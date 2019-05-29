@@ -1,0 +1,30 @@
+{
+  "name": "js-datastruct",
+  "version": "0.0.1",
+  "description": "Code for js-datastruct book",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers js:mocha-traceur test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sitepoint/book-jsdatastruct1.git"
+  },
+  "author": "Marcello La Rocca",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sitepoint/book-jsdatastruct1/issues"
+  },
+  "homepage": "https://github.com/sitepoint/book-jsdatastruct1#readme",
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "jshint": "^2.9.2",
+    "mocha": "^2.4.5",
+    "mocha-es6": "^0.4.4",
+    "mocha-traceur": "^2.1.0",
+    "should": "^8.3.1",
+    "traceur": "0.0.108"
+  }
+}
