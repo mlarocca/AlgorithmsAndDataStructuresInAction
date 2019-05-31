@@ -1,8 +1,9 @@
-package org.mlarocca.containers;
+package org.mlarocca.containers.priorityqueue;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mlarocca.containers.priorityqueue.Heap;
 
 import java.util.*;
 import java.util.stream.Collectors;

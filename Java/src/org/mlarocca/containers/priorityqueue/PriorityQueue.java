@@ -1,4 +1,4 @@
-package org.mlarocca.containers;
+package org.mlarocca.containers.priorityqueue;
 
 import java.util.Optional;
 
