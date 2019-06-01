@@ -3,9 +3,12 @@ package org.mlarocca.containers.priorityqueue;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mlarocca.containers.priorityqueue.Heap;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -13,6 +16,8 @@ import static org.junit.Assert.*;
 
 
 public class HeapTest {
+    private static final Random rnd = new Random();
+
     private Heap<String> heap;
 
     @Before
@@ -39,6 +44,15 @@ public class HeapTest {
             heap.add("c", -0.99);
             result = heap.top();
             assertEquals("top() should return the highest priority element in the heap", "secondo", result.get());
+
+            IntStream.range(0, 10).forEach(i -> {
+                heap.add("" + rnd.nextInt(), rnd.nextInt());
+                assertTrue(heap.checkHeapInvariants());
+            });
+            while (!heap.isEmpty()) {
+                assertTrue(heap.checkHeapInvariants());
+                heap.top();
+            }
         });
     }
 
@@ -61,7 +75,7 @@ public class HeapTest {
     }
 
     @Test
-    public void has() throws Exception {
+    public void addHasRemove() throws Exception {
         Arrays.asList(2, 3, 4, 5).forEach(branchingFactor -> {
             heap = new Heap<>(branchingFactor);
             assertFalse("contains() should return false on a empty heap", heap.contains("any"));
@@ -108,18 +122,18 @@ public class HeapTest {
     }
 
     @Test
-    public void add() throws Exception {
-
-    }
-
-    @Test
-    public void remove() throws Exception {
-
-    }
-
-    @Test
     public void updatePriority() throws Exception {
-
+        Arrays.asList(2, 3, 4, 5).forEach(branchingFactor -> {
+            heap = new Heap<>(branchingFactor);
+            assertFalse("contains() should return false on a empty heap", heap.contains("any"));
+            heap.add("a", 0);
+            heap.add("b", 1);
+            heap.add("c", 2);
+            heap.add("d", 3);
+            heap.add("e", 4);
+            heap.updatePriority("c", -1);
+            assertEquals("Should update priority successfully", "c", heap.top().get());
+        });
     }
 
     @Test
@@ -168,7 +182,7 @@ public class HeapTest {
         heap.add("a", 1);
         heap.add("bcd", -1);
         Assert.assertEquals("Size should change on add", 2, heap.size());
-        heap.add("a",0);
+        heap.add("a", 0);
         assertEquals("Size should NOT change when trying to add existing elements", 2, heap.size());
         heap.add("c", 3.1415);
         heap.add("d", 3.1415);
@@ -211,8 +225,81 @@ public class HeapTest {
         assertEquals("First Child, second level", heap.getParentIndex(3), 1);
         assertEquals("First Child, second level", heap.getParentIndex(4), 1);
         assertEquals("First Child, random", heap.getParentIndex(6), 2);
-        assertEquals("Child/Parent transform should NOT be invertible", heap.getFirstChildIndex(heap.getParentIndex(2)), 1);
-
+        assertEquals("Child/Parent transform should NOT be invertible",
+                heap.getFirstChildIndex(heap.getParentIndex(2)), 1);
     }
 
+    @Test
+    public void testMultiThreading() throws Exception {
+        int maxWait = 5;
+        int branchingFactor = 2 + rnd.nextInt(5);
+
+        Heap<String> heap = new Heap<>(branchingFactor);
+
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+
+        List<String> englishWords = new ArrayList<>(
+                Arrays.asList("this", "is", "just", "to", "test", "concurrent", "access", "for", "synchronized",
+                        "cache"));
+
+        List<String> italianWords = new ArrayList<>(
+                Arrays.asList("prova", "sul", "funzionamento", "di", "una", "cache+", "condivisa", "in", "ambiente",
+                        "multi-threaded"));
+
+        Function<List<String>, Runnable> heapFillerGen = (words) -> () ->
+                words.forEach(w -> {
+                    try {
+                        heap.add(w, w.length());
+                        assertTrue(heap.checkHeapInvariants());
+                        Thread.sleep(1 + rnd.nextInt(maxWait / 2));
+                    } catch (InterruptedException e) {
+                        throw new IllegalStateException(e);
+                    }
+                });
+
+        Runnable englishWordsSetter = heapFillerGen.apply(englishWords);
+        Runnable italianWordsSetter = heapFillerGen.apply(italianWords);
+
+        Function<Integer, Runnable> heapGetterGen = (runs) -> () -> {
+            try {
+                Thread.sleep(1 + rnd.nextInt(maxWait));
+                IntStream.range(0, runs).forEach(j -> {
+                    heap.top();
+                    assertTrue(heap.checkHeapInvariants());
+                });
+            } catch (InterruptedException e) {
+                throw new IllegalStateException(e);
+            }
+        };
+
+        int numGets = 5;
+        Runnable wordsGetter = heapGetterGen.apply(numGets);
+
+        executor.execute(englishWordsSetter);
+        executor.execute(italianWordsSetter);
+        // Make sure the first few words have been added;
+        Thread.sleep(2 * maxWait);
+
+        executor.execute(wordsGetter);
+
+        // Wait till we are sure all threads are done
+        try {
+            executor.awaitTermination(50 * maxWait, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            throw new AssertionError("Computation was stuck");
+        }
+
+        // Check that all elements have been added to the heap
+        assertEquals("All elements should have been added",
+                englishWords.size() + italianWords.size() - numGets, heap.size());
+
+        // Check that all entries are ordered by length (b/c we used it as priority)
+        int prevStrLength = 0;
+        assertTrue(heap.checkHeapInvariants());
+        while (!heap.isEmpty()) {
+            String word = heap.top().get();
+            assertTrue(word.length() >= prevStrLength);
+            prevStrLength = word.length();
+        }
+    }
 }

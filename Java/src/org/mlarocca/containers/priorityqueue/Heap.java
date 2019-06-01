@@ -1,15 +1,11 @@
 package org.mlarocca.containers.priorityqueue;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.google.common.annotations.VisibleForTesting;
+
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Implementation of the PriorityQueue interface as a d-ary heap.
@@ -333,7 +329,7 @@ public class Heap<T> implements PriorityQueue<T> {
      * Returns the size of the heap.
      * Thread safe.
      *
-     * @return The number of elements sotred in the heap.
+     * @return The number of elements sorted in the heap.
      */
     @Override
     public int size() {
@@ -402,18 +398,20 @@ public class Heap<T> implements PriorityQueue<T> {
     private void pushDown(int index) {
         // INVARIANT: index < n
         int n = pairs.size();
-        int firstChildrenIndex= getFirstChildIndex(index);
-        int smallestChildrenIndex  = firstChildrenIndex;
+        int smallestChildrenIndex  = getFirstChildIndex(index);
         Pair<T> pair = pairs.get(index);
+
         while (smallestChildrenIndex < n) {
+            int lastChildrenIndex  = getFirstChildIndex(index) + branchingFactor;
             // Find all
-            for (int childrenIndex = smallestChildrenIndex; childrenIndex < Math.min(firstChildrenIndex + branchingFactor, n); childrenIndex++) {
+            for (int childrenIndex = smallestChildrenIndex; childrenIndex < Math.min(lastChildrenIndex, n); childrenIndex++) {
                 if (hasHigherPriority(pairs.get(childrenIndex), pairs.get(smallestChildrenIndex))) {
                     smallestChildrenIndex = childrenIndex;
                 }
             }
             Pair<T> child = pairs.get(smallestChildrenIndex);
-            if (hasHigherPriority(child, pairs.get(index))) {
+
+            if (hasHigherPriority(child, pair)) {
                 pairs.set(index, child);
                 elementsPositions.put(child.getElement(), index);
                 index = smallestChildrenIndex;
@@ -452,6 +450,25 @@ public class Heap<T> implements PriorityQueue<T> {
         }
         pairs.set(index, pair);
         elementsPositions.put(pair.getElement(), index);
+    }
+
+    @VisibleForTesting
+    protected boolean checkHeapInvariants() {
+        readLock.lock();
+        try {
+            for (int i = 0, n = size();  i < n; i++) {
+                Pair<T> parent = pairs.get(i);
+
+                for (int j = getFirstChildIndex(i), last = getFirstChildIndex(i+1); j < last; j++) {
+                    if (j < n && hasHigherPriority(pairs.get(j), parent)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**
