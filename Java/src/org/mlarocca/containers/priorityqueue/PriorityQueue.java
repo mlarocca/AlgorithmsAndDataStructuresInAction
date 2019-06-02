@@ -15,4 +15,5 @@ public interface PriorityQueue<T> {
     default boolean isEmpty() {
         return this.size() == 0;
     }
+    void clear();
 }

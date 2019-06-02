@@ -341,6 +341,17 @@ public class Heap<T> implements PriorityQueue<T> {
         }
     }
 
+    @Override
+    public void clear() {
+        writeLock.lock();
+        try {
+            pairs.clear();
+            elementsPositions.clear();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
     /**
      * Compares two elements stored in the heap and checks if the first one has higher priority than the second one.
      *
@@ -402,9 +413,9 @@ public class Heap<T> implements PriorityQueue<T> {
         Pair<T> pair = pairs.get(index);
 
         while (smallestChildrenIndex < n) {
-            int lastChildrenIndex  = getFirstChildIndex(index) + branchingFactor;
+            int lastChildrenIndexGuard  = Math.min(getFirstChildIndex(index) + branchingFactor, n);
             // Find all
-            for (int childrenIndex = smallestChildrenIndex; childrenIndex < Math.min(lastChildrenIndex, n); childrenIndex++) {
+            for (int childrenIndex = smallestChildrenIndex; childrenIndex < lastChildrenIndexGuard; childrenIndex++) {
                 if (hasHigherPriority(pairs.get(childrenIndex), pairs.get(smallestChildrenIndex))) {
                     smallestChildrenIndex = childrenIndex;
                 }

@@ -57,6 +57,24 @@ public class HeapTest {
     }
 
     @Test
+    public void clear() throws Exception {
+        Arrays.asList(2, 3, 4, 5).forEach(branchingFactor -> {
+            Heap<Integer> heap = new Heap<>();
+            int numElements = 5 + rnd.nextInt(10);
+            IntStream.range(0 , numElements).forEach(i -> {
+                assertTrue(heap.add(i, rnd.nextDouble()));
+            });
+            assertEquals(numElements, heap.size());
+            heap.clear();
+            assertEquals(0, heap.size());
+            assertTrue(heap.isEmpty());
+            heap.add(1, -1);
+            assertEquals(1, heap.size());
+            assertFalse(heap.isEmpty());
+        });
+    }
+
+    @Test
     public void peek() throws Exception {
         Optional<String> result = heap.peek();
 

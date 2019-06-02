@@ -17,14 +17,14 @@ import java.util.stream.IntStream;
 import static org.junit.Assert.*;
 
 
-public class LFUCacheTest {
+public class LRUCacheTest {
     private static final Random rnd = new Random();
 
-    private LFUCache<String, String> cache;
+    private LRUCache<String, String> cache;
 
     @Test
     public void size() throws Exception {
-        cache = new LFUCache<>(5);
+        cache = new LRUCache<>(5);
         assertEquals("size() should be 0 for an empty cache", 0, cache.size());
 
         cache.set("test", "prova");
@@ -46,7 +46,7 @@ public class LFUCacheTest {
 
     @Test
     public void set() throws Exception {
-        cache = new LFUCache<>(5);
+        cache = new LRUCache<>(6);
         assertEquals(0, cache.size());
 
         cache.set("test", "prova");
@@ -67,8 +67,6 @@ public class LFUCacheTest {
         for (ImmutableMap.Entry<String, String> entry : items.entrySet()) {
             cache.set(entry.getKey(), entry.getValue());
         }
-        // It should have added all entries
-        assertEquals(5, cache.size());
 
         for (ImmutableMap.Entry<String, String> entry : items.entrySet()) {
             assertEquals(cache.get(entry.getKey()).get(), entry.getValue());
@@ -77,7 +75,7 @@ public class LFUCacheTest {
 
     @Test
     public void get() throws Exception {
-        cache = new LFUCache<>(3);
+        cache = new LRUCache<>(3);
         assertEquals(0, cache.size());
 
         cache.set("test", "prova");
@@ -89,7 +87,7 @@ public class LFUCacheTest {
     @Test
     public void evictOneEntry() throws Exception {
         int maxSize = 3;
-        cache = new LFUCache<>(maxSize);
+        cache = new LRUCache<>(maxSize);
         assertEquals(0, cache.size());
         assertFalse("evictOneEntry should fail on empty cache", cache.evictOneEntry());
 
@@ -123,7 +121,7 @@ public class LFUCacheTest {
     @Test
     public void LFUPolicy() throws Exception {
         int maxSize = 5;
-        cache = new LFUCache<>(maxSize);
+        cache = new LRUCache<>(maxSize);
         ImmutableMap<String, String> items = ImmutableMap.of(
                 "this", "questo",
                 "is", "e'",
@@ -146,10 +144,6 @@ public class LFUCacheTest {
         }
 
         assertEquals(maxSize, cache.size());
-        for (ImmutableMap.Entry<String, String> entry : items.entrySet()) {
-            assertEquals(cache.get(entry.getKey()).get(), entry.getValue());
-        }
-        assertEquals(Optional.of("prova"), cache.get("test"));
 
         assertTrue(cache.evictOneEntry());
         assertEquals(maxSize - 1, cache.size());
@@ -167,29 +161,20 @@ public class LFUCacheTest {
         assertTrue(cache.evictOneEntry());
         assertEquals(maxSize - 2, cache.size());
 
-        assertEquals("evictOneEntry should remove the least requested entry", Optional.empty(), cache.get("a"));
+        assertEquals("evictOneEntry should remove the entry requested more in the past", Optional.empty(), cache.get("a"));
 
         assertTrue(cache.set("new test", "nuovo test"));
+        assertEquals(maxSize - 1, cache.size());
         assertEquals(Optional.of("nuovo test"), cache.get("new test"));
         assertTrue(cache.evictOneEntry());
-        assertEquals("evictOneEntry should remove the least requested entry", Optional.empty(), cache.get("new test"));
-
-        String newKey = "brand new test";
-        assertTrue(cache.set(newKey, "nuovissimo test"));
-        assertEquals(maxSize - 1, cache.size());
-
-        // Get the new value many times, so it's not the least frequent anymore
-        IntStream.range(0, 10).forEach(i -> cache.get(newKey));
-        assertTrue(cache.evictOneEntry());
         assertEquals(maxSize - 2, cache.size());
-        assertEquals("evictOneEntry should not remove the latest entry if its counter is high",
-                Optional.of("nuovissimo test"), cache.get(newKey));
+        assertEquals("evictOneEntry should not remove the last requested entry", Optional.of("nuovo test"), cache.get("new test"));
     }
 
     @Test
     public void clear() throws Exception {
         Arrays.asList(2, 3, 4, 5).forEach(maxSize -> {
-            Cache<Integer, Integer> cache = new LFUCache<>(maxSize);
+            Cache<Integer, Integer> cache = new LRUCache<>(maxSize);
             int numElements = 5 + rnd.nextInt(10);
             IntStream.range(0 , numElements).forEach(i -> {
                 assertTrue(cache.set(i, rnd.nextInt()));
@@ -208,7 +193,7 @@ public class LFUCacheTest {
     public void testMultiThreading() throws Exception {
         int maxWait = 5;
         int maxSize = 10;
-        LFUCache<String, Integer> cache = new LFUCache<>(maxSize);
+        LRUCache<String, Integer> cache = new LRUCache<>(maxSize);
 
         ConcurrentHashMap<String, AtomicInteger> counters = new ConcurrentHashMap<>();
 
