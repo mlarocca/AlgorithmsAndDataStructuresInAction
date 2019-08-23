@@ -5,7 +5,8 @@ from mlarocca.datastructures.heap.dway_heap import DWayHeap
 
 BRANCHING_FACTORS_TO_TEST = [2, 3, 4, 5, 6]
 
-class MyTestCase(unittest.TestCase):
+
+class HeapTest(unittest.TestCase):
     def test_init(self):
         heap = DWayHeap(branching_factor=2)
         self.assertEqual(0, len(heap))
