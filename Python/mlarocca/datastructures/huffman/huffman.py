@@ -64,11 +64,24 @@ class HuffmanNode(object):
         return encoding_table
 
 
-def create_frequency_table(text: str) -> collections.Counter:
+def _create_frequency_table(text: str) -> collections.Counter:
+    """Given a text (a string), creates a dictionary with chars/number of occurrences."""
     return collections.Counter(text)
 
 
-def frequency_table_to_heap(ft: collections.Counter, branching_factor: int = 2) -> DWayHeap:
+def _frequency_table_to_heap(ft: collections.Counter, branching_factor: int = 2) -> DWayHeap:
+    """Takes a frequency table and creates a heap whose elements are nodes of the Huffman tree,
+    with one node per unique character in the FT; for each element the priority associated to it is
+    the frequency of the corresponding character.
+
+    Args:
+        ft: The frequency table, with char/number of occurrences (or document frequency) pairs.
+        branching_factor: The branching factor for the d-ary heap that will be created.
+
+    Returns:
+        A d-ary heap containing one entry per unique character in the original text;
+        Each entry is going to be an instance of `HuffmanNode`.
+    """
     characters, priorities = list(zip(*ft.items()))
     # Create a node for each character; use the inverse of the frequency because DWayHeap is a max heap
     priorities = list(map(lambda p: -p, priorities))
@@ -76,7 +89,16 @@ def frequency_table_to_heap(ft: collections.Counter, branching_factor: int = 2) 
     return DWayHeap(elements=elements, priorities=priorities, branching_factor=branching_factor)
 
 
-def heap_to_tree(heap: DWayHeap) -> HuffmanNode:
+def _heap_to_tree(heap: DWayHeap) -> HuffmanNode:
+    """Builds a Huffman encoding tree from a priority queue (containing entries for each of the
+       unique characters in the text to be compressed.
+
+    Args:
+        heap: A
+
+    Returns:
+        The root of the Huffman encoding tree.
+    """
     while len(heap) > 1:
         # Gets the first two elements
         right: HuffmanNode = heap.top()
@@ -92,4 +114,15 @@ def heap_to_tree(heap: DWayHeap) -> HuffmanNode:
 
 
 def create_encoding(text: str) -> Dict[str, str]:
-    return heap_to_tree(frequency_table_to_heap(create_frequency_table(text))).tree_encoding()
+    """Create a Huffman encoding for a text.
+
+    Args:
+        text: The input string to be compressed.
+
+    Returns:
+        A dictionary with an entry for each unique character in the text.
+        Each entry is a string representation of the binary sequence that encodes the character.
+        So, if ('a', '101') is in the output dictionary, to compress the original text one should
+        replace all occurrences of 'a' in the text with the 3 bits 101 (using binary arithmetic).
+    """
+    return _heap_to_tree(_frequency_table_to_heap(_create_frequency_table(text))).tree_encoding()
