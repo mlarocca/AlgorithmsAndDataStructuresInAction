@@ -113,7 +113,7 @@ def _heap_to_tree(heap: DWayHeap) -> HuffmanNode:
     return heap.top()
 
 
-def create_encoding(text: str) -> Dict[str, str]:
+def create_encoding(text: str, branching_factor: int) -> Dict[str, str]:
     """Create a Huffman encoding for a text.
 
     Args:
@@ -125,4 +125,4 @@ def create_encoding(text: str) -> Dict[str, str]:
         So, if ('a', '101') is in the output dictionary, to compress the original text one should
         replace all occurrences of 'a' in the text with the 3 bits 101 (using binary arithmetic).
     """
-    return _heap_to_tree(_frequency_table_to_heap(_create_frequency_table(text))).tree_encoding()
+    return _heap_to_tree(_frequency_table_to_heap(_create_frequency_table(text), branching_factor)).tree_encoding()

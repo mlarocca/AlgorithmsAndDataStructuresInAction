@@ -80,19 +80,20 @@ class DWayHeap(object):
 
         # INVARIANT: 0 <= index < n
         assert (0 <= index < len(self._pairs))
-        current_pair = self._pairs[index]
+        input_pair = self._pairs[index]
+        input_priority = input_pair[0]
         current_index = index
         first_leaf = self.first_leaf_index()
         while current_index < first_leaf:
             child_index = self._highest_priority_child_index(current_index)
             assert (child_index is not None)
-            if self._pairs[child_index][0] > current_pair[0]:
+            if self._pairs[child_index][0] > input_priority:
                 self._pairs[current_index] = self._pairs[child_index]
                 current_index = child_index
             else:
                 break
 
-        self._pairs[current_index] = current_pair
+        self._pairs[current_index] = input_pair
 
     def _bubble_up(self, index: int) -> None:
         """Bubbles up towards the root an element, to reinstate heap's invariants.
@@ -104,18 +105,19 @@ class DWayHeap(object):
         """
         # INVARIANT: 0 <= index < n
         assert (0 <= index < len(self._pairs))
-        current_pair = self._pairs[index]
+        input_pair = self._pairs[index]
+        input_priority = input_pair[0]
         while index > 0:
             parent_index = self._parent_index(index)
             parent = self._pairs[parent_index]
 
-            if current_pair[0] > parent[0]:
+            if input_priority > parent[0]:
                 self._pairs[index] = parent
                 index = parent_index
             else:
                 break
 
-        self._pairs[index] = current_pair
+        self._pairs[index] = input_pair
 
     def _first_child_index(self, index) -> int:
         """Computes the index of the first child of a heap node.
@@ -149,9 +151,10 @@ class DWayHeap(object):
                  current node has no child.
         """
         first_index = self._first_child_index(index)
-        last_index = min(first_index + self.D, len(self))
+        size = len(self)
+        last_index = min(first_index + self.D, size)
 
-        if first_index >= len(self):
+        if first_index >= size:
             return None
 
         highest_priority = -float('inf')
