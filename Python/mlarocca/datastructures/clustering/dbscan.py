@@ -1,9 +1,4 @@
-from collections import Counter
-from itertools import groupby
-from random import random, sample
 from scipy.spatial import KDTree
-from statistics import mean
-from operator import itemgetter
 from typing import Optional, List, Tuple
 
 NOISE = -1
@@ -20,11 +15,11 @@ def dbscan(points: List[Tuple], eps: float, min_points: int) -> List[int]:
     Returns:
         A list of the cluster indices for each point.
     """
-
-    cluster_indices: List[Optional[int]] = [None for _ in points]
+    n = len(points)
+    cluster_indices: List[Optional[int]] = [None] * n
     current_index = 0
     kd_tree = KDTree(points)
-    for i in range(len(points)):
+    for i in range(n):
         if cluster_indices[i] is not None:
             continue
         process_set = {i}
