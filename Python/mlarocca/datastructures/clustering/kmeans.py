@@ -7,8 +7,8 @@ from operator import itemgetter
 from typing import Callable, List, Tuple
 
 
-def __euclidean_distance(p: Tuple, q: Tuple) -> float:
-    """Euclidean distance between 2 points.
+def __euclidean_squared_distance(p: Tuple, q: Tuple) -> float:
+    """The square of Euclidean distance between 2 points.
 
     Args:
         p: One of the points whose distance will be computed.
@@ -54,7 +54,7 @@ def __update_centroids(points: List[Tuple], cluster_indices: List[int]) -> List[
 
 
 def __partition_points_compact(points: List[Tuple], centroids: List[Tuple]) -> List[int]:
-    return [min(enumerate(map(lambda c: __euclidean_distance(p, c), centroids)), key=itemgetter(1)) for p in points]
+    return [min(enumerate(map(lambda c: __euclidean_squared_distance(p, c), centroids)), key=itemgetter(1)) for p in points]
 
 
 def __partition_points(points: List[Tuple], centroids: List[Tuple]) -> List[int]:
@@ -76,7 +76,7 @@ def __partition_points(points: List[Tuple], centroids: List[Tuple]) -> List[int]
         min_distance = float('inf')
         index = 0
         for i in range(k):
-            distance = __euclidean_distance(points[j], centroids[i])
+            distance = __euclidean_squared_distance(points[j], centroids[i])
             if distance < min_distance:
                 min_distance = distance
                 index = i
