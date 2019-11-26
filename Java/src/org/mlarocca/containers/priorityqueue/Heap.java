@@ -4,8 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Implementation of the PriorityQueue interface as a d-ary heap.
@@ -25,13 +23,13 @@ import java.util.stream.IntStream;
  *
  * @param <T> The generic type for elements that can be held in the heap.
  */
-public class Heap<T> implements PriorityQueue<T> {
+public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
 
     private static final int DEFAULT_BRANCHING_FACTOR = 2;
 
     public static final int MAX_BRANCHING_FACTOR = 10;
 
-    private List<Pair<T>> pairs;
+    private List<T> elements;
 
     /**
      * Keep the positions of the elements in a hash map to implement a fast version of `contains` method.
@@ -68,7 +66,7 @@ public class Heap<T> implements PriorityQueue<T> {
      *          - If the branching factor is not within the valid range.
      */
     public Heap(int branchingFactor) throws IllegalArgumentException {
-        pairs = new ArrayList<>();
+        elements = new ArrayList<>();
         elementsPositions = new HashMap<>();
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         readLock = lock.readLock();
@@ -78,42 +76,34 @@ public class Heap<T> implements PriorityQueue<T> {
     }
 
     /**
-     * Most generic constructor.
+     * Most generic constructor, using heapify to construct a heap from a list of elements.
      *
      * @param elements A list of elements to add to the heap.
-     * @param priorities A list of priorities for the elements. The two lists need to have the same
-     *                   size, and be in a consistent order: priority for the i-th element must be
-     *                   in the i-ith position.
      * @param branchingFactor The (maximum) number of children that a node can have.
      * @throws IllegalArgumentException:
-     *          - If the two lists don't have the same size.
+     *          - If the list is null;
      *          - If the branching factor is not within the valid range.
      */
-    public Heap(List<T> elements, List<Double> priorities, int branchingFactor) throws IllegalArgumentException {
+    public Heap(List<T> elements, int branchingFactor) throws IllegalArgumentException {
         validateBranchingFactor(branchingFactor);
         this.branchingFactor = branchingFactor;
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         readLock = lock.readLock();
         writeLock = lock.writeLock();
 
-        if (elements == null || priorities == null) {
+        if (elements == null) {
             throw new NullPointerException("Null argument(s)");
         }
         int n = elements.size();
-        if (priorities.size() != n) {
-            throw new IllegalArgumentException("Elements and priorities lists size does not match");
-        }
 
-        pairs = IntStream.range(0, n)
-            .mapToObj(i -> new Pair<T>(elements.get(i), priorities.get(i)))
-            .collect(Collectors.toList());
+        this.elements = new ArrayList<>(elements);
 
         elementsPositions = new HashMap<>();
 
         // Now performs a heapify initialization
         for (int i = getParentIndex(n - 1) + 1; i < n; i++) {
             // Sets the positions for the second half of the array
-            elementsPositions.put(pairs.get(i).getElement(), i);
+            elementsPositions.put(this.elements.get(i), i);
         }
 
         for (int i = getParentIndex(n - 1); i >= 0; i--) {
@@ -138,15 +128,15 @@ public class Heap<T> implements PriorityQueue<T> {
             if (this.isEmpty()) {
                 return Optional.empty();
             }
-            int n = pairs.size();
-            T top = pairs.get(0).getElement();
+            int n = elements.size();
+            T top = elements.get(0);
 
             if (n > 1) {
                 // Replaces the top element with the last element in the heap
-                pairs.set(0, pairs.remove(n - 1));
+                elements.set(0, elements.remove(n - 1));
                 this.pushDown(0);
             } else {
-                pairs.remove(0);
+                elements.remove(0);
             }
             elementsPositions.remove(top);
             // INVARIANT: top is non null at this point
@@ -167,7 +157,7 @@ public class Heap<T> implements PriorityQueue<T> {
     public Optional<T> peek() {
         readLock.lock();
         try {
-            return pairs.isEmpty() ? Optional.empty() : Optional.of(pairs.get(0).getElement());
+            return elements.isEmpty() ? Optional.empty() : Optional.of(elements.get(0));
         } finally {
             readLock.unlock();
         }
@@ -191,43 +181,23 @@ public class Heap<T> implements PriorityQueue<T> {
     }
 
     /**
-     * Retrieves the priority of an element, if it's stored in the heap.
-     * Thread safe.
-     *
-     * @param element The element of interest.
-     * @return Optional.empty if the lement is not stored in the heap. The element's priority, wrapped
-     *          in an Optional container, otherwise.
-     */
-    @Override
-    public Optional<Double> priority(T element) {
-        readLock.lock();
-        try {
-            return Optional.ofNullable(elementsPositions.get(element))
-                    .map(i -> pairs.get(i).priority);
-        } finally {
-            readLock.unlock();
-        }
-    }
-
-    /**
      * Add a new element to the heap. The heap does not allow duplicates, so if an element equals
      * to the argument is already stored in the heap, ignores the new one.
      * Thread safe.
      *
      * @param element The value of the element to add.
-     * @param priority The priority to associate with the new element.
      * @return true iff the element has been successdully added, false otherwise.
      */
     @Override
-    public boolean add(T element, double priority) {
+    public boolean add(final T element) {
         writeLock.lock();
         try {
             if (this.contains(element)) {
                 return false;
             } // else {
 
-            pairs.add(new Pair<T>(element, priority));
-            this.bubbleUp(pairs.size() - 1);
+            elements.add(element);
+            this.bubbleUp(elements.size() - 1);
             return true;
         } finally {
             writeLock.unlock();
@@ -239,7 +209,7 @@ public class Heap<T> implements PriorityQueue<T> {
      * is based on its value, not on the priority.
      * Thread safe.
      *
-     * @param element The element to eb removed.
+     * @param element The element to be removed.
      * @return true iff the element was stored in the heap and then correctly removed.
      */
     @Override
@@ -254,11 +224,11 @@ public class Heap<T> implements PriorityQueue<T> {
             int position = elementsPositions.get(element);
             if (position == n - 1) {
                 // This also covers the case n == 1
-                pairs.remove(position);
+                elements.remove(position);
                 elementsPositions.remove(element);
             } else {
-                pairs.set(position, pairs.get(n - 1));
-                pairs.remove(n - 1);
+                elements.set(position, elements.get(n - 1));
+                elements.remove(n - 1);
                 elementsPositions.remove(element);
                 this.pushDown(position);
             }
@@ -269,57 +239,32 @@ public class Heap<T> implements PriorityQueue<T> {
     }
 
     /**
-     * Updates an element already stored in the queue, by setting its priority to a new value.
+     * Updates an element already stored in the queue. This method's implementation is more efficient than removing
+     * the old element and then adding the new one with two separate calls.
      * Thread safe.
      *
-     * @param element The element to be updated. If the element is not in the queue, it will NOT be added.
-     *                If you need an `upsert` operation instead, check out {@link this.addElementOrUpdatePriority}.
-     * @param newPriority The new value for the priority.
+     * @param oldElement The element to be updated. If the element is not in the queue, it will NOT be added.
+     * @param newElement The new value for the element.
      * @return true iff the element was stored in the heap and its priority successfully updated.
      */
     @Override
-    public boolean updatePriority(T element, double newPriority) {
+    public boolean updatePriority(T oldElement, T newElement) {
         writeLock.lock();
         try {
-            if (this.isEmpty() || !this.contains(element)) {
+            if (this.isEmpty() || !this.contains(oldElement)) {
                 return false;
             } //else
 
-            int position = elementsPositions.get(element);
-            Pair<T> oldPair = pairs.get(position);
-            Pair<T> newPair = new Pair<T>(element, newPriority);
-            pairs.set(position, newPair);
+            int position = elementsPositions.get(oldElement);
+            elements.set(position, newElement);
 
-            if (hasHigherPriority(newPair, oldPair)) {
+            if (hasHigherPriority(newElement, oldElement)) {
                 bubbleUp(position);
             } else {
                 pushDown(position);
             }
 
             return true;
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-    /**
-     * Adds the element-priority pair to the heap. If the element was already stored, updates its priority to a new value.
-     * Otherwise adds it to the queue.
-     * Thread safe.
-     *
-     * @param element The element to be added or updated. If the element is not in the queue, it will be added.
-     * @param priority The priority to associate with the element.
-     * @return true iff the element is now stored in the queue with the associated priority.
-     */
-    @Override
-    public boolean addElementOrUpdatePriority(T element, double priority) {
-        writeLock.lock();
-        try {
-            if (contains(element)) {
-                return updatePriority(element, priority);
-            } else {
-                return add(element, priority);
-            }
         } finally {
             writeLock.unlock();
         }
@@ -335,17 +280,21 @@ public class Heap<T> implements PriorityQueue<T> {
     public int size() {
         readLock.lock();
         try {
-            return pairs.size();
+            return elements.size();
         } finally {
             readLock.unlock();
         }
     }
 
+    /**
+     * Remove all elements from the heap.
+     * Thread safe.
+     */
     @Override
     public void clear() {
         writeLock.lock();
         try {
-            pairs.clear();
+            elements.clear();
             elementsPositions.clear();
         } finally {
             writeLock.unlock();
@@ -359,7 +308,7 @@ public class Heap<T> implements PriorityQueue<T> {
      * @param withRespectToElement The second element, the one with respect to which the comparison is done.
      * @return true iff the first argument has higher priority than the second, in this heap.
      */
-    protected boolean hasHigherPriority(Pair<T> element, Pair<T> withRespectToElement) {
+    protected boolean hasHigherPriority(T element, T withRespectToElement) {
         return element.compareTo(withRespectToElement) < 0;
     }
 
@@ -408,23 +357,23 @@ public class Heap<T> implements PriorityQueue<T> {
      */
     private void pushDown(int index) {
         // INVARIANT: index < n
-        int n = pairs.size();
+        int n = elements.size();
         int smallestChildrenIndex  = getFirstChildIndex(index);
-        Pair<T> pair = pairs.get(index);
+        T element = elements.get(index);
 
         while (smallestChildrenIndex < n) {
             int lastChildrenIndexGuard  = Math.min(getFirstChildIndex(index) + branchingFactor, n);
             // Find all
             for (int childrenIndex = smallestChildrenIndex; childrenIndex < lastChildrenIndexGuard; childrenIndex++) {
-                if (hasHigherPriority(pairs.get(childrenIndex), pairs.get(smallestChildrenIndex))) {
+                if (hasHigherPriority(elements.get(childrenIndex), elements.get(smallestChildrenIndex))) {
                     smallestChildrenIndex = childrenIndex;
                 }
             }
-            Pair<T> child = pairs.get(smallestChildrenIndex);
+            T child = elements.get(smallestChildrenIndex);
 
-            if (hasHigherPriority(child, pair)) {
-                pairs.set(index, child);
-                elementsPositions.put(child.getElement(), index);
+            if (hasHigherPriority(child, element)) {
+                elements.set(index, child);
+                elementsPositions.put(child, index);
                 index = smallestChildrenIndex;
                 smallestChildrenIndex = getFirstChildIndex(index);
             } else {
@@ -432,8 +381,8 @@ public class Heap<T> implements PriorityQueue<T> {
                 break;
             }
         }
-        pairs.set(index, pair);
-        elementsPositions.put(pair.getElement(), index);
+        elements.set(index, element);
+        elementsPositions.put(element, index);
     }
 
     /**
@@ -445,22 +394,22 @@ public class Heap<T> implements PriorityQueue<T> {
     private void bubbleUp(int index) {
         // INVARIANT: 0 <= index < n
         int parentIndex;
-        Pair<T> pair = pairs.get(index);
+        T element = elements.get(index);
 
         while (index > 0) {
             parentIndex = getParentIndex(index);
-            Pair<T> parent = pairs.get(parentIndex);
-            if (hasHigherPriority(pair, parent)) {
-                pairs.set(index, parent);
-                elementsPositions.put(parent.getElement(), index);
+            T parent = elements.get(parentIndex);
+            if (hasHigherPriority(element, parent)) {
+                elements.set(index, parent);
+                elementsPositions.put(parent, index);
                 index = parentIndex;
             } else {
                 // The element is already in the right position
                 break;
             }
         }
-        pairs.set(index, pair);
-        elementsPositions.put(pair.getElement(), index);
+        elements.set(index, element);
+        elementsPositions.put(element, index);
     }
 
     @VisibleForTesting
@@ -468,10 +417,10 @@ public class Heap<T> implements PriorityQueue<T> {
         readLock.lock();
         try {
             for (int i = 0, n = size();  i < n; i++) {
-                Pair<T> parent = pairs.get(i);
+                T parent = elements.get(i);
 
                 for (int j = getFirstChildIndex(i), last = getFirstChildIndex(i+1); j < last; j++) {
-                    if (j < n && hasHigherPriority(pairs.get(j), parent)) {
+                    if (j < n && hasHigherPriority(elements.get(j), parent)) {
                         return false;
                     }
                 }
@@ -479,87 +428,6 @@ public class Heap<T> implements PriorityQueue<T> {
             return true;
         } finally {
             readLock.unlock();
-        }
-    }
-
-    /**
-     * Internal class used to zip elements and priorities together.
-     * @param <R> The type generic of the elements contained.
-     */
-    @VisibleForTesting
-    protected class Pair<R> implements Comparable<Pair<R>>{
-        private R element;
-        private double priority;
-
-        /**
-         * Constructor.
-         *
-         * @param element
-         * @param priority
-         */
-        public Pair(R element, double priority) {
-            this.element = element;
-            this.priority = priority;
-        }
-
-        /**
-         * A pair should be hashed exactly as its element, ignoring the priority.
-         *
-         * @return The hashcode for the pair, i.e. the hashcode for the element.
-         */
-        @Override
-        public int hashCode() {
-            return element == null ? 0 : element.hashCode();
-        }
-
-        /**
-         * Equality should only depend on the element, ignoring priority.
-         * @param other
-         * @return
-         */
-        @Override
-        public boolean equals(Object other) {
-            return other != null
-                    && other.getClass().equals(this.getClass())
-                    && other.hashCode() == element.hashCode()
-                    && element.equals(((Pair<R>)other).element);
-        }
-
-        /**
-         * Compares two pairs, based on priority only.
-         *
-         * @param other The pair to compare to.
-         * @return -1 if this pair is smaller (i.e. higher priority).
-         *          0 if they have the same priority.
-         *          1 if the other pair has higher priority.
-         */
-        @Override
-        public int compareTo(Pair<R> other) {
-            if (other == null || priority < other.priority) {
-                return -1;
-            } else if (priority == other.priority) {
-                return 0;
-            } else {
-                return 1;
-            }
-        }
-
-        /**
-         * Getter for pair's priority.
-         *
-         * @return The priority component.
-         */
-        public double getPriority() {
-            return priority;
-        }
-
-        /**
-         * Getter for the pair's element.
-         *
-         * @return The element for this pair.
-         */
-        public R getElement() {
-            return element;
         }
     }
 }

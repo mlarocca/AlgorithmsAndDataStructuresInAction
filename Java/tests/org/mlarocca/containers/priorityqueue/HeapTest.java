@@ -32,21 +32,21 @@ public class HeapTest {
             Optional<String> result = heap.top();
 
             assertFalse("top() should return an empty optional when the heap is empty", result.isPresent());
-            heap.add("primo", 1);
+            heap.add("primo");
             result = heap.top();
             assertTrue("top() should return an valid optional when the heap is empty", result.isPresent());
             assertEquals("top() should return the only element in the heap", "primo", result.get());
 
-            heap.add("primo", 1);
-            heap.add("secondo", -1);
-            heap.add("a", 11);
-            heap.add("b", 0);
-            heap.add("c", -0.99);
+            heap.add("primo");
+            heap.add("secondo");
+            heap.add("a");
+            heap.add("b");
+            heap.add("c");
             result = heap.top();
-            assertEquals("top() should return the highest priority element in the heap", "secondo", result.get());
+            assertEquals("top() should return the highest priority element in the heap", "a", result.get());
 
             IntStream.range(0, 10).forEach(i -> {
-                heap.add("" + rnd.nextInt(), rnd.nextInt());
+                heap.add("" + rnd.nextInt());
                 assertTrue(heap.checkHeapInvariants());
             });
             while (!heap.isEmpty()) {
@@ -62,13 +62,13 @@ public class HeapTest {
             Heap<Integer> heap = new Heap<>();
             int numElements = 5 + rnd.nextInt(10);
             IntStream.range(0 , numElements).forEach(i -> {
-                assertTrue(heap.add(i, rnd.nextDouble()));
+                assertTrue(heap.add(i));
             });
             assertEquals(numElements, heap.size());
             heap.clear();
             assertEquals(0, heap.size());
             assertTrue(heap.isEmpty());
-            heap.add(1, -1);
+            heap.add(1);
             assertEquals(1, heap.size());
             assertFalse(heap.isEmpty());
         });
@@ -79,17 +79,17 @@ public class HeapTest {
         Optional<String> result = heap.peek();
 
         assertFalse("peek() should return an empty optional when the heap is empty", result.isPresent());
-        heap.add("primo", 1e14);
+        heap.add("primo");
         result = heap.peek();
         assertTrue("peek() should return an valid optional when the heap is empty", result.isPresent());
         assertEquals("peek() should return the only element in the heap", "primo", result.get());
 
-        heap.add("b", 0);
-        heap.add("c", -0.99);
-        heap.add("secondo", -1);
-        heap.add("a", 11);
+        heap.add("b");
+        heap.add("a");
+        heap.add("secondo");
+        heap.add("c");
         result = heap.peek();
-        assertEquals("peek() should return the highest priority element in the heap", "secondo", result.get());
+        assertEquals("peek() should return the highest priority element in the heap", "a", result.get());
     }
 
     @Test
@@ -97,14 +97,14 @@ public class HeapTest {
         Arrays.asList(2, 3, 4, 5).forEach(branchingFactor -> {
             heap = new Heap<>(branchingFactor);
             assertFalse("contains() should return false on a empty heap", heap.contains("any"));
-            heap.add("primo", 1e14);
+            heap.add("primo");
             assertTrue("contains() should return true for an existing element", heap.contains("primo"));
             assertFalse("contains() should return false if the element is not in the heap", heap.contains("any"));
 
-            heap.add("b", 0);
-            heap.add("c", -0.99);
-            heap.add("secondo", -1);
-            heap.add("a", 11);
+            heap.add("b");
+            heap.add("a");
+            heap.add("secondo");
+            heap.add("c");
             assertTrue("contains() should return true for an existing element ('primo')", heap.contains("primo"));
             assertTrue("contains() should return true for an existing element ('secondo')", heap.contains("secondo"));
             assertTrue("contains() should return true for an existing element ('a')", heap.contains("a"));
@@ -122,7 +122,7 @@ public class HeapTest {
             assertFalse("contains() should return false if the element is not in the heap ('b')", heap.contains("b"));
             assertFalse("contains() should return false if the element is not in the heap ('any')", heap.contains("any"));
 
-            heap.add("terzo", -44);
+            heap.add("terzo");
             assertTrue("contains() should return true for an existing element ('primo')", heap.contains("primo"));
             assertTrue("contains() should return true for an existing element ('secondo')", heap.contains("secondo"));
             assertTrue("contains() should return true for an existing element ('terzo')", heap.contains("terzo"));
@@ -135,7 +135,7 @@ public class HeapTest {
             assertFalse("contains() should return false after the top element contains been removed using remove()", heap.contains("terzo"));
 
             heap.top();
-            assertFalse("contains() should return false after the top element contains been removed using top()", heap.contains("secondo"));
+            assertFalse("contains() should return false after the top element contains been removed using top()", heap.contains("a"));
         });
     }
 
@@ -144,27 +144,28 @@ public class HeapTest {
         Arrays.asList(2, 3, 4, 5).forEach(branchingFactor -> {
             heap = new Heap<>(branchingFactor);
             assertFalse("contains() should return false on a empty heap", heap.contains("any"));
-            heap.add("a", 0);
-            heap.add("b", 1);
-            heap.add("c", 2);
-            heap.add("d", 3);
-            heap.add("e", 4);
-            heap.updatePriority("c", -1);
-            assertEquals("Should update priority successfully", "c", heap.top().get());
+            heap.add("a");
+            heap.add("b");
+            heap.add("c");
+            heap.add("d");
+            heap.add("e");
+            heap.updatePriority("c", "f");
+            assertEquals("Should update priority successfully", "a", heap.top().get());
+            assertEquals("Should update priority successfully", "b", heap.top().get());
+            assertEquals("Should update priority successfully", "d", heap.top().get());
         });
     }
 
     @Test
     public void heapify() throws Exception {
         Arrays.asList(2, 3, 4, 5).forEach(branchingFactor -> {
-            List<Integer> elements = Arrays.asList(1, 2, 3, 4, 5);
-            List<Double> priorities = Arrays.asList(-1.0, 0.0, Math.E, 1.0, -3.14);
-            Heap<Integer> iHeap = new Heap<>(elements, priorities, branchingFactor);
+            List<Double> elements = Arrays.asList(-1.0, 0.0, Math.E, 1.0, -3.14);
+            Heap<Double> iHeap = new Heap<>(elements, branchingFactor);
 
             assertEquals("Size should be 0 on empty Heap", elements.size(), iHeap.size());
 
-            List<Integer> results = new ArrayList<>();
-            List<Integer> expected = Arrays.asList(5, 1, 2, 4, 3);
+            List<Double> results = new ArrayList<>();
+            List<Double> expected = Arrays.asList(-3.14, -1.0, 0.0, 1.0, Math.E);
 
             while (!iHeap.isEmpty()) {
                 results.add(iHeap.top().get());
@@ -176,34 +177,20 @@ public class HeapTest {
 
     @Test(expected = NullPointerException.class)
     public void heapifyConstructorOnNullElements() throws Exception {
-        List<Double> priorities = Arrays.asList(-1.0, 0.0, 1.0, Math.E, -3.14);
-        new Heap<>(null, priorities, 2);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void heapifyConstructorOnNullPriorities() throws Exception {
-        List<Double> elements = Arrays.asList(-1.0, 0.0, 1.0, Math.E, -3.14);
-        new Heap<>(elements, null, 2);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void heapifyConstructorOnDifferentSize() throws Exception {
-        List<Integer> elements = Arrays.asList(1, 2, 3);
-        List<Double> priorities = Arrays.asList(-1.0, 0.0, 1.0, Math.E, -3.14);
-        new Heap<>(elements, priorities, 3);
+        new Heap<>(null, 2);
     }
 
     @Test
     public void size() throws Exception {
         Assert.assertEquals("Size should be 0 on empty Heap", 0, heap.size());
 
-        heap.add("a", 1);
-        heap.add("bcd", -1);
+        heap.add("a");
+        heap.add("bcd");
         Assert.assertEquals("Size should change on add", 2, heap.size());
-        heap.add("a", 0);
+        heap.add("a");
         assertEquals("Size should NOT change when trying to add existing elements", 2, heap.size());
-        heap.add("c", 3.1415);
-        heap.add("d", 3.1415);
+        heap.add("c");
+        heap.add("d");
         assertEquals("Size should change on add more than 2 elements", 4, heap.size());
         heap.remove("d");
         assertEquals("Size should change on remove", 3, heap.size());
@@ -215,17 +202,6 @@ public class HeapTest {
         assertEquals("Size should change on remove top", 1, heap.size());
         heap.top();
         assertEquals("Size should change on remove top", 0, heap.size());
-    }
-
-    @Test
-    public void hasHigherPriority() throws Exception {
-        int n = 10;
-        Set<Heap.Pair> pairs = IntStream.range(0, n).mapToObj(i -> heap.new Pair<Integer>(i, Math.random())).collect(Collectors.toSet());
-        for (Heap.Pair p : pairs) {
-            for (Heap.Pair q : pairs) {
-                assertEquals("Priority: Smallest means highest", p.getPriority() < q.getPriority(), heap.hasHigherPriority(p, q));
-            }
-        }
     }
 
     @Test
@@ -267,7 +243,7 @@ public class HeapTest {
         Function<List<String>, Runnable> heapFillerGen = (words) -> () ->
                 words.forEach(w -> {
                     try {
-                        heap.add(w, w.length());
+                        heap.add(w);
                         assertTrue(heap.checkHeapInvariants());
                         Thread.sleep(1 + rnd.nextInt(maxWait / 2));
                     } catch (InterruptedException e) {
@@ -312,12 +288,12 @@ public class HeapTest {
                 englishWords.size() + italianWords.size() - numGets, heap.size());
 
         // Check that all entries are ordered by length (b/c we used it as priority)
-        int prevStrLength = 0;
+        String prevStr = "";
         assertTrue(heap.checkHeapInvariants());
         while (!heap.isEmpty()) {
             String word = heap.top().get();
-            assertTrue(word.length() >= prevStrLength);
-            prevStrLength = word.length();
+            assertTrue(word.compareTo(prevStr) > 0);
+            prevStr = word;
         }
     }
 }

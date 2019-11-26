@@ -28,7 +28,7 @@ public class Huffman {
             List<Character> symbols = new ArrayList<>(left.map(n -> n.symbols).orElse(Collections.EMPTY_LIST));
             symbols.addAll(right.map(n -> n.symbols).orElse(Collections.EMPTY_LIST));
             Double priority = left.map(n -> n.priority).orElse(0.) + right.map(n -> n.priority).orElse(0.);
-            frequenciesQueue.add(new Node(symbols, priority, left, right), priority);
+            frequenciesQueue.add(new Node(symbols, priority, left, right));
         }
 
         return frequenciesQueue.top().get();
@@ -45,7 +45,7 @@ public class Huffman {
             priorities.add(priority);
         }
 
-        return new Heap<>(elements, priorities, 3);
+        return new Heap<>(elements, 3);
     }
 
     @VisibleForTesting
@@ -60,7 +60,7 @@ public class Huffman {
     }
 
     @VisibleForTesting
-    protected static class Node {
+    protected static class Node implements Comparable<Node> {
         private final List<Character> symbols;
         private final Double priority;
         private final Optional<Node> left;
@@ -112,6 +112,14 @@ public class Huffman {
 
         private static String encodeRightPath(String innerPath) {
             return "1" + innerPath;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            if (o == null) {
+                return -1;
+            }
+            return Double.compare(this.priority, o.priority);
         }
     }
 }
