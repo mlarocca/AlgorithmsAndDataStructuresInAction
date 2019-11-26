@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class LFUCache<Key, Value> implements Cache<Key, Value> {
     private int maxSize;
     private ConcurrentHashMap<Key, CacheItem> items;
-    private PriorityQueue<Key> keyPriorities;
+    private PriorityQueue<CacheItem> keyPriorities;
 
     /**
      * To make this container thread-safe, we need to synchronize all public methods.
@@ -25,7 +25,7 @@ public class LFUCache<Key, Value> implements Cache<Key, Value> {
 
     public LFUCache(int maxSize) {
         this.maxSize = maxSize;
-        this.items = new ConcurrentHashMap<Key, CacheItem>(maxSize);
+        this.items = new ConcurrentHashMap<>(maxSize);
         // We use a branching factor of 4 to optimize the D-way heap performance
         this.keyPriorities = new Heap<>(4);
 
@@ -40,14 +40,16 @@ public class LFUCache<Key, Value> implements Cache<Key, Value> {
         try {
             if (this.items.containsKey(key)) {
                 CacheItem item = this.items.get(key);
+                keyPriorities.remove(item);
                 item.value = value;
-                return keyPriorities.updatePriority(key, item.counter.incrementAndGet());
+                item.counter.incrementAndGet();
+                return keyPriorities.add(item);
             } else if (this.size() >= this.maxSize) {
                 this.evictOneEntry();
             }
-            CacheItem item = new CacheItem(value);
+            CacheItem item = new CacheItem(key, value);
 
-            if (!this.keyPriorities.add(key, item.counter.intValue())) {
+            if (!this.keyPriorities.add(item)) {
                 return false;
             }
             this.items.put(key, item);
@@ -62,7 +64,9 @@ public class LFUCache<Key, Value> implements Cache<Key, Value> {
         readLock.lock();
         try {
             return Optional.ofNullable(this.items.get(key)).map(item -> {
-                keyPriorities.updatePriority(key, item.counter.incrementAndGet());
+                keyPriorities.remove(item);
+                item.counter.incrementAndGet();
+                keyPriorities.add(item);
                 return item.value;
             });
         } finally {
@@ -100,26 +104,35 @@ public class LFUCache<Key, Value> implements Cache<Key, Value> {
     protected boolean evictOneEntry() {
         writeLock.lock();
         try {
-            Optional<Key> key = keyPriorities.top();
-            if (!key.isPresent()) {
+            Optional<CacheItem> item = keyPriorities.top();
+            if (!item.isPresent()) {
                 // Cache is empty
                 return false;
             }
-            items.remove(key.get());
-            keyPriorities.remove(key.get());
+            items.remove(item.get().key);
             return true;
         } finally {
             writeLock.unlock();
         }
     }
 
-    private class CacheItem {
+    private class CacheItem implements Comparable<CacheItem> {
+        public Key key;
         public Value value;
         public AtomicInteger counter;
 
-        private CacheItem(Value value) {
+        private CacheItem(Key key, Value value) {
+            this.key = key;
             this.value = value;
             this.counter = new AtomicInteger(1);
+        }
+
+        @Override
+        public int compareTo(CacheItem o) {
+            if (o == null) {
+                return -1;
+            }
+            return this.counter.get() - o.counter.get();
         }
     }
 
