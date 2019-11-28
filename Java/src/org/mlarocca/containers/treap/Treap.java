@@ -2,47 +2,13 @@ package org.mlarocca.containers.treap;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.mlarocca.containers.priorityqueue.PriorityQueue;
-import org.mlarocca.containers.priorityqueue.ReadOnlyPriorityQueue;
-import org.mlarocca.containers.tree.BST;
 import org.mlarocca.containers.tree.ReadOnlyBST;
 
 import java.util.Optional;
 
-public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements ReadOnlyBST<T>, ReadOnlyPriorityQueue<S> {
+public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements ReadOnlyBST<T>, PriorityQueue<Treap.Entry<T, S>> {
 
     private Optional<TreapNode> root;
-
-    @Override
-    public Optional<T> min() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<T> max() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<T> search(T element) {
-        return root.flatMap(r -> r.search(Optional.of(element), Optional.empty())).map(TreapNode::getKey);
-    }
-
-    @Override
-    public Optional<S> top() {
-        Optional<S> result = root.map(TreapNode::value);
-        root.ifPresent(TreapNode::remove);
-        return result;
-    }
-
-    @Override
-    public Optional<S> peek() {
-        return root.map(TreapNode::value);
-    }
-
-    @Override
-    public boolean contains(S element) {
-        return root.flatMap(r -> r.search(Optional.empty(), Optional.of(element))).isPresent();
-    }
 
     @Override
     public int size() {
@@ -52,6 +18,38 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
     @Override
     public boolean isEmpty() {
         return root.isEmpty();
+    }
+
+    @Override
+    public Optional<T> min() {
+        return root.map(TreapNode::min);
+    }
+
+    @Override
+    public Optional<T> max() {
+        return root.map(TreapNode::max);
+    }
+
+    @Override
+    public Optional<T> search(T element) {
+        return root.flatMap(r -> r.search(Optional.of(element), Optional.empty())).map(TreapNode::getKey);
+    }
+
+    @Override
+    public Optional<Entry<T, S>> top() {
+        Optional<Entry<T, S>> result = root.map(r -> new TreapEntry(r.getKey(), r.getValue()));
+        root = root.flatMap(TreapNode::remove);
+        return result;
+    }
+
+    @Override
+    public Optional<Entry<T, S>> peek() {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean contains(Entry<T, S> element) {
+        return false;
     }
 
     @Override
@@ -67,7 +65,26 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
 
     public boolean remove(T key, S value) throws NullPointerException {
         Optional<TreapNode> maybeNode = root.flatMap(r -> r.search(Optional.of(key), Optional.of(value)));
-        return maybeNode.flatMap(node -> node.remove()).isPresent();
+        Optional<TreapNode> maybeRemoved = maybeNode.flatMap(node -> node.remove());
+        if (maybeRemoved.map(TreapNode::isRoot).orElse(false)) {
+            root = maybeRemoved;
+        }
+        return maybeRemoved.isPresent();
+    }
+
+    @Override
+    public boolean add(Entry<T, S> element) {
+        return false;
+    }
+
+    @Override
+    public boolean updatePriority(Entry<T, S> oldElement, Entry<T, S> newElement) {
+        return false;
+    }
+
+    @Override
+    public boolean remove(Entry<T, S> element) {
+        return false;
     }
 
     @VisibleForTesting
@@ -86,6 +103,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
             this.right = Optional.empty();
             this.parent = Optional.empty();
         }
+
         public Optional<TreapNode> left() {
             return left;
         }
@@ -110,7 +128,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
             return key;
         }
 
-        public S value() {
+        public S getValue() {
             return value;
         }
 
@@ -126,13 +144,13 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
             }
 
             if (result.isEmpty() && targetKey.map(tK -> tK.compareTo(key) > 0).orElse(true)) {
-                 result = right().flatMap(rN -> rN.search(targetKey, targetValue));
+                result = right().flatMap(rN -> rN.search(targetKey, targetValue));
             }
             return result;
         }
 
         public int size() {
-            return 1 + left().map(TreapNode::size).orElse(0)  + right().map(TreapNode::size).orElse(0);
+            return 1 + left().map(TreapNode::size).orElse(0) + right().map(TreapNode::size).orElse(0);
         }
 
         public T min() {
@@ -157,6 +175,38 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
 
         private void rightRotate() {
 
+        }
+
+    }
+
+    public interface Entry<K, V extends Comparable<V>> extends Comparable<Entry<K,V>> {
+        K getKey();
+        V getValue();
+    }
+
+    public class TreapEntry implements Treap.Entry<T, S> {
+        private T key;
+        private S value;
+
+        public TreapEntry(T key, S value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public T getKey() {
+            return key;
+        }
+
+        public S getValue() {
+            return value;
+        }
+
+        @Override
+        public int compareTo(Entry<T, S> o) {
+            if (o == null) {
+                return -1;
+            }
+            return this.value.compareTo(o.getValue());
         }
     }
 }
