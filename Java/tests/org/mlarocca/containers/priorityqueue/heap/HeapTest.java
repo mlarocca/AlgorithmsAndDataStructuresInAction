@@ -1,15 +1,15 @@
-package org.mlarocca.containers.priorityqueue;
+package org.mlarocca.containers.priorityqueue.heap;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mlarocca.containers.priorityqueue.heap.Heap;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
