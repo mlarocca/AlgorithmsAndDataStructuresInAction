@@ -1,6 +1,7 @@
-package org.mlarocca.containers.priorityqueue;
+package org.mlarocca.containers.priorityqueue.heap;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.mlarocca.containers.priorityqueue.PriorityQueue;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -19,7 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * so this operation is only made faster with larger branching factors.
  * In general values between 3 and 5 are a good compromise and produce good performance.
  *
- * Dublicates are not allowed in this implementation.
+ * Duplicates are not allowed in this implementation.
  *
  * @param <T> The generic type for elements that can be held in the heap.
  */
@@ -304,7 +305,7 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
     /**
      * Compares two elements stored in the heap and checks if the first one has higher priority than the second one.
      *
-     * @param element The element whose prioriyt is checked.
+     * @param element The element whose priority is checked.
      * @param withRespectToElement The second element, the one with respect to which the comparison is done.
      * @return true iff the first argument has higher priority than the second, in this heap.
      */
