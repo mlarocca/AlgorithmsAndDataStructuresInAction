@@ -22,6 +22,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  * Duplicates are not allowed in this implementation.
  *
+ * Performance:
+ * - Add, top both take time proportional to the height of the tree, and so O(log n)
+ * - size uses List::size, and so it's cached and requires constant time, O(1);
+ * - contains requires O(1) average time, because this implementation uses a Hash Table to support fast contains (and fast update).
+ * - update, remove requires O(log n) average time, because they can leverage the "fast" contains implementation.
+ *
  * @param <T> The generic type for elements that can be held in the heap.
  */
 public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
@@ -117,6 +123,7 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
     /**
      * Extracts and returns the top element of the heap (if it's not empty), and then reinstante the
      * heap properties.
+     *
      * Thread safe.
      *
      * @return If no element is present, returns an empty Optional. Otherwise wraps the highest
@@ -149,6 +156,7 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
 
     /**
      * Returns the top element of the heap (if it's not empty), without any side effect.
+     *
      * Thread safe.
      *
      * @return If no element is present, returns an empty Optional. Otherwise wraps the highest
@@ -166,9 +174,11 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
 
     /**
      * Check if an element is stored in the heap.
-     * Thread safe.
      *
      * @param element The element of interest.
+     *
+     * Thread safe.
+     *
      * @return true iff the element is present.
      */
     @Override
@@ -184,10 +194,12 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
     /**
      * Add a new element to the heap. The heap does not allow duplicates, so if an element equals
      * to the argument is already stored in the heap, ignores the new one.
-     * Thread safe.
      *
      * @param element The value of the element to add.
-     * @return true iff the element has been successdully added, false otherwise.
+     *
+     * Thread safe.
+     *
+     * @return true iff the element has been successfully added, false otherwise.
      */
     @Override
     public boolean add(final T element) {
@@ -208,9 +220,10 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
     /**
      * Removes a generic element from the heap. It doesn't need to be the top element, as the removal
      * is based on its value, not on the priority.
+     * @param element The element to be removed.
+     *
      * Thread safe.
      *
-     * @param element The element to be removed.
      * @return true iff the element was stored in the heap and then correctly removed.
      */
     @Override
@@ -242,10 +255,12 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
     /**
      * Updates an element already stored in the queue. This method's implementation is more efficient than removing
      * the old element and then adding the new one with two separate calls.
-     * Thread safe.
      *
      * @param oldElement The element to be updated. If the element is not in the queue, it will NOT be added.
      * @param newElement The new value for the element.
+     *
+     * Thread safe.
+     *
      * @return true iff the element was stored in the heap and its priority successfully updated.
      */
     @Override
@@ -273,6 +288,7 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
 
     /**
      * Returns the size of the heap.
+     *
      * Thread safe.
      *
      * @return The number of elements sorted in the heap.
@@ -289,6 +305,7 @@ public class Heap<T extends Comparable<T>> implements PriorityQueue<T> {
 
     /**
      * Remove all elements from the heap.
+     *
      * Thread safe.
      */
     @Override

@@ -7,4 +7,6 @@ public interface ReadOnlyBST<T extends Comparable<T>> {
     Optional<T> max();
     Optional<T> search(final T element);
     boolean isEmpty();
+    int size();
+    int height();
 }

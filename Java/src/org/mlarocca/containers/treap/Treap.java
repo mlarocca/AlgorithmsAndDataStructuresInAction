@@ -8,6 +8,25 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * A treap is a container that stores key-priority pairs in a tree, abiding by invariants of both binary search trees and binary heaps.
+ * 1) Each node has at most two children;
+ * 2) All keys in the left subtree of a node N are not-larger than N.key;
+ * 3) All keys in the right subtree of a node N are larger than N.key;
+ * 4) Given a node N, N.priority is the largest priority among all nodes in the subtree rooted at N.
+ *
+ * With respect to a heap, an invariant is relaxed: a treap is, generally, not a complete balanced tree (because it might not be
+ * compatible with the constraints on its keys).
+ *
+ * Performance:
+ * - Insert, search, remove, update all take time proportional to the height of the tree (O(n) in the worst case, O(log n)
+ *   for a balanced tree)
+ * - size, height are not cached in this implementation, so they take linear time, O(n);
+ * - min, max return the minimum and maximum key in the container, and as such require time proportional to the height of the tree.
+ *
+ * @param <T> The type of the keys added to the container. Must implement the Comparable interface.
+ * @param <S> The type used for the priority associated to keys. Must implement the Comparable interface.
+ */
 public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements ReadOnlyBST<T>, PriorityQueue<Treap.Entry<T, S>> {
 
     private Optional<TreapNode> root;
@@ -21,6 +40,9 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
     private ReentrantReadWriteLock.ReadLock readLock;
     private ReentrantReadWriteLock.WriteLock writeLock;
 
+    /**
+     * Construct an empty treap.
+     */
     public Treap() {
         root = Optional.empty();
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -28,6 +50,14 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         writeLock = lock.writeLock();
     }
 
+    /**
+     * Computes the size of the treap.
+     * Performance warning: this value is not cached, so this requires a scan of the full tree.
+     *
+     * Thread safe.
+     *
+     * @return The number of entries in the container.
+     */
     @Override
     public int size() {
         readLock.lock();
@@ -38,6 +68,31 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
     }
 
+    /**
+     * Computes the height of the treap.
+     * Performance warning: this value is not cached, so this method requires a scan of the full tree.
+     *
+     * Thread safe.
+     *
+     * @return The height of the tree.
+     */
+    @Override
+    public int height() {
+        readLock.lock();
+        try {
+            return root.map(TreapNode::height).orElse(0);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    /**
+     * Check if the treap is empty (i.e. if it currently contains no entries).
+     *
+     * Thread safe.
+     *
+     * @returnv true if and only if there is no entry in the container.
+     */
     @Override
     public boolean isEmpty() {
         readLock.lock();
@@ -48,6 +103,13 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
     }
 
+    /**
+     * Returns the (value of the) minimum key contained in the treap.
+     *
+     * Thread safe.
+     *
+     * @return The minimum key.
+     */
     @Override
     public Optional<T> min() {
         readLock.lock();
@@ -58,6 +120,13 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
     }
 
+    /**
+     * Returns the (value of the) maximum key contained in the treap.
+     *
+     * Thread safe.
+     *
+     * @return The maximum key.
+     */
     @Override
     public Optional<T> max() {
         readLock.lock();
@@ -68,16 +137,34 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
     }
 
+    /**
+     * Searches a key in the container.
+     *
+     * @param key Return a reference to the object, wrapped in an optional: if the key is not found, empty will be returned.
+     *
+     * Thread safe.
+     *
+     * @return An Optional wrapping the result of the search.
+     */
     @Override
-    public Optional<T> search(T element) {
+    public Optional<T> search(T key) {
         readLock.lock();
         try {
-            return root.flatMap(r -> r.search(Optional.of(element), Optional.empty())).map(TreapNode::getKey);
+            return root.flatMap(r -> r.search(Optional.of(key), Optional.empty())).map(TreapNode::getKey);
         } finally {
             readLock.unlock();
         }
     }
 
+    /**
+     * Extracts and returns the top entry of the treap (if it's not empty), and then reinstante the
+     * heap properties.
+     *
+     * Thread safe.
+     *
+     * @return If no entry is present, returns an empty Optional. Otherwise wraps the highest
+     *          priority entry (consisting in a key and its priority) in an Optional container.
+     */
     @Override
     public Optional<Entry<T, S>> top() {
         writeLock.lock();
@@ -90,6 +177,14 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
     }
 
+    /**
+     * Returns the top entry of the treap (if it's not empty), without any side effect.
+     *
+     * Thread safe.
+     *
+     * @return If no entry is present, returns an empty Optional. Otherwise wraps the highest
+     *          priority entry (consisting in a key and its priority) in an Optional container.
+     */
     @Override
     public Optional<Entry<T, S>> peek() {
         readLock.lock();
@@ -100,6 +195,15 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
     }
 
+    /**
+     * Check if an entry is stored in the treap.
+     *
+     * @param entry The entry of interest: both key and priority must match.
+     *
+     * Thread safe.
+     *
+     * @return true if and only if an entry of the container matches the one searched.
+     */
     @Override
     public boolean contains(Entry<T, S> entry) {
         readLock.lock();
@@ -110,6 +214,82 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
     }
 
+
+    /**
+     * Add a new entry to the treap. Duplicates are allowed for keys and even for the whole <key, priority> pair.
+     *
+     * @param entry The <key, priority> entry to add to the container.
+     *
+     * Thread safe.
+     *
+     * @return true iff the entry has been successfully added, false otherwise.
+     */
+    @Override
+    public boolean add(Entry<T, S> entry) {
+        writeLock.lock();
+        try {
+            root = root.flatMap(r -> r.insert(entry.getKey(), entry.getPriority()))
+                    .or(() -> Optional.of(new TreapNode(entry)));
+            // Always add entries, allowing duplicates
+            return true;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public boolean updatePriority(Entry<T, S> oldEntry, Entry<T, S> newEntry) {
+        if (!oldEntry.getKey().equals(newEntry.getKey())) {
+            throw new IllegalArgumentException("The two keys' keys must match!");
+        }
+        if (oldEntry.getPriority().equals(newEntry.getPriority())) {
+            // Wouldn't actually change anything
+            return false;
+        }
+        writeLock.lock();
+        try {
+            // Search the old entry
+            Optional<TreapNode> maybeTarget = root.flatMap(r ->
+                    r.search(Optional.of(oldEntry.getKey()), Optional.of(oldEntry.getPriority())));
+            // On successful search, updated its priority
+            Optional<TreapNode> node =  maybeTarget.flatMap(n -> n.updatePriority(newEntry.getPriority()));
+            // Now check if we need to update the root: only if the node returned is a new root
+            if (node.map(TreapNode::isRoot).orElse(false)) {
+                root = node;
+            }
+            // Return true iff the target node to update was found in the first place
+            return maybeTarget.isPresent();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * Removes a generic entry from the heap.
+     *
+     * @param entry The entry to be removed. Both key and priority must match in order for an entry to be removed from the treap.
+     *
+     * Thread safe.
+     *
+     * @return true iff the entry was stored in the heap and then correctly removed.
+     */
+    @Override
+    public boolean remove(Entry<T, S> entry) {
+        writeLock.lock();
+        try {
+            AtomicBoolean entryRemoved = new AtomicBoolean(false);
+            root = root.flatMap(node -> node.remove(entry.getKey(), entry.getPriority(), entryRemoved));
+            return entryRemoved.get();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * Remove all entries from the treap.
+     *
+     * Thread safe.
+     */
     @Override
     public void clear() {
         Optional<TreapNode> oldRoot = Optional.empty();
@@ -127,69 +307,18 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
     }
 
-    @Override
-    public boolean add(Entry<T, S> entry) {
-        writeLock.lock();
-        try {
-            root = root.flatMap(r -> r.insert(entry.getKey(), entry.getPriority()))
-                    .or(() -> Optional.of(new TreapNode(entry)));
-            // Always add elements, allowing duplicates
-            return true;
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-    @Override
-    public boolean updatePriority(Entry<T, S> oldElement, Entry<T, S> newElement) {
-        if (!oldElement.getKey().equals(newElement.getKey())) {
-            throw new IllegalArgumentException("The two elements' keys must match!");
-        }
-        if (oldElement.getPriority().equals(newElement.getPriority())) {
-            // Wouldn't actually change anything
-            return false;
-        }
-        writeLock.lock();
-        try {
-            // Search the old element
-            Optional<TreapNode> maybeTarget = root.flatMap(r ->
-                    r.search(Optional.of(oldElement.getKey()), Optional.of(oldElement.getPriority())));
-            // On successful search, updated its priority
-            Optional<TreapNode> node =  maybeTarget.flatMap(n -> n.updatePriority(newElement.getPriority()));
-            // Now check if we need to update the root: only if the node returned is a new root
-            if (node.map(TreapNode::isRoot).orElse(false)) {
-                root = node;
-            }
-            // Return true iff the target node to update was found in the first place
-            return maybeTarget.isPresent();
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-    @Override
-    public boolean remove(Entry<T, S> entry) {
-        writeLock.lock();
-        try {
-            AtomicBoolean entryRemoved = new AtomicBoolean(false);
-            root = root.flatMap(node -> node.remove(entry.getKey(), entry.getPriority(), entryRemoved));
-            return entryRemoved.get();
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-
     /**
-     * Compares two elements stored in the heap and checks if the first one has higher priority than the second one.
+     * Takes two priorities (two objects of type S) and checks how the first one compares to the second one.
      *
-     * @param first  The element whose priority is checked.
-     * @param second The second element, the one with respect to which the comparison is done.
+     * @param first  The first priority.
+     * @param second The second priority, the one with respect to which the comparison is done.
+     *
      * @return true iff the first argument has higher priority than the second, in this heap.
      */
     protected boolean hasHigherPriority(S first, S second) {
         return first.compareTo(second) < 0;
     }
+
 
     @VisibleForTesting
     protected boolean checkTreapInvariants() {
@@ -297,6 +426,10 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
 
         public int size() {
             return 1 + getLeft().map(TreapNode::size).orElse(0) + getRight().map(TreapNode::size).orElse(0);
+        }
+
+        public int height() {
+            return 1 + Math.max(getLeft().map(TreapNode::size).orElse(0), getRight().map(TreapNode::size).orElse(0));
         }
 
         public T min() {
