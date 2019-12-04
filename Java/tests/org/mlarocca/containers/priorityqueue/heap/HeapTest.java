@@ -3,7 +3,6 @@ package org.mlarocca.containers.priorityqueue.heap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mlarocca.containers.priorityqueue.heap.Heap;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -143,7 +142,6 @@ public class HeapTest {
     public void updatePriority() throws Exception {
         Arrays.asList(2, 3, 4, 5).forEach(branchingFactor -> {
             heap = new Heap<>(branchingFactor);
-            assertFalse("contains() should return false on a empty heap", heap.contains("any"));
             heap.add("a");
             heap.add("b");
             heap.add("c");
