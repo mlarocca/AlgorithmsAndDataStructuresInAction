@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements ReadOnlyBST<T>, PriorityQueue<Treap.Entry<T, S>> {
 
-    private Optional<TreapNode> root = Optional.empty();
+    private Optional<TreapNode> root;
 
     /**
      * To make this container thread-safe, we need to synchronize all public methods.
@@ -20,6 +20,13 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
      */
     private ReentrantReadWriteLock.ReadLock readLock;
     private ReentrantReadWriteLock.WriteLock writeLock;
+
+    public Treap() {
+        root = Optional.empty();
+        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+        readLock = lock.readLock();
+        writeLock = lock.writeLock();
+    }
 
     @Override
     public int size() {
@@ -76,7 +83,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         writeLock.lock();
         try {
             Optional<Entry<T, S>> result = root.map(r -> new TreapEntry(r.getKey(), r.getPriority()));
-            root = root.flatMap(TreapNode::pushDownAndDisconnect);
+            root = root.flatMap(TreapNode::pushDownToLeafAndDisconnect);
             return result;
         } finally {
             writeLock.unlock();
@@ -116,7 +123,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
             // (although, since the pointer to the old root should NOT be stored anywhere by now, the GC should
             // be able to identify the dangling reference and recollect the whole tree).
             // Anyway, we can clear the old tree outside of the write lock, because it's not reachable anymore.
-            oldRoot.ifPresent(TreapNode::clear);
+            oldRoot.ifPresent(TreapNode::cleanUp);
         }
     }
 
@@ -144,11 +151,20 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
         writeLock.lock();
         try {
-
+            // Search the old element
+            Optional<TreapNode> maybeTarget = root.flatMap(r ->
+                    r.search(Optional.of(oldElement.getKey()), Optional.of(oldElement.getPriority())));
+            // On successful search, updated its priority
+            Optional<TreapNode> node =  maybeTarget.flatMap(n -> n.updatePriority(newElement.getPriority()));
+            // Now check if we need to update the root: only if the node returned is a new root
+            if (node.map(TreapNode::isRoot).orElse(false)) {
+                root = node;
+            }
+            // Return true iff the target node to update was found in the first place
+            return maybeTarget.isPresent();
         } finally {
             writeLock.unlock();
         }
-        return false;
     }
 
     @Override
@@ -176,16 +192,24 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
     }
 
     @VisibleForTesting
-    protected boolean checkHeapInvariants() {
-        //        readLock.lock();
+    protected boolean checkTreapInvariants() {
+        readLock.lock();
         try {
-            return root.map(TreapNode::checkHeapInvariants).orElse(true);
-
+            return root.map(TreapNode::checkTreapInvariants).orElse(true);
         } finally {
-//            readLock.unlock();
+            readLock.unlock();
         }
     }
 
+    @VisibleForTesting
+    protected boolean checkBSTInvariants() {
+        readLock.lock();
+        try {
+            return root.map(TreapNode::checkTreapInvariants).orElse(true);
+        } finally {
+            readLock.unlock();
+        }
+    }
     @VisibleForTesting
     private class TreapNode {
         private T key;
@@ -305,7 +329,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         public Optional<TreapNode> remove(T targetKey, S targetPriority, AtomicBoolean wasRemoved) {
             if (targetKey.equals(key) && targetPriority.equals(priority)) {
                 wasRemoved.set(true);
-                return this.pushDownAndDisconnect();
+                return this.pushDownToLeafAndDisconnect();
             }
             // else
             if (targetKey.compareTo(key) <= 0) {
@@ -321,7 +345,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
          *
          * @return
          */
-        public Optional<TreapNode> pushDownAndDisconnect() {
+        public Optional<TreapNode> pushDownToLeafAndDisconnect() {
             if (this.isLeaf()) {
                 return Optional.empty();
             }
@@ -330,21 +354,111 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
             if (this.getRight().isEmpty() || this.getRight().flatMap(r ->
                     this.getLeft().map(l -> hasHigherPriority(l.getPriority(), r.getPriority()))).orElse(false)) {
                 // Left child certainly exists, and has higher priority than right's
-                Optional<TreapNode> newParent = this.getLeft();
-                newParent.map(TreapNode::rightRotate);
-                // Now this node is the right child of newParent, but we still have to remove it
-                newParent.ifPresent(np -> np.setRight(this.pushDownAndDisconnect()));
-                // We can return newParent as the node that will replace current node, since we are deleting this.
-                return newParent;
+                Optional<TreapNode> newSubRoot = this.getLeft();
+                newSubRoot.map(TreapNode::rightRotate);
+                // Now this node is the right child of newSubRoot, but we still have to remove it
+                newSubRoot.ifPresent(np -> np.setRight(this.pushDownToLeafAndDisconnect()));
+                // We can return newSubRoot as the node that will replace current node, since we are deleting this.
+                return newSubRoot;
             } else {
                 // Right child certainly exists, and has higher priority than left's
-                Optional<TreapNode> newParent = this.getRight();
-                newParent.map(TreapNode::leftRotate);
-                // Now this node is the left child of newParent, but we still have to remove it
-                newParent.ifPresent(np -> np.setLeft(this.pushDownAndDisconnect()));
-                // We can return newParent as the node that will replace current node, since we are deleting this.
-                return newParent;
+                Optional<TreapNode> newSubRoot = this.getRight();
+                newSubRoot.map(TreapNode::leftRotate);
+                // Now this node is the left child of newSubRoot, but we still have to remove it
+                newSubRoot.ifPresent(np -> np.setLeft(this.pushDownToLeafAndDisconnect()));
+                // We can return newSubRoot as the node that will replace current node, since we are deleting this.
+                return newSubRoot;
             }
+        }
+
+        public Optional<TreapNode> updatePriority(S newPriority) {
+            // Update priority
+            S oldPriority = getPriority();
+            this.priority = newPriority;
+
+            // Now we need to check invariants: if new priority is higher, we need to check current node's parent,
+            // otherwise its children.
+            if (hasHigherPriority(newPriority, oldPriority)) {
+                return this.bubbleUp();
+            } else {
+                // Store a reference to current's node parent
+                Optional<TreapNode> parent = getParent();
+                boolean leftChild = this.isLeftChild();
+
+                Optional<TreapNode> newSubRoot = this.pushDown();
+
+                parent.ifPresent(p -> {
+                    if (leftChild) {
+                        p.setLeft(newSubRoot);
+                    } else {
+                        p.setRight(newSubRoot);
+                    }
+                });
+                return newSubRoot;
+            }
+        }
+
+        /**
+         * Pushes down current node till heap's invariants are not violated anymore.
+         *
+         * @return the new root of the subtree that is pushed down. No node in levels above current node will be
+         *         changed by this call (except for, at most, the reference to child pointing to this node, which can be updated).
+         */
+        private Optional<TreapNode> pushDown() {
+            if (this.isLeaf()) {
+                return Optional.of(this);
+            }
+            Optional<TreapNode> highestPriorityChild = this.getLeft();
+            // Check which child has the highest priority (at least one must be non-empty).
+            if (this.getLeft().isEmpty() || this.getLeft().flatMap(lN ->
+                    this.getRight().map(rN -> hasHigherPriority(rN.getPriority(), lN.getPriority()))).orElse(false)) {
+                highestPriorityChild = getRight();
+            }
+
+            // Check if the highest-priority child has higher priority than current node
+            if (highestPriorityChild.map(c -> hasHigherPriority(getPriority(), c.getPriority())).orElse(false)) {
+                return Optional.of(this);
+            }
+
+            // else: the highest priority child must be rotated, next step depends on its position
+            if (highestPriorityChild.map(TreapNode::isLeftChild).orElse(false)) {
+                // Left child certainly exists, and has higher priority than right's
+                Optional<TreapNode> newSubRoot = this.getLeft();
+                newSubRoot.map(TreapNode::rightRotate);
+                // Now this node is the right child of newSubRoot, but we still have to remove it
+                newSubRoot.ifPresent(np -> np.setRight(this.pushDown()));
+                // We can return newSubRoot as the node that will replace current node, since we are deleting this.
+                return newSubRoot;
+            } else {
+                // Right child certainly exists, and has higher priority than left's
+                Optional<TreapNode> newSubRoot = this.getRight();
+                newSubRoot.map(TreapNode::leftRotate);
+                // Now this node is the left child of newSubRoot, but we still have to remove it
+                newSubRoot.ifPresent(np -> np.setLeft(this.pushDown()));
+                // We can return newSubRoot as the node that will replace current node, since we are deleting this.
+                return newSubRoot;
+            }
+        }
+
+        /**
+         * Bubbles up current node till heap's invariants are not violated anymore.
+         *
+         * @return the root of the subtree that is affected by this call. No node below the level of current node will
+         *         be updated by this call, except at most for the parent's reference in this node's children.
+         */
+        private Optional<TreapNode> bubbleUp() {
+            // Check if the there is a parent, and if it has a priority higher than current node's
+            if (getParent().map(p -> hasHigherPriority(p.getPriority(), getPriority())).orElse(true)) {
+                return Optional.of(this);
+            } // else: this node must be rotated, next step depends on its position
+
+            if (this.isLeftChild()) {
+                // Left child certainly exists, and has higher priority than right's
+                this.rightRotate();
+            } else {
+                this.leftRotate();
+            }
+            return this.bubbleUp();
         }
 
         /**
@@ -390,21 +504,23 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         /**
          * Cleans up tree's references to facilitate garbage collection.
          */
-        private void clear() {
-            this.getLeft().ifPresent(TreapNode::clear);
+        private void cleanUp() {
+            this.getLeft().ifPresent(TreapNode::cleanUp);
             this.setLeft(Optional.empty());
-            this.getRight().ifPresent(TreapNode::clear);
+            this.getRight().ifPresent(TreapNode::cleanUp);
             this.setRight(Optional.empty());
             this.parent = Optional.empty();
         }
 
-        private boolean checkHeapInvariants() {
-            if (getLeft().map(n -> hasHigherPriority(n.getPriority(), priority)).orElse(false)
-                    || getRight().map(n -> hasHigherPriority(n.getPriority(), priority)).orElse(false)) {
+        private boolean checkTreapInvariants() {
+            if (getLeft().map(n -> hasHigherPriority(n.getPriority(), priority) || n.getKey().compareTo(key) > 0)
+                    .orElse(false)
+                    || getRight().map(n -> hasHigherPriority(n.getPriority(), priority) || n.getKey().compareTo(key) <= 0)
+                    .orElse(false)) {
                 return false;
             }
-            return getLeft().map(TreapNode::checkHeapInvariants).orElse(true)
-                    && getRight().map(TreapNode::checkHeapInvariants).orElse(true);
+            return getLeft().map(TreapNode::checkTreapInvariants).orElse(true)
+                    && getRight().map(TreapNode::checkTreapInvariants).orElse(true);
         }
     }
 

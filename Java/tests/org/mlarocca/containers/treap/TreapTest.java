@@ -36,10 +36,10 @@ public class TreapTest {
 
         IntStream.range(0, 10).forEach(i -> {
             treap.add(new Treap.TreapEntry<>("" + rnd.nextInt(), rnd.nextDouble()));
-            assertTrue(treap.checkHeapInvariants());
+            assertTrue(treap.checkTreapInvariants());
         });
         while (!treap.isEmpty()) {
-            assertTrue(treap.checkHeapInvariants());
+            assertTrue(treap.checkTreapInvariants());
             treap.top();
         }
     }
@@ -73,6 +73,50 @@ public class TreapTest {
 
     @Test
     public void updatePriority() {
+        Treap<String, Integer> treap = new Treap<>();
+        treap.add(new Treap.TreapEntry<>("a", 0));
+        treap.add(new Treap.TreapEntry<>("b", 1));
+        treap.add(new Treap.TreapEntry<>("c", 2));
+        treap.add(new Treap.TreapEntry<>("d", 3));
+        treap.add(new Treap.TreapEntry<>("e", 4));
+        treap.add(new Treap.TreapEntry<>("f", 5));
+        treap.add(new Treap.TreapEntry<>("g", 6));
+
+        assertFalse("Should return false for keys not in the treap",
+                treap.updatePriority(new Treap.TreapEntry<>("d", 2), new Treap.TreapEntry<>("d", 1)));
+        assertFalse("Should return false if the priority doesn't match what's in the treap",
+                treap.updatePriority(new Treap.TreapEntry<>("a", -1), new Treap.TreapEntry<>("a", 0)));
+        assertFalse("Should return false if priority doesn't change",
+                treap.updatePriority(new Treap.TreapEntry<>("a", 0), new Treap.TreapEntry<>("a", 0)));
+
+        assertTrue("Should return true for legitimate update of an existing key's priority",
+                treap.updatePriority(new Treap.TreapEntry<>("b", 1), new Treap.TreapEntry<>("b", 7)));
+        assertTrue("Update Priority shouldn't mess treap up", treap.checkTreapInvariants());
+        assertFalse("After updatePriority the new element should not be in the heap",
+                treap.contains(new Treap.TreapEntry<>("b", 1)));
+        assertTrue("After updatePriority the old element should be in the heap",
+                treap.contains(new Treap.TreapEntry<>("b", 7)));
+
+        assertTrue("Should return true for legitimate update of an existing key's priority",
+                treap.updatePriority(new Treap.TreapEntry<>("c", 2), new Treap.TreapEntry<>("c", -1)));
+        assertTrue("Update Priority shouldn't mess treap up", treap.checkTreapInvariants());
+        assertEquals("Should update priority successfully", "c", treap.top().get().getKey());
+
+        assertTrue("Should update root's priority successfully",
+                treap.updatePriority(new Treap.TreapEntry<>("a", 0), new Treap.TreapEntry<>("a", 4)));
+        assertTrue("Update Priority shouldn't mess treap up", treap.checkTreapInvariants());
+        assertEquals("Should update root's priority successfully", "d", treap.top().get().getKey());
+
+
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updatePriorityFail() {
+        Treap<String, Integer> treap = new Treap<>();
+        treap.add(new Treap.TreapEntry<>("a", 0));
+        // Should throw if the keys don't match
+        treap.updatePriority(new Treap.TreapEntry<>("a", 2), new Treap.TreapEntry<>("c", 2));
     }
 
     @Test
@@ -135,13 +179,5 @@ public class TreapTest {
 
     @Test
     public void search() {
-    }
-
-    @Test
-    public void insert() {
-    }
-
-    @Test
-    public void delete() {
     }
 }
