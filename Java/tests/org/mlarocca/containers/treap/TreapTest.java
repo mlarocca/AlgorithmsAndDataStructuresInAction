@@ -2,8 +2,8 @@ package org.mlarocca.containers.treap;
 
 import org.junit.Test;
 
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
@@ -64,23 +64,43 @@ public class TreapTest {
     }
 
     @Test
-    public void contains() {
-    }
-
-    @Test
     public void add() {
+        Treap<String, Double> treap = new Treap<>();
+        assertEquals(treap.size(), 0);
+
+        treap.add(new Treap.TreapEntry<>("d", 1.0));
+        assertEquals(1, treap.size());
+        assertTrue(treap.contains(new Treap.TreapEntry<>("d", 1.0)));
+
+        treap.add(new Treap.TreapEntry<>("c", 2.0));
+        assertEquals(2, treap.size());
+        assertTrue(treap.contains(new Treap.TreapEntry<>("c", 2.0)));
+
+        treap.add(new Treap.TreapEntry<>("c", 2.0));
+        assertEquals(3, treap.size());
+        assertTrue(treap.contains(new Treap.TreapEntry<>("c", 2.0)));
+
+        treap.add(new Treap.TreapEntry<>("e", -1.0));
+        assertEquals(4, treap.size());
+        assertTrue(treap.contains(new Treap.TreapEntry<>("e", -1.0)));
+
+        treap.add(new Treap.TreapEntry<>("f", 0.0));
+        assertEquals(5, treap.size());
+        assertTrue(treap.contains(new Treap.TreapEntry<>("f", 0.0)));
+
+        treap.add(new Treap.TreapEntry<>("a", 2.0));
+        assertEquals(6, treap.size());
+        assertTrue(treap.contains(new Treap.TreapEntry<>("a", 2.0)));
+
+        treap.add(new Treap.TreapEntry<>("a", 123.0));
+        assertEquals(7, treap.size());
+        assertTrue(treap.contains(new Treap.TreapEntry<>("a", 123.0)));
     }
 
     @Test
     public void updatePriority() {
-        Treap<String, Integer> treap = new Treap<>();
-        treap.add(new Treap.TreapEntry<>("a", 0));
-        treap.add(new Treap.TreapEntry<>("b", 1));
-        treap.add(new Treap.TreapEntry<>("c", 2));
-        treap.add(new Treap.TreapEntry<>("d", 3));
-        treap.add(new Treap.TreapEntry<>("e", 4));
-        treap.add(new Treap.TreapEntry<>("f", 5));
-        treap.add(new Treap.TreapEntry<>("g", 6));
+        Treap<String, Integer> treap = initTreap(Arrays.asList("a", "b", "c", "d", "e", "f", "g"),
+                java.util.stream.IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toList()));
 
         assertFalse("Should return false for keys not in the treap",
                 treap.updatePriority(new Treap.TreapEntry<>("d", 2), new Treap.TreapEntry<>("d", 1)));
@@ -106,9 +126,6 @@ public class TreapTest {
                 treap.updatePriority(new Treap.TreapEntry<>("a", 0), new Treap.TreapEntry<>("a", 4)));
         assertTrue("Update Priority shouldn't mess treap up", treap.checkTreapInvariants());
         assertEquals("Should update root's priority successfully", "d", treap.top().get().getKey());
-
-
-
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -121,12 +138,40 @@ public class TreapTest {
 
     @Test
     public void remove() {
+        final List<Integer> keys = IntStream.rangeClosed(0, 8).boxed().collect(Collectors.toList());
+        final List<Double> priorities = keys.stream().map(i -> rnd.nextDouble()).collect(Collectors.toList());
+        Treap<Integer, Double> treap = initTreap(keys, priorities);
+
+        assertEquals(keys.size(), treap.size());
+
+        Collections.shuffle(keys);
+        keys.stream().forEach(i -> {
+            int size = treap.size();
+            assertTrue("Remove should succeed", treap.remove(new Treap.TreapEntry<>(i, priorities.get(i))));
+            assertEquals("Treap's size should decrease 1 unit", size - 1, treap.size());
+            assertFalse("Element should have been removed", treap.contains(new Treap.TreapEntry<>(i, priorities.get(i))));
+        });
+    }
+
+    @Test
+    public void clear() {
+        Treap<Integer, Double> treap = new Treap<>();
+        int numElements = 5 + rnd.nextInt(10);
+        IntStream.range(0, numElements).forEach(i -> {
+            assertTrue(treap.add(new Treap.TreapEntry(i, rnd.nextDouble())));
+        });
+        assertEquals(numElements, treap.size());
+        treap.clear();
+        assertEquals(0, treap.size());
+        assertTrue(treap.isEmpty());
+        treap.add(new Treap.TreapEntry(1, 0.0));
+        assertEquals(1, treap.size());
+        assertFalse(treap.isEmpty());
     }
 
     @Test
     public void size() {
         Treap<String, Double> treap = new Treap<>();
-        Optional<Treap.Entry<String, Double>> result = treap.peek();
         assertEquals("Size should be 0 on empty Heap", 0, treap.size());
 
         treap.add(new Treap.TreapEntry<>("a", 1.0));
@@ -150,34 +195,100 @@ public class TreapTest {
     }
 
     @Test
-    public void isEmpty() {
+    public void height() {
+        Treap<String, Double> treap = new Treap<>();
+        assertEquals("An empty treap must have height==0", 0, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("d", 1.0));
+        assertEquals(1, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("c", 2.0));
+        assertEquals(2, treap.height());
+
+        treap.remove(new Treap.TreapEntry<>("c", 2.0));
+        assertEquals(1, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("e", -1.0));
+        assertEquals(2, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("f", 0.0));
+        assertEquals(2, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("c", 2.0));
+        assertEquals(3, treap.height());
     }
 
     @Test
-    public void clear() {
+    public void isEmpty() {
         Treap<Integer, Double> treap = new Treap<>();
-        int numElements = 5 + rnd.nextInt(10);
-        IntStream.range(0 , numElements).forEach(i -> {
-            assertTrue(treap.add(new Treap.TreapEntry(i, rnd.nextDouble())));
-        });
-        assertEquals(numElements, treap.size());
-        treap.clear();
-        assertEquals(0, treap.size());
         assertTrue(treap.isEmpty());
-        treap.add(new Treap.TreapEntry(1, 0.0));
-        assertEquals(1, treap.size());
+
+        assertTrue(treap.add(new Treap.TreapEntry<>(1, 1.1)));
         assertFalse(treap.isEmpty());
+
+        assertTrue(treap.add(new Treap.TreapEntry<>(2, -1.1)));
+        assertFalse(treap.isEmpty());
+
+        assertTrue(treap.add(new Treap.TreapEntry<>(1, 1.1)));
+        assertFalse(treap.isEmpty());
+
+        assertTrue(treap.remove(new Treap.TreapEntry<>(1, 1.1)));
+        assertFalse(treap.isEmpty());
+
+        assertTrue(treap.remove(new Treap.TreapEntry<>(2, -1.1)));
+        assertFalse(treap.isEmpty());
+
+        assertTrue(treap.remove(new Treap.TreapEntry<>(1, 1.1)));
+        assertTrue(treap.isEmpty());
     }
 
     @Test
     public void min() {
+        Treap<String, Integer> treap = initTreap(Arrays.asList("a", "b", "c", "d", "e", "f", "g"),
+                java.util.stream.IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toList()));
+
+        assertEquals("a", treap.min().get());
     }
 
     @Test
     public void max() {
+        Treap<String, Integer> treap = initTreap(Arrays.asList("a", "b", "c", "d", "e", "f", "g"),
+                java.util.stream.IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toList()));
+
+        assertEquals("g", treap.max().get());
     }
 
     @Test
     public void search() {
+        Treap<String, Double> treap = initTreap(Arrays.asList("a", "b", "c", "d", "e", "f", "g"),
+                java.util.stream.IntStream.rangeClosed(0, 6).boxed().map(i -> rnd.nextDouble()).collect(Collectors.toList()));
+
+        // Search by key only
+        assertEquals("Should find an existing entry", "d", treap.search("d").get());
+        assertTrue("Should not fail on miss", treap.search("z").isEmpty());
+    }
+
+    @Test
+    public void contains() {
+        final List<Double> priorities = IntStream.rangeClosed(0, 6).boxed().map(i -> rnd.nextDouble()).collect(Collectors.toList());
+        Treap<String, Double> treap = initTreap(Arrays.asList("a", "b", "c", "d", "e", "f", "g"),
+                priorities);
+
+        // Search by key only
+        assertTrue("Should find an existing entry", treap.contains(new Treap.TreapEntry<>("d", priorities.get(3))));
+        assertFalse("Should not fail on miss", treap.contains(new Treap.TreapEntry<>("d", -3.1415)));
+        assertFalse("Should not fail on miss", treap.contains(new Treap.TreapEntry<>("z", 1.1)));
+    }
+
+    private <K extends Comparable<K>, P extends Comparable<P>> Treap<K, P> initTreap(List<K> keys, List<P> priorities) {
+        if (keys.size() != priorities.size()) {
+            throw new IllegalArgumentException("Both lists must have the same length");
+        }
+
+        Treap<K, P> treap = new Treap<>();
+        for (int i = 0; i < keys.size(); i++) {
+            treap.add(new Treap.TreapEntry<>(keys.get(i), priorities.get(i)));
+        }
+        return treap;
     }
 }
