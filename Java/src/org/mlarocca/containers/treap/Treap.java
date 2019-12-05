@@ -2,7 +2,7 @@ package org.mlarocca.containers.treap;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.mlarocca.containers.priorityqueue.PriorityQueue;
-import org.mlarocca.containers.tree.ReadOnlyBST;
+import org.mlarocca.containers.tree.ReadOnlySearchTree;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @param <T> The type of the keys added to the container. Must implement the Comparable interface.
  * @param <S> The type used for the priority associated to keys. Must implement the Comparable interface.
  */
-public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements ReadOnlyBST<T>, PriorityQueue<Treap.Entry<T, S>> {
+public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements ReadOnlySearchTree<T>, PriorityQueue<Treap.Entry<T, S>> {
 
     private Optional<TreapNode> root;
 
@@ -286,6 +286,35 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
     }
 
     /**
+     * Removes a generic key from the heap.
+     *
+     * @param key The key to be removed. Only the key must match in order for an entry to be removed from the treap.
+     *            If a key appears multiple times in the treap (possibly with different priorities), then any of
+     *            the duplicates can be removed: there is no way to tell which of the duplicate entries will be removed
+     *            from the client side; internally, the entry removed will be the one closest to the root,
+     *            the first of the duplicates found during a traversal of the tree.
+     *
+     * Thread safe.
+     *
+     * @return true iff the key was stored in the heap and then correctly removed.
+     */
+    public boolean removeKey(T key) {
+        writeLock.lock();
+        try {
+            Optional<TreapNode> maybeNode = root.flatMap(r -> r.search(Optional.of(key), Optional.empty()));
+            if (maybeNode.isEmpty()) {
+                // No entry with matching key found;
+                return false;
+            } else {
+                // An entry with matching key is found: get its priority and re-use the remove(Entry) overloaded method
+                return maybeNode.map(node -> remove(new TreapEntry<>(node.getKey(), node.getPriority()))).orElse(false);
+            }
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
      * Remove all entries from the treap.
      *
      * Thread safe.
@@ -429,7 +458,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
 
         public int height() {
-            return 1 + Math.max(getLeft().map(TreapNode::size).orElse(0), getRight().map(TreapNode::size).orElse(0));
+            return 1 + Math.max(getLeft().map(TreapNode::height).orElse(0), getRight().map(TreapNode::height).orElse(0));
         }
 
         public T min() {

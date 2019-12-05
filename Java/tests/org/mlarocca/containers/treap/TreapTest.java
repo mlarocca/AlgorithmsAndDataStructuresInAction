@@ -154,6 +154,36 @@ public class TreapTest {
     }
 
     @Test
+    public void removeKey() {
+        final List<Integer> keys = IntStream.rangeClosed(0, 8).boxed().collect(Collectors.toList());
+        final List<Double> priorities = keys.stream().map(i -> rnd.nextDouble()).collect(Collectors.toList());
+        final Treap<Integer, Double> treap = initTreap(keys, priorities);
+
+        assertEquals(keys.size(), treap.size());
+
+        Collections.shuffle(keys);
+        keys.stream().forEach(i -> {
+            int size = treap.size();
+            assertTrue("Remove should succeed", treap.removeKey(i));
+            assertEquals("Treap's size should decrease 1 unit", size - 1, treap.size());
+            assertFalse("Element should have been removed", treap.contains(new Treap.TreapEntry<>(i, priorities.get(i))));
+        });
+
+        // Should also handle duplicates
+        final Treap<Integer, Double> treap2 = initTreap(keys, priorities);
+        treap2.add(new Treap.TreapEntry<>(0, -10.));
+        assertEquals(keys.size() + 1, treap2.size());
+
+        assertTrue(treap2.removeKey(0));
+        assertEquals(keys.size(), treap2.size());
+        assertTrue("A copy of the duplicate key should still be stored", treap2.search(0).isPresent());
+
+        assertTrue(treap2.removeKey(0));
+        assertEquals(keys.size() - 1, treap2.size());
+        assertTrue("All copies of key 0 should be removed", treap2.search(0).isEmpty());
+    }
+
+    @Test
     public void clear() {
         Treap<Integer, Double> treap = new Treap<>();
         int numElements = 5 + rnd.nextInt(10);
@@ -216,6 +246,21 @@ public class TreapTest {
 
         treap.add(new Treap.TreapEntry<>("c", 2.0));
         assertEquals(3, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("x", 4.0));
+        assertEquals(3, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("y", 5.0));
+        assertEquals(4, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("w", 6.0));
+        assertEquals(4, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("z", 7.0));
+        assertEquals(5, treap.height());
+
+        treap.add(new Treap.TreapEntry<>("xy", 7.0));
+        assertEquals(5, treap.height());
     }
 
     @Test
