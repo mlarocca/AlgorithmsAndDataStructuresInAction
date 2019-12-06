@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements ReadOnlySearchTree<T>, PriorityQueue<Treap.Entry<T, S>> {
 
+    // A reference to the root of the internal representation of the tree.
     private Optional<TreapNode> root;
 
     /**
@@ -228,7 +229,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
     public boolean add(Entry<T, S> entry) {
         writeLock.lock();
         try {
-            root = root.flatMap(r -> r.insert(entry.getKey(), entry.getPriority()))
+            root = root.flatMap(r -> r.add(entry.getKey(), entry.getPriority()))
                     .or(() -> Optional.of(new TreapNode(entry)));
             // Always add entries, allowing duplicates
             return true;
@@ -368,6 +369,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
             readLock.unlock();
         }
     }
+
     @VisibleForTesting
     private class TreapNode {
         private T key;
@@ -469,18 +471,24 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
             return getRight().map(TreapNode::max).orElse(key);
         }
 
-        public Optional<TreapNode> insert(T key, S priority) {
+        public Optional<TreapNode> add(T key, S priority) {
             if (key.compareTo(this.getKey()) <= 0) {
-                Optional<TreapNode> left = this.getLeft().flatMap(node -> node.insert(key, priority))
+                Optional<TreapNode> left = this.getLeft()
+                        .flatMap(node -> node.add(key, priority))
+                        // If the left child is empty, we can create a new node with the new key
                         .or(() -> Optional.of(new TreapNode(key, priority)));
                 this.setLeft(left);
+                // Check that the heaps invariants are not violated, otherwise a rotation is needed to reinstate them
                 if (hasHigherPriority(priority, this.getPriority())) {
                     return this.getLeft().map(TreapNode::rightRotate);
                 }
             } else {
-                Optional<TreapNode> right = this.getRight().flatMap(node -> node.insert(key, priority))
+                Optional<TreapNode> right = this.getRight()
+                        .flatMap(node -> node.add(key, priority))
+                        // If the right child is empty, we can create a new node with the new key
                         .or(() -> Optional.of(new TreapNode(key, priority)));
                 this.setRight(right);
+                // Check that the heaps invariants are not violated, otherwise a rotation is needed to reinstate them
                 if (hasHigherPriority(priority, this.getPriority())) {
                     return this.getRight().map(TreapNode::leftRotate);
                 }
@@ -491,9 +499,10 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         public Optional<TreapNode> remove(T targetKey, S targetPriority, AtomicBoolean wasRemoved) {
             if (targetKey.equals(key) && targetPriority.equals(priority)) {
                 wasRemoved.set(true);
+                // We have found the node to be removed, now we just need to push it down to a leaf and remove it
                 return this.pushDownToLeafAndDisconnect();
             }
-            // else
+            // else: based on how the target key to remove compares to current, traverse the left or right subtree
             if (targetKey.compareTo(key) <= 0) {
                 this.setLeft(getLeft().flatMap(lN -> lN.remove(targetKey, targetPriority, wasRemoved)));
             } else {
@@ -505,7 +514,7 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         /**
          * Pushes down current node till it reaches a leaf, and then disconnects it from the tree.
          *
-         * @return
+         * @return The new root of the subtree previously rooted at current node, or Optional.empty if this was a leaf.
          */
         public Optional<TreapNode> pushDownToLeafAndDisconnect() {
             if (this.isLeaf()) {
