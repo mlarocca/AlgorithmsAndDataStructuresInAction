@@ -68,31 +68,31 @@ public class TreapTest {
         Treap<String, Double> treap = new Treap<>();
         assertEquals(treap.size(), 0);
 
-        treap.add(new Treap.TreapEntry<>("d", 1.0));
+        assertTrue(treap.add(new Treap.TreapEntry<>("d", 1.0)));
         assertEquals(1, treap.size());
         assertTrue(treap.contains(new Treap.TreapEntry<>("d", 1.0)));
 
-        treap.add(new Treap.TreapEntry<>("c", 2.0));
+        assertTrue(treap.add(new Treap.TreapEntry<>("c", 2.0)));
         assertEquals(2, treap.size());
         assertTrue(treap.contains(new Treap.TreapEntry<>("c", 2.0)));
 
-        treap.add(new Treap.TreapEntry<>("c", 2.0));
+        assertTrue(treap.add(new Treap.TreapEntry<>("c", 2.0)));
         assertEquals(3, treap.size());
         assertTrue(treap.contains(new Treap.TreapEntry<>("c", 2.0)));
 
-        treap.add(new Treap.TreapEntry<>("e", -1.0));
+        assertTrue(treap.add(new Treap.TreapEntry<>("e", -1.0)));
         assertEquals(4, treap.size());
         assertTrue(treap.contains(new Treap.TreapEntry<>("e", -1.0)));
 
-        treap.add(new Treap.TreapEntry<>("f", 0.0));
+        assertTrue(treap.add(new Treap.TreapEntry<>("f", 0.0)));
         assertEquals(5, treap.size());
         assertTrue(treap.contains(new Treap.TreapEntry<>("f", 0.0)));
 
-        treap.add(new Treap.TreapEntry<>("a", 2.0));
+        assertTrue(treap.add(new Treap.TreapEntry<>("a", 2.0)));
         assertEquals(6, treap.size());
         assertTrue(treap.contains(new Treap.TreapEntry<>("a", 2.0)));
 
-        treap.add(new Treap.TreapEntry<>("a", 123.0));
+        assertTrue(treap.add(new Treap.TreapEntry<>("a", 123.0)));
         assertEquals(7, treap.size());
         assertTrue(treap.contains(new Treap.TreapEntry<>("a", 123.0)));
     }
@@ -289,16 +289,18 @@ public class TreapTest {
 
     @Test
     public void min() {
-        Treap<String, Integer> treap = initTreap(Arrays.asList("a", "b", "c", "d", "e", "f", "g"),
-                java.util.stream.IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toList()));
+        List<String> keys = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+        Collections.shuffle(keys);
+        Treap<String, Integer> treap = initTreap(keys, java.util.stream.IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toList()));
 
         assertEquals("a", treap.min().get());
     }
 
     @Test
     public void max() {
-        Treap<String, Integer> treap = initTreap(Arrays.asList("a", "b", "c", "d", "e", "f", "g"),
-                java.util.stream.IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toList()));
+        List<String> keys = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+        Collections.shuffle(keys);
+        Treap<String, Integer> treap = initTreap(keys, java.util.stream.IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toList()));
 
         assertEquals("g", treap.max().get());
     }
