@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * A treap is a container that stores key-priority pairs in a tree, abiding by invariants of both binary search trees and binary heaps.
+ * A Treap is a container that stores key-priority pairs in a tree, abiding by invariants of both binary search trees and binary heaps.
  * 1) Each node has at most two children;
  * 2) All keys in the left subtree of a node N are not-larger than N.key;
  * 3) All keys in the right subtree of a node N are larger than N.key;
