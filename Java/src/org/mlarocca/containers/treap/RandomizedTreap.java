@@ -7,14 +7,14 @@ import java.util.Optional;
 import java.util.Random;
 
 /**
- * A RandomizedSearchTree is a binary search tree whose structure depend on randomization, and that on average is balanced.
+ * A RandomizedTreap is a binary search tree whose structure depend on randomization, and that on average is balanced.
  * It's implemented through a Treap whose elements' priorities are assigned randomly on insertion: if priorities are drawn
  * from a uniform distribution, it can be proved that the expected height of the tree is logarithmic in the number of elements,
  * after a statistically relevant number of operations on the tree.
  *
  * @param <T> The type of elements that can be added to this container. Must implement the Comparable interface.
  */
-public class RandomizedSearchTree<T extends Comparable<T>> implements SearchTree<T> {
+public class RandomizedTreap<T extends Comparable<T>> implements SearchTree<T> {
 
     // A reference to Treap internally used to implement the tree.
     private final Treap<T, Double> treap = new Treap<>();

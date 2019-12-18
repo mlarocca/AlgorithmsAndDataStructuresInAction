@@ -633,10 +633,10 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
 
         /**
-         * y                             x
-         * / \      RightRotate(x)      /  \
-         * x   T3    – – – – – – – >    T1   y
-         * / \        < - - - - - - -        / \
+         *     y                             x
+         *    / \      RightRotate(x)      /  \
+         *   x   T3    – – – – – – – >    T1   y
+         *  / \        < - - - - - - -        / \
          * T1  T2      LeftRotate(y)         T2  T3
          *
          * @return
@@ -653,10 +653,10 @@ public class Treap<T extends Comparable<T>, S extends Comparable<S>> implements 
         }
 
         /**
-         * y                             x
-         * / \      RightRotate(x)      /  \
-         * x   T3    – – – – – – – >    T1   y
-         * / \        < - - - - - - -        / \
+         *     y                             x
+         *    / \      RightRotate(x)      /  \
+         *   x   T3    – – – – – – – >    T1   y
+         *  / \        < - - - - - - -        / \
          * T1  T2      LeftRotate(y)         T2  T3
          *
          * @return
