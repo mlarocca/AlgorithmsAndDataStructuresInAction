@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
-public class RandomizedSearchTreeTest {
+public class RandomizedTreapTest {
     // Note: most tests (all except `treeMustBeBalanced`) are guaranteed to succeed because of the unit tests on Treap.
     // However, having this extra tests can allow changing RandomizedSearchTree's implementation and moving away from using a Treap,
     // without breaking any code using RandomizedSearchTree.
@@ -19,7 +19,7 @@ public class RandomizedSearchTreeTest {
 
     @Test
     public void add() {
-        RandomizedSearchTree<String> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<String> rst = new RandomizedTreap<>();
         assertEquals(rst.size(), 0);
 
         assertTrue(rst.add("d"));
@@ -54,7 +54,7 @@ public class RandomizedSearchTreeTest {
     @Test
     public void remove() {
         final List<Integer> keys = IntStream.rangeClosed(0, 8).boxed().collect(Collectors.toList());
-        RandomizedSearchTree<Integer> rst = new RandomizedSearchTree();
+        RandomizedTreap<Integer> rst = new RandomizedTreap();
 
         keys.stream().forEach(i -> rst.add(i));
 
@@ -71,7 +71,7 @@ public class RandomizedSearchTreeTest {
 
     @Test
     public void clear() {
-        RandomizedSearchTree<Integer> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<Integer> rst = new RandomizedTreap<>();
         int numElements = 5 + rnd.nextInt(10);
         IntStream.range(0, numElements).forEach(i -> {
             assertTrue(rst.add(rnd.nextInt()));
@@ -89,7 +89,7 @@ public class RandomizedSearchTreeTest {
     public void min() {
         List<String> keys = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         Collections.shuffle(keys);
-        RandomizedSearchTree<String> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<String> rst = new RandomizedTreap<>();
         for (String str : keys) {
             rst.add(str);
         }
@@ -100,7 +100,7 @@ public class RandomizedSearchTreeTest {
     public void max() {
         List<String> keys = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         Collections.shuffle(keys);
-        RandomizedSearchTree<String> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<String> rst = new RandomizedTreap<>();
         for (String str : keys) {
             rst.add(str);
         }
@@ -112,7 +112,7 @@ public class RandomizedSearchTreeTest {
         List<String> keys = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         Collections.shuffle(keys);
         final List<Double> priorities = IntStream.rangeClosed(0, 6).boxed().map(i -> rnd.nextDouble()).collect(Collectors.toList());
-        RandomizedSearchTree<String> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<String> rst = new RandomizedTreap<>();
         for (String str : keys) {
             rst.add(str);
         }
@@ -125,7 +125,7 @@ public class RandomizedSearchTreeTest {
 
     @Test
     public void isEmpty() {
-        RandomizedSearchTree<Integer> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<Integer> rst = new RandomizedTreap<>();
         assertTrue(rst.isEmpty());
 
         assertTrue(rst.add(1));
@@ -149,7 +149,7 @@ public class RandomizedSearchTreeTest {
 
     @Test
     public void size() {
-        RandomizedSearchTree<String> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<String> rst = new RandomizedTreap<>();
         assertEquals("Size should be 0 on empty Heap", 0, rst.size());
 
         rst.add("a");
@@ -168,7 +168,7 @@ public class RandomizedSearchTreeTest {
 
     @Test
     public void height() {
-        RandomizedSearchTree<String> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<String> rst = new RandomizedTreap<>();
         assertEquals("An empty rst must have height==0", 0, rst.height());
 
         rst.add("d");
@@ -207,7 +207,7 @@ public class RandomizedSearchTreeTest {
 
     @Test
     public void treeMustBeBalanced() {
-        RandomizedSearchTree<Integer> rst = new RandomizedSearchTree<>();
+        RandomizedTreap<Integer> rst = new RandomizedTreap<>();
         int size = 2000 + rnd.nextInt(1000);
         List<Integer> keys = IntStream.range(0, size).boxed().collect(Collectors.toList());
         //Collections.shuffle(keys);
@@ -230,7 +230,7 @@ public class RandomizedSearchTreeTest {
         }
     }
 
-    private <T extends Comparable<T>> boolean isApproximatelyBalanced(RandomizedSearchTree<T> rst) {
+    private <T extends Comparable<T>> boolean isApproximatelyBalanced(RandomizedTreap<T> rst) {
         // Use a relaxed condition to check if a tree is balanced: it's enough that the height is proportional
         // to the logarithm of the number of elements (within a factor 3, in particular)
         int n = rst.size();
