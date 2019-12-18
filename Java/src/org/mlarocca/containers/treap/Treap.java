@@ -24,6 +24,37 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * - size, height are not cached in this implementation, so they take linear time, O(n);
  * - min, max return the minimum and maximum key in the container, and as such require time proportional to the height of the tree.
  *
+ * Design:
+ *   This class was designed to implement both BST's and Heap's interfaces. It was not, obviously, the only way, neither the
+ *   most efficient, but this choice was made so that a Treap can be passed in place of both binary search trees and
+ *   priority queues.
+ *   As always we need to compromise and balance our requirements, so in many applications, whenever we know that we are
+ *   going to use randomized treaps only and we don't need methods like `top`, we can and should avoid the complexity of
+ *   multiple inheritance.
+ *
+ *   Inheriting from 2 different interfaces has consequences and raises issues, so that the result is not the cleanest possible.
+ *   First, a Treap's entries are pairs of possibly different types (as long as both are comparable); if these types are
+ *   T and S, we need Treap<T,S> to abide by the interfaces BST<T> and PriorityQueue<Pair<T,S>: for the BST part, we are only
+ *   interested in operations on keys (there is no notion of priority), but for the heap's part, we need to take into account
+ *   both priorities and keys.
+ *   If we tried to inherit all methods from both classes, we would have issues because we would allow inserting keys
+ *   without priorities etc...
+ *   So, the first thing we had to do was splitting the interface for BSTs into two, one for read-only operations, that
+ *   Treap implements, and another interface, extending the read-only one, that includes methods `insert`, `remove` etc...
+ *
+ *   The next issue comes with methods with the same name: since these containers are generic, we will hit issues with
+ *   erasure if both interface have methods with the same (generic) signature:
+ *   https://stackoverflow.com/questions/1998544/method-has-the-same-erasure-as-another-method-in-type
+ *
+ *   To work around this issue, we had to find an alternative name for method `contains` in at least one of the two interfaces:
+ *   in the end, the BST's version is called `search`.
+ *
+ *   In conclusion, this is one possible implementation for Treaps, as generic as possible, because it's meant for
+ *   didactic purposes.
+ *   Keep in mind that neither its implementation nor its design are optimized for the best performance, or the cleanest
+ *   possible: depending on your requirements, simpler, more efficient versions can be written by simplifying the inheritance
+ *   hierarchy and possibly dropping the use of Optional, lambdas and Stream.
+ *
  * @param <T> The type of the keys added to the container. Must implement the Comparable interface.
  * @param <S> The type used for the priority associated to keys. Must implement the Comparable interface.
  */
