@@ -1,8 +1,8 @@
 import Point from '../geometric/point.js';
-import {arrayMax, variance} from '../common/array.js';
-import {isUndefined} from '../common/basic.js';
-import {isNumber, range} from '../common/numbers.js';
-import {ERROR_MSG_INVALID_DISTANCE, ERROR_MSG_METHOD_UNIMPLEMENTED} from '../common/errors.js';
+import { arrayMax, variance } from '../common/array.js';
+import { isUndefined } from '../common/basic.js';
+import { isNumber, range } from '../common/numbers.js';
+import { ERROR_MSG_INVALID_DISTANCE, ERROR_MSG_METHOD_UNIMPLEMENTED } from '../common/errors.js';
 
 const _root = new WeakMap();
 const _points = new WeakMap();
@@ -128,7 +128,7 @@ class SsTree {
   get size() {
     return _root.get(this).size;
   }
-  
+
   /**
    * @name height
    * @for SsTree
@@ -301,7 +301,7 @@ class Node {
    * @returns {Generator<Point>} Returns the point stored in the node, or undefined if none is.
    */
   *points() {
-    if (this.isLeaf()){
+    if (this.isLeaf()) {
       yield* _points.get(this);
     } else {
       for (let child of this.children) {
@@ -350,7 +350,7 @@ class Node {
   get dimensionality() {
     return _K.get(this);
   }
-  
+
   /**
    * @name isLeaf
    * @for Node
@@ -532,7 +532,7 @@ class Node {
             newNodes = null;  //Doesn't really matter
           }
         }
-      } else{
+      } else {
         newNodes = null;
         this._updatePointsStats();
       }
@@ -834,7 +834,7 @@ class Node {
     }
     let checkCentroidPosition = points.every(p => p.distanceTo(this.centroid) <= this.radius);
 
-    if (!checkCentroidPosition){
+    if (!checkCentroidPosition) {
       throw new TypeError(`Points within cluster check failed: ${points.length} vs ${this.T}`);
     }
 

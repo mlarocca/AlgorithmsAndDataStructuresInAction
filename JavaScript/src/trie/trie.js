@@ -1,12 +1,12 @@
-import {isString, isNonEmptyString} from '../common/strings.js';
-import {isUndefined} from '../common/basic.js';
-import {ERROR_MSG_PARAM_TYPE} from '../common/errors.js';
+import { isString, isNonEmptyString } from '../common/strings.js';
+import { isUndefined } from '../common/basic.js';
+import { ERROR_MSG_PARAM_TYPE } from '../common/errors.js';
 
 const _root = new WeakMap();
 const _size = new WeakMap();
 const _value = new WeakMap();
 
-const ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING = (fname, val, pname='key') => `Illegal argument for ${fname}: ${pname} = ${val} must be a non-empty string`;
+const ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING = (fname, val, pname = 'key') => `Illegal argument for ${fname}: ${pname} = ${val} must be a non-empty string`;
 
 /**
  * @class Trie
@@ -433,7 +433,7 @@ class TrieNode {
    * @returns {Generator<string, *>} all the (key, value) pairs in the subtrie.
    */
   *items(path = []) {
-    if(!isUndefined(this.value)) {
+    if (!isUndefined(this.value)) {
       yield {
         key: path.join(''),
         value: this.value
@@ -457,7 +457,7 @@ class TrieNode {
    * @returns {Generator<string>} all the keys in this subtrie.
    */
   *keys(path = []) {
-    for (let {key, _} of this.items(path)) {
+    for (let { key, _ } of this.items(path)) {
       yield key;
     }
   }

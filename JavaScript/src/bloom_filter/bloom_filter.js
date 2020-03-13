@@ -1,6 +1,6 @@
-import {fnv1Hash32, murmurHash32} from '../common/hash.js';
-import {consistentStringify} from '../common/strings.js';
-import {randomInt, range} from '../common/numbers.js';
+import { fnv1Hash32, murmurHash32 } from '../common/hash.js';
+import { consistentStringify } from '../common/strings.js';
+import { randomInt, range } from '../common/numbers.js';
 
 const _maxSize = new WeakMap();
 const _seed = new WeakMap();

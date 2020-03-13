@@ -1,7 +1,7 @@
-import {isString} from '../common/strings.js'
-import {isFunction} from '../common/basic.js'
-import {isNumber} from '../common/numbers.js'
-import {ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
+import { isString } from '../common/strings.js'
+import { isFunction } from '../common/basic.js'
+import { isNumber } from '../common/numbers.js'
+import { ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
 
 const _costMatch = new WeakMap();
 const _costGap = new WeakMap();
@@ -28,9 +28,9 @@ function reconstructAlignment(pattern, text, similarityMatrix, costMatch, costGa
 
   while (similarityMatrix[initialRow][initialCol] > 0) {
     // simMatrix[0][j] and simMatrix[i][0] are set to 0 at initialization simMatrix[i][j] > 0 => i > 0 && j > 0
-    const costWithMatch = similarityMatrix[initialRow-1][initialCol-1] + costMatch(pattern[initialRow-1], text[initialCol-1]);
-    const costWithDelete = similarityMatrix[initialRow-1][initialCol] + costGap;
-    const costWithInsert = similarityMatrix[initialRow][initialCol-1] + costGap;
+    const costWithMatch = similarityMatrix[initialRow - 1][initialCol - 1] + costMatch(pattern[initialRow - 1], text[initialCol - 1]);
+    const costWithDelete = similarityMatrix[initialRow - 1][initialCol] + costGap;
+    const costWithInsert = similarityMatrix[initialRow][initialCol - 1] + costGap;
 
     if (costWithMatch >= costWithInsert && costWithMatch >= costWithDelete) {
       alignedPattern.push(pattern[--initialRow]);
@@ -68,7 +68,7 @@ class LocalAlignment {
    * @param {?string} placeholder The placeholder character to be used in the alignments. Must have length 1.
    *                              The default value is '-'.
    */
-  constructor(costMatch, costGap, placeholder='-') {
+  constructor(costMatch, costGap, placeholder = '-') {
     if (!isFunction(costMatch)) {
       throw new TypeError(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costMatch', costMatch, 'function'));
     }
@@ -114,20 +114,20 @@ class LocalAlignment {
     let maxSimRow = 0;
     let maxSimCol = 0;
 
-    for (let i=0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       similarityMatrix[i] = new Array(m);
       similarityMatrix[i][0] = 0;
     }
 
-    for (let j=0; j < m; j++) {
+    for (let j = 0; j < m; j++) {
       similarityMatrix[0][j] = 0;
     }
 
-    for (let i=1; i < n; i++) {
-      for (let j=1; j < m; j++) {
-        const costWithSub = similarityMatrix[i-1][j-1] + costMatch(pattern[i-1], text[j-1]);
-        const costWithIns = similarityMatrix[i][j-1] + costGap;
-        const costWithDel = similarityMatrix[i-1][j] + costGap;
+    for (let i = 1; i < n; i++) {
+      for (let j = 1; j < m; j++) {
+        const costWithSub = similarityMatrix[i - 1][j - 1] + costMatch(pattern[i - 1], text[j - 1]);
+        const costWithIns = similarityMatrix[i][j - 1] + costGap;
+        const costWithDel = similarityMatrix[i - 1][j] + costGap;
         const val = similarityMatrix[i][j] = Math.max(costWithSub, costWithIns, costWithDel, 0);
         if (val > maxSimilarity) {
           maxSimCol = j;
@@ -136,7 +136,7 @@ class LocalAlignment {
         }
       }
     }
-    
+
     const alignment = reconstructAlignment(
       pattern,
       text,

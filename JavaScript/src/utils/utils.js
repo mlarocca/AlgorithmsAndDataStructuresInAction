@@ -82,9 +82,9 @@ export function range(a, b, step = 1) {
     throw new TypeError(ERROR_MSG_RANGE_BOUNDARIES('range', a, b));
   }
 
-  let len = 1 + Math.floor((b - a - 1)/step);
+  let len = 1 + Math.floor((b - a - 1) / step);
   try {
-    return Array.from({length: len}, (_, i) => a + i * step);
+    return Array.from({ length: len }, (_, i) => a + i * step);
   } catch (e) {
     if (e instanceof RangeError) {
       throw new RangeError(ERROR_MSG_RANGE_TOO_LARGE('range', a, b));
@@ -109,7 +109,7 @@ export function range(a, b, step = 1) {
  * @throws {TypeError(ERROR_MSG_RANGE_BOUNDARIES)} If a < b.
  * @throws {TypeError(ERROR_MSG_RANGE_TOO_LARGE)} If the array [a ... b-1] is too big to be allocated.
  */
-export function *xrange(a, b, step = 1) {
+export function* xrange(a, b, step = 1) {
   if (!Number.isSafeInteger(a)) {
     throw new TypeError(ERROR_MSG_RANGE_LOWER('xrange', a));
   }
@@ -126,7 +126,7 @@ export function *xrange(a, b, step = 1) {
     throw new TypeError(ERROR_MSG_RANGE_STEP('xrange', step));
   }
 
-  for (; a < b; a+= step) {
+  for (; a < b; a += step) {
     yield a;
   }
 }
@@ -170,7 +170,7 @@ export function randomString(length) {
     throw new TypeError(ERROR_MSG_RANDOM_STRING_LENGTH(length));
   }
   try {
-    return Array.from({length: length}, () => ASCII_ALPHABET[Math.floor(Math.random() * ASCII_ALPHABET_LENGTH)])
+    return Array.from({ length: length }, () => ASCII_ALPHABET[Math.floor(Math.random() * ASCII_ALPHABET_LENGTH)])
       .join('');
   } catch (e) {
     if (e instanceof RangeError) {
@@ -236,7 +236,7 @@ let checkArgumentsLength = (args, expectedArgsLength, fname) => {
  *
  */
 export function isUndefined(maybeUndefined) {
-  return maybeUndefined === void(0) && checkArgumentsLength(arguments, 1, 'isUndefined');
+  return maybeUndefined === void (0) && checkArgumentsLength(arguments, 1, 'isUndefined');
 }
 
 /**
@@ -263,7 +263,7 @@ function inPlaceInsertionSort(array, key = identity, left = 0, right = array.len
     for (j = i - 1; j >= left && key(array[j]) > currentKey; j--) {
       array[j + 1] = array[j];
     }
-    array[j+1] = current;
+    array[j + 1] = current;
   }
   return array;
 }
@@ -305,7 +305,7 @@ export function insertionSort(array, key = identity) {
  * @returns {[number, number]} The indices of the first and last occurrences of the pivot in the array.
  */
 function partition(array, left, right, key) {
-  if (right === left){
+  if (right === left) {
     return [left, left];
   }
   let i = randomInt(left, right + 1);
@@ -422,7 +422,7 @@ export function median(array, key = identity) {
 
   let copy = Array.from(array);
   let n = copy.length;
-  let m = Math.floor((n-1) / 2) + 1;
+  let m = Math.floor((n - 1) / 2) + 1;
   let median = randomizedSelect(copy, m, key);
   let left = copy.splice(0, m); //Remove all the elements till the median (included) from copy
   left.pop(); //Remove median from left

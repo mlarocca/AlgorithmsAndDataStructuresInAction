@@ -1,5 +1,5 @@
-import {isIterable, isUndefined} from '../../common/basic.js';
-import {ERROR_MSG_INVALID_ARGUMENT} from '../../common/errors.js';
+import { isIterable, isUndefined } from '../../common/basic.js';
+import { ERROR_MSG_INVALID_ARGUMENT } from '../../common/errors.js';
 
 const ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT = (val) => `Illegal argument for UnionFindTrees constructor: ${val}`;
 const ERROR_MSG_UNION_FIND_CONSTRUCTOR_DUPLICATE_ELEMENT = (val) => `Duplicate element in initial set for UnionFindTrees constructor: ${val}`;
@@ -33,7 +33,7 @@ class UnionFindTrees {
    * @throws {TypeError(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT)}   If initialSet is not an array, or any element is undefined or null.
    * @throws {TypeError(ERROR_MSG_UNION_FIND_CONSTRUCTOR_DUPLICATE_ELEMENT)}   If initialSet contains duplicates.
    */
-  constructor(initialSet=[]) {
+  constructor(initialSet = []) {
     if (!isIterable(initialSet)) {
       throw new TypeError(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(initialSet));
     }
@@ -111,10 +111,10 @@ class UnionFindTrees {
    * @throws {TypeError(ERROR_MSG_FIND_NOT_IN_SET)}   If the argument does not belong to this set.
    */
   findPartition(elem) {
-    if (isUndefined(elem)){
+    if (isUndefined(elem)) {
       throw new TypeError(ERROR_MSG_INVALID_ARGUMENT('findPartition', 'elem', elem));
     }
-    
+
     if (!(_parentsMap.get(this).has(elem))) {
       throw new TypeError(ERROR_MSG_FIND_NOT_IN_SET(elem));
     }

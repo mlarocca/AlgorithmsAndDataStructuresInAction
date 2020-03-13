@@ -1,6 +1,6 @@
-import {isString} from '../common/strings.js'
-import {isNumber} from '../common/numbers.js'
-import {ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
+import { isString } from '../common/strings.js'
+import { isNumber } from '../common/numbers.js'
+import { ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
 
 const _costSubstitute = new WeakMap();
 const _costInsert = new WeakMap();
@@ -33,9 +33,9 @@ function reconstructAlignment(pattern, text, costMatrix, costSubstitute, costIns
   let j = text.length;
 
   while (i > 0 && j > 0) {
-    const costWithMatch = costMatrix[i-1][j-1] + (pattern[i-1] === text[j-1] ? 0 : costSubstitute);
-    const costWithDelete = costMatrix[i-1][j] + costDelete;
-    const costWithInsert = costMatrix[i][j-1] + costInsert;
+    const costWithMatch = costMatrix[i - 1][j - 1] + (pattern[i - 1] === text[j - 1] ? 0 : costSubstitute);
+    const costWithDelete = costMatrix[i - 1][j] + costDelete;
+    const costWithInsert = costMatrix[i][j - 1] + costInsert;
 
     if (costWithMatch <= costWithInsert && costWithMatch <= costWithDelete) {
       alignedPattern.push(pattern[--i]);
@@ -84,7 +84,7 @@ class GlobalAlignment {
    * @param {?string} placeholder The placeholder character to be used in the alignments. Must have length 1.
    *                              The default value is '-'.
    */
-  constructor(costSubstitute, costInsert, costDelete, placeholder='-') {
+  constructor(costSubstitute, costInsert, costDelete, placeholder = '-') {
     if (!isNumber(costSubstitute)) {
       throw new TypeError(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costSubstitute', costSubstitute, 'number'));
     }
@@ -132,22 +132,22 @@ class GlobalAlignment {
     let prevCol = new Array(n);
     let currentCol = new Array(n);
 
-    for (let i=0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       currentCol[i] = i * costDelete;
     }
 
-    for (let j=1; j < m; j++) {
+    for (let j = 1; j < m; j++) {
       prevCol = currentCol;
       currentCol = new Array(n);
       currentCol[0] = j * costInsert;
-      for (let i=1; i < n; i++) {
-        const costWithSub = prevCol[i-1] + (text[j-1] === pattern[i-1] ? 0 : costSubstitute);
+      for (let i = 1; i < n; i++) {
+        const costWithSub = prevCol[i - 1] + (text[j - 1] === pattern[i - 1] ? 0 : costSubstitute);
         const costWithIns = prevCol[i] + costInsert;
-        const costWithDel = currentCol[i-1] + costDelete;
+        const costWithDel = currentCol[i - 1] + costDelete;
         currentCol[i] = Math.min(costWithSub, costWithIns, costWithDel);
       }
     }
-    return currentCol[n-1];
+    return currentCol[n - 1];
   }
 
   /**
@@ -176,20 +176,20 @@ class GlobalAlignment {
     const m = text.length + 1;
     const costMatrix = new Array(n);
 
-    for (let i=0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       costMatrix[i] = new Array(m);
       costMatrix[i][0] = i * costDelete;
     }
 
-    for (let j=0; j < m; j++) {
+    for (let j = 0; j < m; j++) {
       costMatrix[0][j] = j * costInsert;
     }
 
-    for (let i=1; i < n; i++) {
-      for (let j=1; j < m; j++) {
-        const costWithSub = costMatrix[i-1][j-1] + (text[j-1] === pattern[i-1] ? 0 : costSubstitute);
-        const costWithIns = costMatrix[i][j-1] + costInsert;
-        const costWithDel = costMatrix[i-1][j] + costDelete;
+    for (let i = 1; i < n; i++) {
+      for (let j = 1; j < m; j++) {
+        const costWithSub = costMatrix[i - 1][j - 1] + (text[j - 1] === pattern[i - 1] ? 0 : costSubstitute);
+        const costWithIns = costMatrix[i][j - 1] + costInsert;
+        const costWithDel = costMatrix[i - 1][j] + costDelete;
         costMatrix[i][j] = Math.min(costWithSub, costWithIns, costWithDel);
       }
     }

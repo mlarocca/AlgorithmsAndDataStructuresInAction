@@ -104,6 +104,6 @@ export function fnv1Hash32(key) {
     hash ^= key.charCodeAt(i);
     hash += FNV1_PRIME_MUL(hash);
   }
-  
+
   return hash >>> 0;
 }

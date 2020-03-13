@@ -1,7 +1,7 @@
-import {isNumber, range} from '../common/numbers.js';
-import {mean} from '../common/array.js';
-import {isUndefined} from '../common/basic.js';
-import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_EMPTY_ARRAY, ERROR_MSG_PARAM_TYPE} from '../common/errors.js';
+import { isNumber, range } from '../common/numbers.js';
+import { mean } from '../common/array.js';
+import { isUndefined } from '../common/basic.js';
+import { ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_EMPTY_ARRAY, ERROR_MSG_PARAM_TYPE } from '../common/errors.js';
 
 const _coordinates = new WeakMap();
 const _K = new WeakMap();

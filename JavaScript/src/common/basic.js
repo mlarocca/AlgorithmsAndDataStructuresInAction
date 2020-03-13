@@ -1,4 +1,4 @@
-import {ERROR_MSG_TOO_FEW_ARGUMENTS} from './errors.js';
+import { ERROR_MSG_TOO_FEW_ARGUMENTS } from './errors.js';
 
 /**
  * @name isObject
@@ -35,7 +35,7 @@ export function isFunction(maybeFunction) {
  *
  */
 export function isUndefined(maybeUndefined) {
-  return maybeUndefined === void(0) && checkArgumentsLength(arguments, 1, 'isUndefined');
+  return maybeUndefined === void (0) && checkArgumentsLength(arguments, 1, 'isUndefined');
 }
 
 /**

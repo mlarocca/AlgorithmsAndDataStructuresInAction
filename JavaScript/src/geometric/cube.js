@@ -1,7 +1,7 @@
 import Point from './point.js';
-import {isUndefined} from '../common/basic.js';
-import {range} from '../common/numbers.js';
-import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_TYPE} from '../common/errors.js';
+import { isUndefined } from '../common/basic.js';
+import { range } from '../common/numbers.js';
+import { ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_TYPE } from '../common/errors.js';
 
 const _bottom = new WeakMap();
 const _top = new WeakMap();
@@ -201,7 +201,7 @@ class Cube {
   equals(other) {
     let eq = false;
     if (other instanceof Cube && other.dimensionality === this.dimensionality) {
-      eq = this.bottom.equals(other.bottom) &&  this.top.equals(other.top);
+      eq = this.bottom.equals(other.bottom) && this.top.equals(other.top);
     }
     return eq;
   }

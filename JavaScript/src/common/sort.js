@@ -1,6 +1,6 @@
-import {ERROR_MSG_ARGUMENT_TYPE, ERROR_MSG_POSITION_OUT_OF_BOUNDARIES} from './errors.js';
-import {randomInt} from './numbers.js';
-import {identity} from './basic.js';
+import { ERROR_MSG_ARGUMENT_TYPE, ERROR_MSG_POSITION_OUT_OF_BOUNDARIES } from './errors.js';
+import { randomInt } from './numbers.js';
+import { identity } from './basic.js';
 
 /**
  *
@@ -26,7 +26,7 @@ function inPlaceInsertionSort(array, key = identity, left = 0, right = array.len
     for (j = i - 1; j >= left && key(array[j]) > currentKey; j--) {
       array[j + 1] = array[j];
     }
-    array[j+1] = current;
+    array[j + 1] = current;
   }
   return array;
 }
@@ -68,7 +68,7 @@ export function insertionSort(array, key = identity) {
  * @returns {[number, number]} The indices of the first and last occurrences of the pivot in the array.
  */
 function partition(array, left, right, key) {
-  if (right === left){
+  if (right === left) {
     return [left, left];
   }
   let i = randomInt(left, right + 1);
@@ -185,7 +185,7 @@ export function median(array, key = identity) {
 
   let copy = Array.from(array);
   let n = copy.length;
-  let m = Math.floor((n-1) / 2) + 1;
+  let m = Math.floor((n - 1) / 2) + 1;
   let median = randomizedSelect(copy, m, key);
   let left = copy.splice(0, m); //Remove all the elements till the median (included) from copy
   left.pop(); //Remove median from left

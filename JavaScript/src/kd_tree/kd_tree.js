@@ -1,8 +1,8 @@
 import Point from '../geometric/point.js';
 import Cube from '../geometric/cube.js';
-import {median} from '../common/sort.js';
-import {isNumber} from '../common/numbers.js';
-import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_INVALID_DISTANCE} from '../common/errors.js';
+import { median } from '../common/sort.js';
+import { isNumber } from '../common/numbers.js';
+import { ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_INVALID_DISTANCE } from '../common/errors.js';
 
 const _root = new WeakMap();
 const _depth = new WeakMap();
@@ -547,7 +547,7 @@ class Node {
         } else {
           let minNode = this.right.findMinNode(dimIndex);
           _point.set(this, minNode.point);
-          _size.set(this, this. size - 1);
+          _size.set(this, this.size - 1);
           this.right.delete(minNode.point);
         }
       } else {

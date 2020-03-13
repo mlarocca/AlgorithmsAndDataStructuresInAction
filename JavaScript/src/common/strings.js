@@ -1,5 +1,5 @@
-import {isObject} from './basic';
-import {ERROR_MSG_RANDOM_STRING_LENGTH, ERROR_MSG_RANDOM_STRING_TOO_LARGE} from './errors.js';
+import { isObject } from './basic';
+import { ERROR_MSG_RANDOM_STRING_LENGTH, ERROR_MSG_RANDOM_STRING_TOO_LARGE } from './errors.js';
 
 const ASCII_ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\ \t\n';
 const ASCII_ALPHABET_LENGTH = ASCII_ALPHABET.length;
@@ -26,7 +26,7 @@ const respondsToToJson = (obj) => {
  * @return {string} The stringified key.
  */
 export function consistentStringify(key) {
-  if (!isObject(key)){
+  if (!isObject(key)) {
     return JSON.stringify(key);
   } else if (Array.isArray(key)) {
     return JSON.stringify(key.map(consistentStringify));
@@ -56,7 +56,7 @@ export function randomString(length) {
     throw new TypeError(ERROR_MSG_RANDOM_STRING_LENGTH(length));
   }
   try {
-    return Array.from({length: length}, () => ASCII_ALPHABET[Math.floor(Math.random() * ASCII_ALPHABET_LENGTH)])
+    return Array.from({ length: length }, () => ASCII_ALPHABET[Math.floor(Math.random() * ASCII_ALPHABET_LENGTH)])
       .join('');
   } catch (e) {
     if (e instanceof RangeError) {

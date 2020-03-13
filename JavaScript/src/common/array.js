@@ -1,8 +1,8 @@
-import {identity} from './basic.js';
-import {isNumber, randomInt} from './numbers.js';
-import {setDifference} from './set.js';
-import {ERROR_MSG_INVALID_ARGUMENT, ERROR_MSG_ARGUMENT_TYPE, ERROR_MSG_PARAM_EMPTY_ARRAY} from './errors.js';
-import {consistentStringify} from './strings.js';
+import { identity } from './basic.js';
+import { isNumber, randomInt } from './numbers.js';
+import { setDifference } from './set.js';
+import { ERROR_MSG_INVALID_ARGUMENT, ERROR_MSG_ARGUMENT_TYPE, ERROR_MSG_PARAM_EMPTY_ARRAY } from './errors.js';
+import { consistentStringify } from './strings.js';
 
 /**
  * @name mean
@@ -41,9 +41,9 @@ export function variance(values) {
   }
   let m = mean(values);
   return 1 / n * values.reduce((tot, v) => {
-      let d = v - m;
-      return tot + d * d;
-    }, 0);
+    let d = v - m;
+    return tot + d * d;
+  }, 0);
 }
 
 /**
@@ -73,7 +73,7 @@ export function arrayMin(values, { key = identity } = {}) {
   }, [Number.MAX_VALUE, 0]);
 
   return {
-    value:values[index],
+    value: values[index],
     index: index
   };
 }
@@ -105,7 +105,7 @@ export function arrayMax(values, { key = identity } = {}) {
   }, [Number.MIN_VALUE, 0]);
 
   return {
-    value:values[index],
+    value: values[index],
     index: index
   };
 }
@@ -143,7 +143,7 @@ export function zip(a1, a2) {
   return a1.map((x, i) => [x, a2[i]]);
 }
 
-export function compareAsSets(array1, array2, key=consistentStringify) {
+export function compareAsSets(array1, array2, key = consistentStringify) {
   if (!Array.isArray(array1)) {
     throw new TypeError(ERROR_MSG_INVALID_ARGUMENT('compareAsSets', 'array1', array1));
   }
@@ -155,7 +155,7 @@ export function compareAsSets(array1, array2, key=consistentStringify) {
   return setDifference(set1, set2).size === 0 && setDifference(set2, set1).size === 0;
 }
 
-export function compareAsLists(array1, array2, key=consistentStringify) {
+export function compareAsLists(array1, array2, key = consistentStringify) {
   if (!Array.isArray(array1)) {
     throw new TypeError(ERROR_MSG_INVALID_ARGUMENT('compareAsLists', 'array1', array1));
   }

@@ -1,8 +1,10 @@
-import {ERROR_MSG_RANGE_LOWER,
-  ERROR_MSG_RANGE_UPPER,
-  ERROR_MSG_RANGE_STEP,
-  ERROR_MSG_RANGE_BOUNDARIES,
-  ERROR_MSG_RANGE_TOO_LARGE} from './errors.js';
+import {
+    ERROR_MSG_RANGE_LOWER,
+    ERROR_MSG_RANGE_UPPER,
+    ERROR_MSG_RANGE_STEP,
+    ERROR_MSG_RANGE_BOUNDARIES,
+    ERROR_MSG_RANGE_TOO_LARGE
+} from './errors.js';
 
 /**
  * @name isNumber
@@ -60,9 +62,9 @@ export function range(a, b, step = 1) {
         throw new TypeError(ERROR_MSG_RANGE_BOUNDARIES('range', a, b));
     }
 
-    let len = 1 + Math.floor((b - a - 1)/step);
+    let len = 1 + Math.floor((b - a - 1) / step);
     try {
-        return Array.from({length: len}, (_, i) => a + i * step);
+        return Array.from({ length: len }, (_, i) => a + i * step);
     } catch (e) {
         if (e instanceof RangeError) {
             throw new RangeError(ERROR_MSG_RANGE_TOO_LARGE('range', a, b));
@@ -87,7 +89,7 @@ export function range(a, b, step = 1) {
  * @throws {TypeError(ERROR_MSG_RANGE_BOUNDARIES)} If a < b.
  * @throws {TypeError(ERROR_MSG_RANGE_TOO_LARGE)} If the array [a ... b-1] is too big to be allocated.
  */
-export function *xrange(a, b, step = 1) {
+export function* xrange(a, b, step = 1) {
     if (!Number.isSafeInteger(a)) {
         throw new TypeError(ERROR_MSG_RANGE_LOWER('xrange', a));
     }
@@ -104,7 +106,7 @@ export function *xrange(a, b, step = 1) {
         throw new TypeError(ERROR_MSG_RANGE_STEP('xrange', step));
     }
 
-    for (; a < b; a+= step) {
+    for (; a < b; a += step) {
         yield a;
     }
 }
