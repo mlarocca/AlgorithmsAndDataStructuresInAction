@@ -1,7 +1,7 @@
 import LocalAlignment from '../../src/strings/local_alignment.js';
-import {identity} from '../../src/common/basic.js';
-import {ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
-import {testAPI} from '../utils/test_common.js';
+import { identity } from '../../src/common/basic.js';
+import { ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -33,7 +33,7 @@ describe('LocalAlignment Creation', () => {
       expect(() => new LocalAlignment(null)).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costMatch', null, 'function'));
       expect(() => new LocalAlignment('a')).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costMatch', 'a', 'function'));
       expect(() => new LocalAlignment([])).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costMatch', [], 'function'));
-      expect(() => new LocalAlignment({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costMatch', {'4': 4}, 'function'));
+      expect(() => new LocalAlignment({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costMatch', { '4': 4 }, 'function'));
     });
 
     it('should throw when no costGap is passed', () => {
@@ -44,13 +44,13 @@ describe('LocalAlignment Creation', () => {
       expect(() => new LocalAlignment(identity, null)).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costGap', null, 'number'));
       expect(() => new LocalAlignment(identity, 'a')).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costGap', 'a', 'number'));
       expect(() => new LocalAlignment(identity, [])).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costGap', [], 'number'));
-      expect(() => new LocalAlignment(identity, {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costGap', {'4': 4}, 'number'));
+      expect(() => new LocalAlignment(identity, { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'costGap', { '4': 4 }, 'number'));
     });
 
     it('should throw when placeholder is passed but it is not a string of length 1', () => {
       expect(() => new LocalAlignment(identity, 0, null)).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'placeholder', null, 'string[1]'));
       expect(() => new LocalAlignment(identity, 0, [])).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'placeholder', [], 'string[1]'));
-      expect(() => new LocalAlignment(identity, 0, {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'placeholder', {'4': 4}, 'string[1]'));
+      expect(() => new LocalAlignment(identity, 0, { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'placeholder', { '4': 4 }, 'string[1]'));
       expect(() => new LocalAlignment(identity, 0, 'ab')).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'placeholder', 'ab', 'string[1]'));
       expect(() => new LocalAlignment(identity, 0, '')).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.constructor', 'placeholder', '', 'string[1]'));
     });
@@ -71,25 +71,25 @@ describe('Methods', () => {
     const substitutionMatrix = {
       'A': {
         'A': 3,
-        'T' : -1,
+        'T': -1,
         'C': -3,
         'G': -3
       },
       'C': {
         'A': -3,
-        'T' : -3,
+        'T': -3,
         'C': 3,
         'G': -1
       },
       'G': {
         'A': -3,
-        'T' : -3,
+        'T': -3,
         'C': -1,
         'G': 3
       },
       'T': {
         'A': -1,
-        'T' : 3,
+        'T': 3,
         'C': -3,
         'G': -3
       }
@@ -104,11 +104,11 @@ describe('Methods', () => {
 
     let sw;
 
-    beforeEach(() => {
-      sw = new LocalAlignment(costSub, -2);
-    });
-    
     describe('API', () => {
+      beforeEach(() => {
+        sw = new LocalAlignment(costSub, -2);
+      });
+
       it('should expect 2 mandatory arguments', () => {
         sw.alignment.length.should.eql(2);
       });
@@ -117,14 +117,14 @@ describe('Methods', () => {
         expect(() => sw.alignment([])).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'pattern', [], 'string'));
         expect(() => sw.alignment(false)).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'pattern', false, 'string'));
         expect(() => sw.alignment(55)).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'pattern', 55, 'string'));
-        expect(() => sw.alignment({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'pattern', {'4': 4}, 'string'));
+        expect(() => sw.alignment({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'pattern', { '4': 4 }, 'string'));
       });
 
       it('should throw if the second argument is not a valid string', () => {
         expect(() => sw.alignment('', [])).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'text', [], 'string'));
         expect(() => sw.alignment('', false)).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'text', false, 'string'));
         expect(() => sw.alignment('', 55)).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'text', 55, 'string'));
-        expect(() => sw.alignment('', {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'text', {'4': 4}, 'string'));
+        expect(() => sw.alignment('', { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('LocalAlignment.alignment', 'text', { '4': 4 }, 'string'));
       });
 
       it('should accept proper values for the arguments', () => {
@@ -137,6 +137,10 @@ describe('Methods', () => {
     });
 
     describe('Behaviour', () => {
+      beforeEach(() => {
+        sw = new LocalAlignment(costSub, -2);
+      });
+
       const makeAlignmentResult = (pattern, text, similarity) => ({
         pattern: pattern,
         text: text,
@@ -144,7 +148,7 @@ describe('Methods', () => {
       });
 
       it('should return the actual alignment', () => {
-        let smithWat = new LocalAlignment((a,b) => a === b ? 2 : 1, -1);
+        let smithWat = new LocalAlignment((a, b) => a === b ? 2 : 1, -1);
 
         smithWat.alignment('', 'ab').should.be.eql(makeAlignmentResult('', '', 0));
         smithWat.alignment('abcd', '').should.be.eql(makeAlignmentResult('', '', 0));
@@ -157,7 +161,7 @@ describe('Methods', () => {
         sw.alignment('ATTGGC', 'TATGA').should.be.eql(makeAlignmentResult('T-TG', 'TATG', 7));
 
         // This model penalizes substitution more than gap
-        smithWat = new LocalAlignment((a,b) => a === b ? 2 : -1, -0.6);
+        smithWat = new LocalAlignment((a, b) => a === b ? 2 : -1, -0.6);
 
         smithWat.alignment('', 'ab').should.be.eql(makeAlignmentResult('', '', 0));
         smithWat.alignment('abcd', '').should.be.eql(makeAlignmentResult('', '', 0));
@@ -166,7 +170,7 @@ describe('Methods', () => {
         smithWat.alignment('ATTGGC', 'TATGA').should.be.eql(makeAlignmentResult('T-TG', 'TATG', 5.4));
 
         // This model penalizes gap more than it rewards match
-        smithWat = new LocalAlignment((a,b) => a === b ? 0.4 : -1, -0.6);
+        smithWat = new LocalAlignment((a, b) => a === b ? 0.4 : -1, -0.6);
 
         smithWat.alignment('', 'ab').should.be.eql(makeAlignmentResult('', '', 0));
         smithWat.alignment('abcd', '').should.be.eql(makeAlignmentResult('', '', 0));

@@ -1,6 +1,6 @@
 import GlobalAlignment from '../../src/strings/global_alignment.js';
-import {ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
-import {testAPI} from '../utils/test_common.js';
+import { ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -32,7 +32,7 @@ describe('GlobalAlignment Creation', () => {
       expect(() => new GlobalAlignment(null)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costSubstitute', null, 'number'));
       expect(() => new GlobalAlignment('a')).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costSubstitute', 'a', 'number'));
       expect(() => new GlobalAlignment([])).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costSubstitute', [], 'number'));
-      expect(() => new GlobalAlignment({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costSubstitute', {'4': 4}, 'number'));
+      expect(() => new GlobalAlignment({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costSubstitute', { '4': 4 }, 'number'));
     });
 
     it('should throw when no costInsert is passed', () => {
@@ -43,7 +43,7 @@ describe('GlobalAlignment Creation', () => {
       expect(() => new GlobalAlignment(0, null)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costInsert', null, 'number'));
       expect(() => new GlobalAlignment(0, 'a')).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costInsert', 'a', 'number'));
       expect(() => new GlobalAlignment(0, [])).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costInsert', [], 'number'));
-      expect(() => new GlobalAlignment(0, {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costInsert', {'4': 4}, 'number'));
+      expect(() => new GlobalAlignment(0, { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costInsert', { '4': 4 }, 'number'));
     });
 
     it('should throw when no costDelete is passed', () => {
@@ -54,13 +54,13 @@ describe('GlobalAlignment Creation', () => {
       expect(() => new GlobalAlignment(0, 0, null)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costDelete', null, 'number'));
       expect(() => new GlobalAlignment(0, 0, 'a')).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costDelete', 'a', 'number'));
       expect(() => new GlobalAlignment(0, 0, [])).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costDelete', [], 'number'));
-      expect(() => new GlobalAlignment(0, 0, {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costDelete', {'4': 4}, 'number'));
+      expect(() => new GlobalAlignment(0, 0, { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'costDelete', { '4': 4 }, 'number'));
     });
 
     it('should throw when placeholder is passed but it is not a string of length 1', () => {
       expect(() => new GlobalAlignment(0, 0, 0, null)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'placeholder', null, 'string[1]'));
       expect(() => new GlobalAlignment(0, 0, 0, [])).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'placeholder', [], 'string[1]'));
-      expect(() => new GlobalAlignment(0, 0, 0, {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'placeholder', {'4': 4}, 'string[1]'));
+      expect(() => new GlobalAlignment(0, 0, 0, { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'placeholder', { '4': 4 }, 'string[1]'));
       expect(() => new GlobalAlignment(0, 0, 0, 'ab')).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'placeholder', 'ab', 'string[1]'));
       expect(() => new GlobalAlignment(0, 0, 0, '')).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.constructor', 'placeholder', '', 'string[1]'));
     });
@@ -79,12 +79,12 @@ describe('GlobalAlignment Creation', () => {
 describe('Methods', () => {
   describe('distance()', () => {
     let nw;
-    
-    beforeEach(() => {
-      nw = new GlobalAlignment(0, 1, 2);
-    });
-    
+
     describe('API', () => {
+      beforeEach(() => {
+        nw = new GlobalAlignment(0, 1, 2);
+      });
+
       it('should expect 2 mandatory arguments', () => {
         nw.distance.length.should.eql(2);
       });
@@ -93,14 +93,14 @@ describe('Methods', () => {
         expect(() => nw.distance([])).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'pattern', [], 'string'));
         expect(() => nw.distance(false)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'pattern', false, 'string'));
         expect(() => nw.distance(55)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'pattern', 55, 'string'));
-        expect(() => nw.distance({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'pattern', {'4': 4}, 'string'));
+        expect(() => nw.distance({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'pattern', { '4': 4 }, 'string'));
       });
 
       it('should throw if the second argument is not a valid string', () => {
         expect(() => nw.distance('', [])).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'text', [], 'string'));
         expect(() => nw.distance('', false)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'text', false, 'string'));
         expect(() => nw.distance('', 55)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'text', 55, 'string'));
-        expect(() => nw.distance('', {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'text', {'4': 4}, 'string'));
+        expect(() => nw.distance('', { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.distance', 'text', { '4': 4 }, 'string'));
       });
 
       it('should accept proper values for the arguments', () => {
@@ -113,6 +113,10 @@ describe('Methods', () => {
     });
 
     describe('Behaviour', () => {
+      beforeEach(() => {
+        nw = new GlobalAlignment(0, 1, 2);
+      });
+
       it('should return the actual distance', () => {
         const needWun = new GlobalAlignment(3, 5, 7);
 
@@ -124,14 +128,15 @@ describe('Methods', () => {
       });
     });
   });
+
   describe('alignment()', () => {
     let nw;
-    
-    beforeEach(() => {
-      nw = new GlobalAlignment(0, 1, 2);
-    });
-    
+
     describe('API', () => {
+      beforeEach(() => {
+        nw = new GlobalAlignment(0, 1, 2);
+      });
+
       it('should expect 2 mandatory arguments', () => {
         nw.alignment.length.should.eql(2);
       });
@@ -140,14 +145,14 @@ describe('Methods', () => {
         expect(() => nw.alignment([])).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'pattern', [], 'string'));
         expect(() => nw.alignment(false)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'pattern', false, 'string'));
         expect(() => nw.alignment(55)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'pattern', 55, 'string'));
-        expect(() => nw.alignment({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'pattern', {'4': 4}, 'string'));
+        expect(() => nw.alignment({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'pattern', { '4': 4 }, 'string'));
       });
 
       it('should throw if the second argument is not a valid string', () => {
         expect(() => nw.alignment('', [])).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'text', [], 'string'));
         expect(() => nw.alignment('', false)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'text', false, 'string'));
         expect(() => nw.alignment('', 55)).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'text', 55, 'string'));
-        expect(() => nw.alignment('', {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'text', {'4': 4}, 'string'));
+        expect(() => nw.alignment('', { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('GlobalAlignment.alignment', 'text', { '4': 4 }, 'string'));
       });
 
       it('should accept proper values for the arguments', () => {
@@ -160,6 +165,10 @@ describe('Methods', () => {
     });
 
     describe('Behaviour', () => {
+      beforeEach(() => {
+        nw = new GlobalAlignment(0, 1, 2);
+      });
+
       const makeAlignmentResult = (pattern, text) => ({
         pattern: pattern,
         text: text
