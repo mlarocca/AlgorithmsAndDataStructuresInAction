@@ -1,18 +1,11 @@
-A folder for the book's code archive.
+A collection of data structures implementing what's presented in the book ["Algorithms and Data Structures in Action"](https://www.manning.com/books/algorithms-and-data-structures-in-action#toc).
 
 ## Installation
 
-From `code` folder:
+From the base folder:
 
 ```
 nvm install stable
-
-npm install -g mocha
-npm install -g traceur
-npm install -g chai
-npm install -g should
-npm install -g mocha-traceur
-npm install -g jshint
 
 npm install
 ```
@@ -20,8 +13,14 @@ npm install
 
 ## Run tests
 
-From `code` folder:
+From the base folder:
 
 ```
-mocha --compilers js:mocha-traceur test/*
+npm t test/$FOLDER/$TEST
+```
+
+For instance
+
+```
+npm t test/geometric/test_point.js
 ```

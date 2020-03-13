@@ -5,7 +5,7 @@ import Cube from '../../src/geometric/cube.js';
 import {isUndefined} from '../../src/common/basic.js';
 import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_INVALID_DISTANCE, ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
 import {range} from '../../src/common/numbers.js';
-import {testAPI} from '../utils/test_common.js';
+import {expectSetEquality, testAPI} from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -79,11 +79,11 @@ describe('KdTree Creation', () => {
 describe('Attributes', () => {
   let kdTree;
 
-  beforeEach(function () {
-    kdTree = new KdTree();
-  });
-
   describe('size', () => {
+    beforeEach(function () {
+      kdTree = new KdTree();
+    });
+
     it('should be 0 for an empty tree', () => {
       kdTree.size.should.equal(0);
     });
@@ -154,6 +154,10 @@ describe('Attributes', () => {
   });
   
   describe('height', () => {
+    beforeEach(function () {
+      kdTree = new KdTree();
+    });
+
     it('should be 0 for an empty tree', () => {
       kdTree.height.should.equal(0);
     });
@@ -968,20 +972,16 @@ describe('Methods', () => {
       var p3 = new Point2D(200, -100);
       var p4 = new Point2D(150, -50);
       var points3D = [new Point(0, 0, 0), new Point(-1, 2, 3.5), new Point(0.55, 30, -10), new Point(1, 1.2, 1.5), new Point(4.25, 0.37, 0)];
-      var kdTree;
-
-      beforeEach(() =>{
-        kdTree = new KdTree();
-      });
 
       it('should return an empty set in an empty tree', () => {
+        let kdTree = new KdTree();
         let result = [...kdTree.pointsWithinDistanceFrom(p1, 100)];
         result.should.be.instanceOf(Array);
         result.length.should.be.eql(0);
       });
 
       it('should return an empty Set if all the points are not within distance', () => {
-        kdTree = new KdTree([p1]);
+        let kdTree = new KdTree([p1]);
         let result = [...kdTree.pointsWithinDistanceFrom(p3, 100)];
         result.length.should.be.eql(0);
 
@@ -991,7 +991,7 @@ describe('Methods', () => {
       });
 
       it('should return the only point in a singleton tree, if within distance', () => {
-        kdTree = new KdTree([p1]);
+        let kdTree = new KdTree([p1]);
 
         let result = [...kdTree.pointsWithinDistanceFrom(p2, 10)];
         result.length.should.be.eql(1);
@@ -1003,7 +1003,7 @@ describe('Methods', () => {
       });
 
       it('should include the points itself, if in the tree (2D)', () => {
-        kdTree = new KdTree([p1, p2]);
+        let kdTree = new KdTree([p1, p2]);
 
         let result = new Set(kdTree.pointsWithinDistanceFrom(p2, 1));
         result.has(p2).should.be.true();
@@ -1014,7 +1014,7 @@ describe('Methods', () => {
 
       it('should include the points itself, if in the tree (3D)', () => {
         let p = points3D[0];
-        kdTree = new KdTree(points3D);
+        let kdTree = new KdTree(points3D);
 
         let result = new Set(kdTree.pointsWithinDistanceFrom(p, 1));
         result.has(p).should.be.true();
@@ -1028,28 +1028,31 @@ describe('Methods', () => {
         let [p1, p2, p3, p4, p5] = points;
         let result;
 
-        kdTree = new KdTree(points);
+        let kdTree = new KdTree(points);
 
-        result = [...kdTree.pointsWithinDistanceFrom(new Point(1.1, 1.9), 1)];
-        result.should.be.eql([p1, p4]);
+        let p = new Point(1.1, 1.9);
+        let closerTo = (target) => (p1, p2) => p1.distanceTo(target) - p2.distanceTo(target);
+
+        result = [...kdTree.pointsWithinDistanceFrom(p, 1)];
+        result.sort(closerTo(p)).should.be.eql([p1, p4]);
 
         result = [...kdTree.pointsWithinDistanceFrom(new Point(1.1, 1.9), 10)];
-        result.should.be.eql([p1, p2, p3, p4, p5]);
+        expectSetEquality(result, [p1, p2, p3, p4, p5]);
 
         result = [...kdTree.pointsWithinDistanceFrom(new Point(-5, -5), 1)];
         result.should.be.eql([]);
         result = [...kdTree.pointsWithinDistanceFrom(new Point(-5, -5), 10)];
-        result.should.be.eql([p1, p2, p4]);
+        expectSetEquality(result, [p1, p2, p4]);
         result = [...kdTree.pointsWithinDistanceFrom(new Point(-5, -5), 10.78)];
-        result.should.be.eql([p1, p2, p4, p5]);
+        expectSetEquality(result, [p1, p2, p4, p5]);
         result = [...kdTree.pointsWithinDistanceFrom(new Point(3.01, 2.9999), 0.1)];
-        result.should.be.eql([p3]);
+        expectSetEquality(result, [p3]);
         result = [...kdTree.pointsWithinDistanceFrom(new Point(3.01, 2.9999), 2)];
-        result.should.be.eql([p3, p4]);
+        expectSetEquality(result, [p3, p4]);
         result = [...kdTree.pointsWithinDistanceFrom(new Point(1.6, 2), 10)];
-        result.should.be.eql([p1, p2, p3, p4, p5]);
+        expectSetEquality(result, [p1, p2, p3, p4, p5]);
         result = [...kdTree.pointsWithinDistanceFrom(new Point(160, 2), 160)];
-        result.should.be.eql([p1, p3, p4, p5]);
+        expectSetEquality(result, [p1, p3, p4, p5]);
       });
     });
   });
