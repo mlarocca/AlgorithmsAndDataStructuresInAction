@@ -12,8 +12,6 @@ import should from "should";
 const expect = chai.expect;
 
 const ERROR_MSG_PARAM_INVALID_POINT = (fname, val, dimension, pname = 'point') => `Illegal argument for ${fname}: ${pname} = ${val} must be of class Point${isUndefined(dimension) ? '' : ` (${dimension}D)`}`;
-const ERROR_MSG_PARAM_INVALID_CUBE = (fname, val, dimension, pname = 'cube') =>
-  `Illegal argument for ${fname}: ${pname} = ${val} must be of class Cube${isUndefined(dimension) ? '' : ` (${dimension}D)`}`;
 
 describe('SsTree API', () => {
 
@@ -68,7 +66,7 @@ describe('SsTree Creation', () => {
     });
 
     it('should add all the points in the list (2D), even with higher max number of elements per cluster', () => {
-      let points = range(0, 100).map(_ => new Point2D.random());
+      let points = range(0, 100).map(_ => Point2D.random());
       let ssTree = new SsTree(points, 7);
       ssTree.size.should.be.eql(points.length);
       points.every(p => ssTree.contains(p)).should.be.true();
@@ -86,11 +84,12 @@ describe('SsTree Creation', () => {
 describe('Attributes', () => {
   let ssTree;
 
-  beforeEach(function () {
-    ssTree = new SsTree([], 2);
-  });
-
   describe('height', () => {
+
+    beforeEach(function () {
+      ssTree = new SsTree([], 2);
+    });
+    
     it('should be 0 for an empty tree', () => {
       ssTree.height.should.equal(0);
     });
@@ -126,6 +125,10 @@ describe('Attributes', () => {
   });
 
   describe('size', () => {
+    beforeEach(function () {
+      ssTree = new SsTree([], 2);
+    });
+    
     it('should be 0 for an empty tree', () => {
       ssTree.size.should.equal(0);
     });
@@ -299,7 +302,7 @@ describe('Methods', () => {
       });
 
       it('should add all the points in the list (2D)', () => {
-        let points = range(0, 100).map(_ => new Point2D.random());
+        let points = range(0, 100).map(_ => Point2D.random());
         let ssTree = new SsTree([], 4);
         points.forEach(p => ssTree.add(p));
         ssTree.size.should.be.eql(points.length);
