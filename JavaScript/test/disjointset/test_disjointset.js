@@ -257,17 +257,17 @@ let testCase = klass => {
         uf = new klass(keys);
       });
 
-        it('> Size should be consistent', () => {
-          uf.size.should.equal(keys.length);
-        });
+      it('> Size should be consistent', () => {
+        uf.size.should.equal(keys.length);
+      });
 
-        it('> Union should not change size', () => {
-          uf.merge('1', '2');
-          uf.size.should.equal(keys.length);
+      it('> Union should not change size', () => {
+        uf.merge('1', '2');
+        uf.size.should.equal(keys.length);
 
-          uf.merge('3', '2');
-          uf.size.should.equal(keys.length);
-        });
+        uf.merge('3', '2');
+        uf.size.should.equal(keys.length);
+      });
 
       it('# Adding element should correctly modify size', () => {
         let testKeys = ['new', [], [2], {}];

@@ -1,14 +1,14 @@
 import Point2D from '../../src/geometric/2d_point.js';
-import {isUndefined} from '../../src/common/basic.js';
-import {ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
-import {testAPI} from '../utils/test_common.js';
+import { isUndefined } from '../../src/common/basic.js';
+import { ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
 import should from "should";
 const expect = chai.expect;
 
-const ERROR_MSG_PARAM_INVALID_POINT = (fname, val, dimension, pname='point') => `Illegal argument for ${fname}: ${pname} = ${val} must be of class Point${isUndefined(dimension) ? '' : ` (${dimension}D)`}`;
+const ERROR_MSG_PARAM_INVALID_POINT = (fname, val, dimension, pname = 'point') => `Illegal argument for ${fname}: ${pname} = ${val} must be of class Point${isUndefined(dimension) ? '' : ` (${dimension}D)`}`;
 
 describe('Point2D API', () => {
 
@@ -18,7 +18,7 @@ describe('Point2D API', () => {
 
   it('# Object\'s interface should be complete', () => {
     let point = new Point2D(1, 2);
-    
+
     let methods = ['constructor'];
     let superMethods = ['coordinates', 'coordinate', 'equals', 'distanceTo', 'maxDistance', 'minDistance', 'toString', 'dimensionality'];
     let attributes = ['x', 'y'];
@@ -43,14 +43,14 @@ describe('Point2D Creation', () => {
       expect(() => new Point2D(null)).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [null, undefined], 'sequence of numbers'));
       expect(() => new Point2D('a')).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', ['a', undefined], 'sequence of numbers'));
       expect(() => new Point2D([])).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [[], undefined], 'sequence of numbers'));
-      expect(() => new Point2D({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [{'4': 4}, undefined], 'sequence of numbers'));
+      expect(() => new Point2D({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [{ '4': 4 }, undefined], 'sequence of numbers'));
     });
 
     it('should throw when y is not a number', () => {
       expect(() => new Point2D(1, null)).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [1, null], 'sequence of numbers'));
       expect(() => new Point2D(2, 'erwer')).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [2, 'erwer'], 'sequence of numbers'));
       expect(() => new Point2D(3, [])).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [3, []], 'sequence of numbers'));
-      expect(() => new Point2D(4, {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [4, {'4': 4}], 'sequence of numbers'));
+      expect(() => new Point2D(4, { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [4, { '4': 4 }], 'sequence of numbers'));
     });
 
     it('should not throw with valid parameters', () => {
@@ -70,8 +70,8 @@ describe('Attributes', () => {
   const x2 = Number.MAX_SAFE_INTEGER;
   const y2 = 2.1547889;
 
-  beforeEach(function () {
-    point = new Point2D(x1 ,y1);
+  before(function () {
+    point = new Point2D(x1, y1);
     point2 = new Point2D(x2, y2);
   });
 
@@ -116,7 +116,7 @@ describe('Static Methods', () => {
         expect(() => Point2D.validatePoint(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', false));
         expect(() => Point2D.validatePoint('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', 's'));
         expect(() => Point2D.validatePoint([])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', []));
-        expect(() => Point2D.validatePoint({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', {'4': 4}));
+        expect(() => Point2D.validatePoint({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', { '4': 4 }));
       });
 
       it('should throw if the coordinates are not valid', () => {
@@ -167,8 +167,8 @@ describe('Methods', () => {
   const x2 = Number.MAX_SAFE_INTEGER;
   const y2 = 2.1547889;
 
-  beforeEach(function () {
-    point = new Point2D(x1 ,y1);
+  before(function () {
+    point = new Point2D(x1, y1);
     point2 = new Point2D(x2, y2);
   });
 
@@ -186,7 +186,7 @@ describe('Methods', () => {
       });
     });
   });
-  
+
   describe('equals()', () => {
     describe('API', () => {
       it('should expect 1 argument', () => {
@@ -244,7 +244,7 @@ describe('Methods', () => {
         expect(() => point.distanceTo(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', false));
         expect(() => point.distanceTo('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', 's'));
         expect(() => point.distanceTo([])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', []));
-        expect(() => point.distanceTo({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', {'4': 4}));
+        expect(() => point.distanceTo({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', { '4': 4 }));
       });
 
       it('should throw if the coordinates are not valid', () => {

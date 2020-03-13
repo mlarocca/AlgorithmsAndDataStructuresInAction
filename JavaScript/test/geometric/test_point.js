@@ -1,8 +1,8 @@
 import Point from '../../src/geometric/point.js';
-import {isUndefined} from '../../src/common/basic.js';
-import {range} from '../../src/common/numbers.js';
-import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_EMPTY_ARRAY, ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
-import {testAPI} from '../utils/test_common.js';
+import { isUndefined } from '../../src/common/basic.js';
+import { range } from '../../src/common/numbers.js';
+import { ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_EMPTY_ARRAY, ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -19,7 +19,7 @@ describe('Point API', () => {
 
   it('# Object\'s interface should be complete', () => {
     let point = new Point(1, 2);
-    
+
     let methods = ['constructor', 'coordinates', 'coordinate', 'equals', 'distanceTo', 'maxDistance', 'minDistance', 'toString'];
     let attributes = ['dimensionality'];
     testAPI(point, attributes, methods);
@@ -45,21 +45,21 @@ describe('Point Creation', () => {
       expect(() => new Point(null)).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [null], 'sequence of numbers'));
       expect(() => new Point('a')).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', ['a'], 'sequence of numbers'));
       expect(() => new Point([])).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [[]], 'sequence of numbers'));
-      expect(() => new Point({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [{'4': 4}], 'sequence of numbers'));
+      expect(() => new Point({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [{ '4': 4 }], 'sequence of numbers'));
     });
 
     it('should throw when y is not a number', () => {
       expect(() => new Point(1, null)).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [1, null], 'sequence of numbers'));
       expect(() => new Point(2, 'erwer')).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [2, 'erwer'], 'sequence of numbers'));
       expect(() => new Point(3, [])).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [3, []], 'sequence of numbers'));
-      expect(() => new Point(4, {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [4, {'4': 4}], 'sequence of numbers'));
+      expect(() => new Point(4, { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [4, { '4': 4 }], 'sequence of numbers'));
     });
 
     it('should throw when z is not a number', () => {
       expect(() => new Point(1, 1, null)).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [1, 1, null], 'sequence of numbers'));
       expect(() => new Point(2, 2, 'erwer')).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [2, 2, 'erwer'], 'sequence of numbers'));
       expect(() => new Point(3, 3, [])).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [3, 3, []], 'sequence of numbers'));
-      expect(() => new Point(4, 4, {'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [4, 4, {'4': 4}], 'sequence of numbers'));
+      expect(() => new Point(4, 4, { '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('constructor', 'coordinates', [4, 4, { '4': 4 }], 'sequence of numbers'));
     });
 
     it('should not throw with valid parameters', () => {
@@ -78,7 +78,7 @@ describe('Attributes', () => {
   var point3D;
   var point4D;
 
-  beforeEach(function () {
+  before(function () {
     point1D = Point.random(1);
     point2D = Point.random(2);
     point3D = Point.random(3);
@@ -123,7 +123,7 @@ describe('Static Methods', () => {
         expect(() => Point.validatePoint(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', false));
         expect(() => Point.validatePoint('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', 's'));
         expect(() => Point.validatePoint([])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', []));
-        expect(() => Point.validatePoint({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', {'4': 4}));
+        expect(() => Point.validatePoint({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('validatePoint', { '4': 4 }));
       });
 
       it('should throw if the coordinates are not valid', () => {
@@ -269,7 +269,7 @@ describe('Static Methods', () => {
         expect(() => Point.validatePointArray(false)).to.throw(ERROR_MSG_PARAM_TYPE('validatePointArray', 'maybePointsArray', false, 'array'));
         expect(() => Point.validatePointArray('s')).to.throw(ERROR_MSG_PARAM_TYPE('validatePointArray', 'maybePointsArray', 's', 'array'));
         expect(() => Point.validatePointArray(new Point(0, 0))).to.throw(ERROR_MSG_PARAM_TYPE('validatePointArray', 'maybePointsArray', new Point(0, 0), 'array'));
-        expect(() => Point.validatePointArray({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('validatePointArray', 'maybePointsArray', {'4': 4}, 'array'));
+        expect(() => Point.validatePointArray({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('validatePointArray', 'maybePointsArray', { '4': 4 }, 'array'));
       });
 
       it('should throw if the points have a different dimensionality than the requested one', () => {
@@ -314,7 +314,7 @@ describe('Static Methods', () => {
         expect(() => Point.centroid(false)).to.throw(ERROR_MSG_PARAM_TYPE('centroid', 'maybePointsArray', false, 'array'));
         expect(() => Point.centroid('s')).to.throw(ERROR_MSG_PARAM_TYPE('centroid', 'maybePointsArray', 's', 'array'));
         expect(() => Point.centroid(new Point(0, 0))).to.throw(ERROR_MSG_PARAM_TYPE('centroid', 'maybePointsArray', new Point(0, 0), 'array'));
-        expect(() => Point.centroid({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('centroid', 'maybePointsArray', {'4': 4}, 'array'));
+        expect(() => Point.centroid({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('centroid', 'maybePointsArray', { '4': 4 }, 'array'));
       });
 
       it('should throw if the argument is an empty array', () => {
@@ -341,16 +341,16 @@ describe('Static Methods', () => {
 
     describe('Behaviour', () => {
       it('should return the point itself for a singleton', () => {
-        let point = new Point(1, 2, 3 ,4 ,5);
+        let point = new Point(1, 2, 3, 4, 5);
         Point.centroid([point]).equals(point).should.be.true();
         point = new Point(1, 2, 3, 4, 5);
         Point.centroid([point]).equals(point).should.be.true();
       });
 
       it('should return the mean point of the set', () => {
-        Point.centroid([new Point(1), new Point(2), new Point(3), new Point(-3), new Point(5)]).equals(new Point(8/5)).should.be.true();
-        Point.centroid([new Point(0.5, 1), new Point(-1, 2), new Point(1.5, 0.75)]).equals(new Point(1/3, 1.25)).should.be.true();
-        Point.centroid([new Point(0, 1, 0), new Point(-1, 1, 2), new Point(3, 4, 5)]).equals(new Point(2/3, 2, 7/3)).should.be.true();
+        Point.centroid([new Point(1), new Point(2), new Point(3), new Point(-3), new Point(5)]).equals(new Point(8 / 5)).should.be.true();
+        Point.centroid([new Point(0.5, 1), new Point(-1, 2), new Point(1.5, 0.75)]).equals(new Point(1 / 3, 1.25)).should.be.true();
+        Point.centroid([new Point(0, 1, 0), new Point(-1, 1, 2), new Point(3, 4, 5)]).equals(new Point(2 / 3, 2, 7 / 3)).should.be.true();
       });
     });
   });
@@ -366,8 +366,8 @@ describe('Methods', () => {
   const y2 = 2.1547889;
   const z2 = -66;
 
-  beforeEach(function () {
-    point = new Point(x1 ,y1);
+  before(function () {
+    point = new Point(x1, y1);
     point2 = new Point(x2, y2);
     point3D = new Point(x2, y2, z2);
   });
@@ -382,8 +382,8 @@ describe('Methods', () => {
     describe('Behaviour', () => {
       it('should return the correct value', () => {
         point.coordinates().should.be.eql([x1, y1]);
-        point2.coordinates().should.be.eql([x2 ,y2]);
-        point3D.coordinates().should.be.eql([x2 ,y2, z2]);
+        point2.coordinates().should.be.eql([x2, y2]);
+        point3D.coordinates().should.be.eql([x2, y2, z2]);
       });
     });
   });
@@ -398,16 +398,16 @@ describe('Methods', () => {
         expect(() => point.coordinate(1.2)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', 1.2, 2));
         expect(() => point.coordinate(false)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', false, 2));
         expect(() => point.coordinate('s')).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', 's', 2));
-        expect(() => point.coordinate({'4': 4})).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', {'4': 4}, 2));
+        expect(() => point.coordinate({ '4': 4 })).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', { '4': 4 }, 2));
       });
 
       it('should throw if the argument is an integer but negative or greather than K - 1', () => {
         expect(() => point.coordinate(-1)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', -1, 2));
         expect(() => point.coordinate(2)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', 2, 2));
 
-        point = new Point(1, 2, 3, 4);
-        expect(() => point.coordinate(-1)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', -1, 4));
-        expect(() => point.coordinate(5)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', 5, 4));
+        let p = new Point(1, 2, 3, 4);
+        expect(() => p.coordinate(-1)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', -1, 4));
+        expect(() => p.coordinate(5)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('coordinate', 5, 4));
       });
 
       it('should accept either 0 or 1 for a 2d Point', () => {
@@ -416,11 +416,11 @@ describe('Methods', () => {
       });
 
       it('should accept up to K-1 for a KD Point', () => {
-        point = new Point(1, 2, 3, 4);
-        expect(() => point.coordinate(0)).not.to.throw();
-        expect(() => point.coordinate(1)).not.to.throw();
-        expect(() => point.coordinate(2)).not.to.throw();
-        expect(() => point.coordinate(3)).not.to.throw();
+        let p = new Point(1, 2, 3, 4);
+        expect(() => p.coordinate(0)).not.to.throw();
+        expect(() => p.coordinate(1)).not.to.throw();
+        expect(() => p.coordinate(2)).not.to.throw();
+        expect(() => p.coordinate(3)).not.to.throw();
       });
     });
 
@@ -497,7 +497,7 @@ describe('Methods', () => {
         expect(() => point.distanceTo(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', false, 2));
         expect(() => point.distanceTo('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', 's', 2));
         expect(() => point.distanceTo([])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', [], 2));
-        expect(() => point.distanceTo({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', {'4': 4}, 2));
+        expect(() => point.distanceTo({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('distanceTo', { '4': 4 }, 2));
       });
 
       it('should throw if the points doesn\'t have the same dimensionality', () => {
@@ -518,8 +518,8 @@ describe('Methods', () => {
 
     describe('Behaviour', () => {
       it('should return the correct Euclidean distance', () => {
-        point = new Point(0, 0);
-        point2 = new Point(3, 4);
+        let point = new Point(0, 0);
+        let point2 = new Point(3, 4);
         point.distanceTo(point2).should.be.eql(5);
         point2.distanceTo(point).should.be.eql(5);
         point.distanceTo(point).should.be.eql(0);
@@ -542,7 +542,7 @@ describe('Methods', () => {
       it('should expect 1 mandatory argument', () => {
         point.maxDistance.length.should.eql(1);
       });
-      
+
       it('should throw if no argument is passed', () => {
         expect(() => point.maxDistance()).to.throw(ERROR_MSG_PARAM_TYPE('maxDistance', 'maybePointsArray', undefined, 'array'));
       });
@@ -552,7 +552,7 @@ describe('Methods', () => {
         expect(() => point.maxDistance(false)).to.throw(ERROR_MSG_PARAM_TYPE('maxDistance', 'maybePointsArray', false, 'array'));
         expect(() => point.maxDistance('s')).to.throw(ERROR_MSG_PARAM_TYPE('maxDistance', 'maybePointsArray', 's', 'array'));
         expect(() => point.maxDistance(new Point(0, 0))).to.throw(ERROR_MSG_PARAM_TYPE('maxDistance', 'maybePointsArray', new Point(0, 0), 'array'));
-        expect(() => point.maxDistance({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('maxDistance', 'maybePointsArray', {'4': 4}, 'array'));
+        expect(() => point.maxDistance({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('maxDistance', 'maybePointsArray', { '4': 4 }, 'array'));
       });
 
       it('should throw if the argument is an empty array', () => {
@@ -574,17 +574,17 @@ describe('Methods', () => {
 
     describe('Behaviour', () => {
       it('should return the furthest point', () => {
-        point = new Point(0, 0);
+        let point0 = new Point(0, 0);
         let point1 = new Point(3, 4);
         let point2 = new Point(1, 2);
         let point3 = new Point(-1, 2);
         let point4 = new Point(-1, -2);
 
-        let [p, dist] = point.maxDistance([point1, point2, point3]);
+        let [p, dist] = point0.maxDistance([point1, point2, point3]);
         p.equals(point1).should.be.true();
-        dist.should.be.eql(p.distanceTo(point));
+        dist.should.be.eql(p.distanceTo(point0));
 
-        [p, dist] = point1.maxDistance([point, point1, point2, point3, point4]);
+        [p, dist] = point1.maxDistance([point0, point1, point2, point3, point4]);
         p.equals(point4).should.be.true();
         dist.should.be.eql(p.distanceTo(point1));
       });
@@ -622,7 +622,7 @@ describe('Methods', () => {
         expect(() => point.minDistance(false)).to.throw(ERROR_MSG_PARAM_TYPE('minDistance', 'maybePointsArray', false, 'array'));
         expect(() => point.minDistance('s')).to.throw(ERROR_MSG_PARAM_TYPE('minDistance', 'maybePointsArray', 's', 'array'));
         expect(() => point.minDistance(new Point(0, 0))).to.throw(ERROR_MSG_PARAM_TYPE('minDistance', 'maybePointsArray', new Point(0, 0), 'array'));
-        expect(() => point.minDistance({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('minDistance', 'maybePointsArray', {'4': 4}, 'array'));
+        expect(() => point.minDistance({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('minDistance', 'maybePointsArray', { '4': 4 }, 'array'));
       });
 
       it('should throw if the argument is an empty array', () => {
@@ -644,7 +644,7 @@ describe('Methods', () => {
 
     describe('Behaviour', () => {
       it('should return the closest point', () => {
-        point = new Point(0, 0);
+        let point = new Point(0, 0);
         let point1 = new Point(3, 4);
         let point2 = new Point(1, 2);
         let point3 = new Point(-1, 2);
@@ -660,7 +660,7 @@ describe('Methods', () => {
       });
 
       it('should return itself when among the checked points', () => {
-        point = new Point(3, 4);
+        let point = new Point(3, 4);
         let point1 = new Point(3, 4);
         let point2 = new Point(3 + 1e-20, 2);
         let point3 = new Point(-1, 2);
@@ -671,7 +671,7 @@ describe('Methods', () => {
       });
 
       it('should check the whole array', () => {
-        point = new Point(0, 0);
+        let point = new Point(0, 0);
         let point1 = new Point(3, 4);
         let point2 = new Point(1, 2);
         let point3 = new Point(-1, 2);

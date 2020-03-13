@@ -1,5 +1,5 @@
 import DWayHeap from '../../src/dway_heap/dway_heap.js';
-import {testAPI} from '../utils/test_common.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -48,7 +48,7 @@ describe('DWayHeap Creation', () => {
       it('should throw with non-integer branching factor', () => {
         expect(() => new DWayHeap([])).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_FST_PARAM([]));
         expect(() => new DWayHeap('g')).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_FST_PARAM('g'));
-        expect(() => new DWayHeap({'1': 2})).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_FST_PARAM({'1': 2}));
+        expect(() => new DWayHeap({ '1': 2 })).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_FST_PARAM({ '1': 2 }));
       });
 
       it('should throw with branching factor < 2', () => {
@@ -68,7 +68,7 @@ describe('DWayHeap Creation', () => {
       it('should throw when it\'s not an array', () => {
         expect(() => new DWayHeap(2, 4)).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_SND_PARAM(4));
         expect(() => new DWayHeap(4, '4')).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_SND_PARAM('4'));
-        expect(() => new DWayHeap(3, {'4': 4})).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_SND_PARAM({'4': 4}));
+        expect(() => new DWayHeap(3, { '4': 4 })).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_SND_PARAM({ '4': 4 }));
       });
 
       it('should NOT throw with isEmpty arrays', () => {
@@ -90,7 +90,7 @@ describe('DWayHeap Creation', () => {
         expect(() => new DWayHeap(3, [], 'r')).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_TRD_PARAM('r'));
         expect(() => new DWayHeap(3, [], 'r')).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_TRD_PARAM('r'));
         expect(() => new DWayHeap(3, [], 5)).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_TRD_PARAM(5));
-        expect(() => new DWayHeap(3, [], {'5': 5})).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_TRD_PARAM({'5': 5}));
+        expect(() => new DWayHeap(3, [], { '5': 5 })).to.throw(ERROR_MSG_DWAYHEAP_CONSTRUCTOR_TRD_PARAM({ '5': 5 }));
       });
 
       it('should throw if compare function contains length !== 2', () => {
@@ -219,7 +219,7 @@ describe('Methods', () => {
         expect(() => h.push('1')).not.to.throw();
         expect(() => h.push(false)).not.to.throw();
         expect(() => h.push([Math.random()])).not.to.throw();
-        expect(() => h.push({'x': Math.random()})).not.to.throw();
+        expect(() => h.push({ 'x': Math.random() })).not.to.throw();
       });
     });
 
@@ -243,7 +243,7 @@ describe('Methods', () => {
       ];
 
       heaps.forEach(function (h) {
-        [2, '3', [4], {6: '6'}].forEach(function (elem) {
+        [2, '3', [4], { 6: '6' }].forEach(function (elem) {
           expect(() => h.push(elem)).not.to.throw();
         });
       });
@@ -300,22 +300,22 @@ describe('Methods', () => {
 
     it('# should work correctly with compare functions', () => {
       var functions = [
-          function (x, y) {
-            return x - y;
-          },
-          function (x, y) {
-            return y - x;
-          },
-          function (x, y) {
-            return x < y ? -1 : (x === y ? 0 : 1);
-          },
-          function (x, y) {
-            return x - y;
-          },
-          function (x, y) {
-            return x > y ? -1 : (x === y ? 0 : 1);
-          }
-        ],
+        function (x, y) {
+          return x - y;
+        },
+        function (x, y) {
+          return y - x;
+        },
+        function (x, y) {
+          return x < y ? -1 : (x === y ? 0 : 1);
+        },
+        function (x, y) {
+          return x - y;
+        },
+        function (x, y) {
+          return x > y ? -1 : (x === y ? 0 : 1);
+        }
+      ],
         heaps = [
           new DWayHeap(2, undefined, functions[0]),
           new DWayHeap(3, undefined, functions[1]),
@@ -323,7 +323,7 @@ describe('Methods', () => {
           new DWayHeap(5, undefined, functions[3]),
           new DWayHeap(6, undefined, functions[4])
         ],
-        keys = [2, '3', [4], {6: '6'}],
+        keys = [2, '3', [4], { 6: '6' }],
         counter = 0;
 
       heaps.forEach(function (h) {
@@ -398,22 +398,22 @@ describe('Methods', () => {
 
     it('# should work correctly with compare functions', () => {
       var functions = [
-          function (x, y) {
-            return x - y;
-          },
-          function (x, y) {
-            return y - x;
-          },
-          function (x, y) {
-            return x < y ? -1 : (x === y ? 0 : 1);
-          },
-          function (x, y) {
-            return x - y;
-          },
-          function (x, y) {
-            return x > y ? -1 : (x === y ? 0 : 1);
-          }
-        ],
+        function (x, y) {
+          return x - y;
+        },
+        function (x, y) {
+          return y - x;
+        },
+        function (x, y) {
+          return x < y ? -1 : (x === y ? 0 : 1);
+        },
+        function (x, y) {
+          return x - y;
+        },
+        function (x, y) {
+          return x > y ? -1 : (x === y ? 0 : 1);
+        }
+      ],
         heaps = [
           new DWayHeap(2, undefined, functions[0]),
           new DWayHeap(3, undefined, functions[1]),
@@ -421,7 +421,7 @@ describe('Methods', () => {
           new DWayHeap(5, undefined, functions[3]),
           new DWayHeap(6, undefined, functions[4])
         ],
-        keys = [2, '3', [4], {6: '6'}],
+        keys = [2, '3', [4], { 6: '6' }],
         counter = 0;
 
       heaps.forEach(function (h) {

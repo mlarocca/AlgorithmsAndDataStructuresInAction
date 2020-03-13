@@ -1,9 +1,9 @@
 import Cube from '../../src/geometric/cube.js';
 import Point from '../../src/geometric/point.js';
-import {isUndefined} from '../../src/common/basic.js';
-import {range} from '../../src/common/numbers.js';
-import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
-import {testAPI} from '../utils/test_common.js';
+import { isUndefined } from '../../src/common/basic.js';
+import { range } from '../../src/common/numbers.js';
+import { ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -24,7 +24,7 @@ describe('Cube API', () => {
 
   it('# Object\'s interface should be complete', () => {
     let cube = new Cube(new Point(1, 2), new Point(2, 3));
-    
+
     let methods = ['constructor', 'intersectWithTopBound', 'intersectWithBottomBound', 'equals', 'contains', 'intersects', 'containsPoint', 'toString'];
     let attributes = ['dimensionality', 'bottom', 'top'];
     testAPI(cube, attributes, methods);
@@ -40,7 +40,7 @@ describe('Cube Creation', () => {
   var p1;
   var p2;
 
-  beforeEach(() => {
+  before(() => {
     p1 = new Point(0, 0);
     p2 = new Point(1, 1);
   });
@@ -54,28 +54,28 @@ describe('Cube Creation', () => {
       expect(() => new Cube(null)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', null));
       expect(() => new Cube('a')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', 'a'));
       expect(() => new Cube([])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', []));
-      expect(() => new Cube({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', {'4': 4}));
+      expect(() => new Cube({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', { '4': 4 }));
     });
 
     it('should throw when top is not a valid point', () => {
       expect(() => new Cube(p1, null)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', null));
       expect(() => new Cube(p1, 'a')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', 'a'));
       expect(() => new Cube(p1, [])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', []));
-      expect(() => new Cube(p1, {'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', {'4': 4}));
+      expect(() => new Cube(p1, { '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', { '4': 4 }));
     });
 
     it('should throw when points have a different dimensionality', () => {
-      p2 = new Point(1, 2, 3);
-      expect(() => new Cube(p1, p2)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', p2, 2));
+      let p3 = new Point(1, 2, 3);
+      expect(() => new Cube(p1, p3)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.constructor', p3, 2));
     });
 
     it('should throw when bottom is not < top', () => {
       expect(() => new Cube(p1, p1)).to.throw(ERROR_MSG_PARAM_INVALID_VERTICES('Cube.constructor', p1, p1));
       expect(() => new Cube(p2, p2)).to.throw(ERROR_MSG_PARAM_INVALID_VERTICES('Cube.constructor', p2, p2));
-      p2 = new Point(-1, 100);
-      expect(() => new Cube(p1, p2)).to.throw(ERROR_MSG_PARAM_INVALID_VERTICES('Cube.constructor', p1, p2));
-      p2 = new Point(1, -1);
-      expect(() => new Cube(p1, p2)).to.throw(ERROR_MSG_PARAM_INVALID_VERTICES('Cube.constructor', p1, p2));
+      let p3 = new Point(-1, 100);
+      expect(() => new Cube(p1, p3)).to.throw(ERROR_MSG_PARAM_INVALID_VERTICES('Cube.constructor', p1, p3));
+      p3 = new Point(1, -1);
+      expect(() => new Cube(p1, p3)).to.throw(ERROR_MSG_PARAM_INVALID_VERTICES('Cube.constructor', p1, p3));
     });
 
     it('should not throw with valid parameters', () => {
@@ -92,8 +92,8 @@ describe('Attributes', () => {
   var p3;
   var p4;
 
-  beforeEach(() => {
-    [p1, p2] = [new Point(1), new  Point(2)];
+  before(() => {
+    [p1, p2] = [new Point(1), new Point(2)];
     [p3, p4] = [new Point(-1, -2, -3, -4), new Point(1, 2, 3, 4)];
     cube1D = new Cube(p1, p2);
     cube4D = new Cube(p3, p4);
@@ -129,8 +129,8 @@ describe('Static Methods', () => {
   var p3;
   var p4;
 
-  beforeEach(() => {
-    [p1, p2] = [new Point(1, 0), new  Point(2, 1)];
+  before(() => {
+    [p1, p2] = [new Point(1, 0), new Point(2, 1)];
     [p3, p4] = [new Point(-1, -2, -3, -4), new Point(1, 2, 3, 4)];
     cube2D = new Cube(p1, p2);
     cube4D = new Cube(p3, p4);
@@ -160,7 +160,7 @@ describe('Static Methods', () => {
         expect(() => Cube.validateCube(false)).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('validateCube', false));
         expect(() => Cube.validateCube('s')).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('validateCube', 's'));
         expect(() => Cube.validateCube([])).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('validateCube', []));
-        expect(() => Cube.validateCube({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('validateCube', {'4': 4}));
+        expect(() => Cube.validateCube({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('validateCube', { '4': 4 }));
       });
 
       it('should throw if the cube contains a different dimensionality', () => {
@@ -197,7 +197,7 @@ describe('Static Methods', () => {
       it('should throw if dimensionality is not a valid safe integer', () => {
         expect(() => Cube.R('s')).to.throw(ERROR_MSG_PARAM_TYPE('R', 'dimensionality', 's', 'positive integer'));
         expect(() => Cube.R([])).to.throw(ERROR_MSG_PARAM_TYPE('R', 'dimensionality', [], 'positive integer'));
-        expect(() => Cube.R({x: 3})).to.throw(ERROR_MSG_PARAM_TYPE('R', 'dimensionality', {x: 3}, 'positive integer'));
+        expect(() => Cube.R({ x: 3 })).to.throw(ERROR_MSG_PARAM_TYPE('R', 'dimensionality', { x: 3 }, 'positive integer'));
         expect(() => Cube.R(0)).to.throw(ERROR_MSG_PARAM_TYPE('R', 'dimensionality', 0, 'positive integer'));
         expect(() => Cube.R(-1)).to.throw(ERROR_MSG_PARAM_TYPE('R', 'dimensionality', -1, 'positive integer'));
         expect(() => Cube.R(1.2)).to.throw(ERROR_MSG_PARAM_TYPE('R', 'dimensionality', 1.2, 'positive integer'));
@@ -223,7 +223,7 @@ describe('Static Methods', () => {
         let c1 = Cube.R(1);
         c1.bottom.coordinate(0).should.be.eql(Number.NEGATIVE_INFINITY);
         c1.top.coordinate(0).should.be.eql(Number.POSITIVE_INFINITY);
-        range(2, 6).forEach(dim =>{
+        range(2, 6).forEach(dim => {
           let c = Cube.R(dim);
           range(0, dim).every(d => c.bottom.coordinate(d) === Number.NEGATIVE_INFINITY).should.be.true();
           range(0, dim).every(d => c.top.coordinate(d) === Number.POSITIVE_INFINITY).should.be.true();
@@ -244,15 +244,15 @@ describe('Methods', () => {
   var p5;
   var p6;
 
-  beforeEach(() => {
-    [p1, p2] = [new Point(1), new  Point(2)];
+  before(() => {
+    [p1, p2] = [new Point(1), new Point(2)];
     [p3, p4] = [new Point(-1, -2), new Point(1, 3)];
     [p5, p6] = [new Point(-1, -2, -3), new Point(1, 2, 3)];
-    cube1D = new Cube(p1 ,p2);
+    cube1D = new Cube(p1, p2);
     cube2D = new Cube(p3, p4);
     cube3D = new Cube(p5, p6);
   });
-  
+
   describe('intersectWithTopBound()', () => {
     describe('API', () => {
       it('should expect 2 mandatory arguments', () => {
@@ -263,7 +263,7 @@ describe('Methods', () => {
         expect(() => cube1D.intersectWithTopBound([])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithTopBound', [], 1));
         expect(() => cube1D.intersectWithTopBound(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithTopBound', false, 1));
         expect(() => cube1D.intersectWithTopBound('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithTopBound', 's', 1));
-        expect(() => cube1D.intersectWithTopBound({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithTopBound', {'4': 4}, 1));
+        expect(() => cube1D.intersectWithTopBound({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithTopBound', { '4': 4 }, 1));
       });
 
       it('should throw if the first argument is a valid point with a different dimensionality', () => {
@@ -276,7 +276,7 @@ describe('Methods', () => {
         expect(() => cube2D.intersectWithTopBound(p3, -1)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithTopBound', -1, 2));
         expect(() => cube2D.intersectWithTopBound(p3, false)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithTopBound', false, 2));
         expect(() => cube2D.intersectWithTopBound(p3, 's')).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithTopBound', 's', 2));
-        expect(() => cube3D.intersectWithTopBound(p5, {'4': 4})).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithTopBound', {'4': 4}, 3));
+        expect(() => cube3D.intersectWithTopBound(p5, { '4': 4 })).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithTopBound', { '4': 4 }, 3));
       });
 
       it('should throw if the second argument is not an integer between 0 and K-1', () => {
@@ -314,7 +314,7 @@ describe('Methods', () => {
         expect(() => cube1D.intersectWithBottomBound([])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithBottomBound', [], 1));
         expect(() => cube1D.intersectWithBottomBound(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithBottomBound', false, 1));
         expect(() => cube1D.intersectWithBottomBound('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithBottomBound', 's', 1));
-        expect(() => cube1D.intersectWithBottomBound({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithBottomBound', {'4': 4}, 1));
+        expect(() => cube1D.intersectWithBottomBound({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('Cube.intersectWithBottomBound', { '4': 4 }, 1));
       });
 
       it('should throw if the first argument is a valid point with a different dimensionality', () => {
@@ -327,7 +327,7 @@ describe('Methods', () => {
         expect(() => cube2D.intersectWithBottomBound(p3, -1)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithBottomBound', -1, 2));
         expect(() => cube2D.intersectWithBottomBound(p3, false)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithBottomBound', false, 2));
         expect(() => cube2D.intersectWithBottomBound(p3, 's')).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithBottomBound', 's', 2));
-        expect(() => cube3D.intersectWithBottomBound(p5, {'4': 4})).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithBottomBound', {'4': 4}, 3));
+        expect(() => cube3D.intersectWithBottomBound(p5, { '4': 4 })).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('Cube.intersectWithBottomBound', { '4': 4 }, 3));
       });
 
       it('should throw if the second argument is not an integer between 0 and K-1', () => {
@@ -401,7 +401,7 @@ describe('Methods', () => {
         expect(() => cube1D.containsPoint(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('containsPoint', false, 1));
         expect(() => cube2D.containsPoint('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('containsPoint', 's', 2));
         expect(() => cube2D.containsPoint([])).to.throw(ERROR_MSG_PARAM_INVALID_POINT('containsPoint', [], 2));
-        expect(() => cube3D.containsPoint({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('containsPoint', {'4': 4}, 3));
+        expect(() => cube3D.containsPoint({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('containsPoint', { '4': 4 }, 3));
       });
 
       it('should throw if the cubes doesn\'t have the same dimensionality', () => {
@@ -418,7 +418,7 @@ describe('Methods', () => {
       let p3 = new Point(-1, 0, 0);
       let p4 = new Point(0, 1, 0.5);
 
-      beforeEach(() => {
+      before(() => {
         cubeA = new Cube(new Point(-1, -1, -5), new Point(2, 3, 0.32));
       });
 
@@ -448,7 +448,7 @@ describe('Methods', () => {
         expect(() => cube1D.contains(false)).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('contains', false, 1));
         expect(() => cube2D.contains('s')).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('contains', 's', 2));
         expect(() => cube2D.contains([])).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('contains', [], 2));
-        expect(() => cube3D.contains({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('contains', {'4': 4}, 3));
+        expect(() => cube3D.contains({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('contains', { '4': 4 }, 3));
       });
 
       it('should throw if the cubes doesn\'t have the same dimensionality', () => {
@@ -465,7 +465,7 @@ describe('Methods', () => {
       let cubeC;
       let cubeD;
 
-      beforeEach(() => {
+      before(() => {
         cubeA = new Cube(new Point(-1, -1), new Point(2, 3));
         cubeB = new Cube(new Point(-0.5, 0.5), new Point(1, 2));
         cubeC = new Cube(new Point(-0.5, 0.5), new Point(2, 3));
@@ -506,7 +506,7 @@ describe('Methods', () => {
         expect(() => cube1D.intersects(false)).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('intersects', false, 1));
         expect(() => cube2D.intersects('s')).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('intersects', 's', 2));
         expect(() => cube2D.intersects([])).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('intersects', [], 2));
-        expect(() => cube3D.intersects({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('intersects', {'4': 4}, 3));
+        expect(() => cube3D.intersects({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('intersects', { '4': 4 }, 3));
       });
 
       it('should throw if the cubes doesn\'t have the same dimensionality', () => {
@@ -531,7 +531,7 @@ describe('Methods', () => {
       let cube3DC;
       let cube3DD;
 
-      beforeEach(() => {
+      before(() => {
         cubeA = new Cube(new Point(-1, -1), new Point(2, 3));
         cubeB = new Cube(new Point(-0.5, 0.5), new Point(1, 2));
         cubeC = new Cube(new Point(-0.5, 0.5), new Point(2, 3));
