@@ -113,32 +113,32 @@ describe('randomInt()', () => {
     });
 
     it('# should throw if a is not a safe integer', function () {
-      numbers.randomInt.bind(null, 'a').should.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', 'a'));
-      numbers.randomInt.bind(null, '1').should.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', '1'));
-      numbers.randomInt.bind(null, null).should.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', null));
-      numbers.randomInt.bind(null, Number.MAX_VALUE).should.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', Number.MAX_VALUE));
-      numbers.randomInt.bind(null, Number.MIN_VALUE).should.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', Number.MIN_VALUE));
+      expect(() => numbers.randomInt('a')).to.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', 'a'));
+      expect(() => numbers.randomInt('1')).to.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', '1'));
+      expect(() => numbers.randomInt(null)).to.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', null));
+      expect(() => numbers.randomInt(Number.MAX_VALUE)).to.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', Number.MAX_VALUE));
+      expect(() => numbers.randomInt(Number.MIN_VALUE)).to.throw(errors.ERROR_MSG_RANGE_LOWER('randomInt', Number.MIN_VALUE));
     });
 
     it('# should throw if b is not a safe integer', function () {
-      numbers.randomInt.bind(null, 1, 'a').should.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', 'a'));
-      numbers.randomInt.bind(null, 1, '1').should.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', '1'));
-      numbers.randomInt.bind(null, 1, null).should.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', null));
-      numbers.randomInt.bind(null, 1, Number.MAX_VALUE).should.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', Number.MAX_VALUE));
-      numbers.randomInt.bind(null, 1, Number.MIN_VALUE).should.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', Number.MIN_VALUE));
+      expect(() => numbers.randomInt(1, 'a')).to.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', 'a'));
+      expect(() => numbers.randomInt(1, '1')).to.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', '1'));
+      expect(() => numbers.randomInt(1, null)).to.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', null));
+      expect(() => numbers.randomInt(1, Number.MAX_VALUE)).to.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', Number.MAX_VALUE));
+      expect(() => numbers.randomInt(1, Number.MIN_VALUE)).to.throw(errors.ERROR_MSG_RANGE_UPPER('randomInt', Number.MIN_VALUE));
     });
 
     it('# should throw if b <= a', function () {
-      numbers.randomInt.bind(null, 1, 0).should.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('randomInt', 1, 0));
-      numbers.randomInt.bind(null, 1, 1).should.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('randomInt', 1, 1));
-      numbers.randomInt.bind(null, -1, -2).should.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('randomInt', -1, -2));
-      numbers.randomInt.bind(null, 3, 2).should.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('randomInt', 3, 2));
+      expect(() => numbers.randomInt(1, 0)).to.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('randomInt', 1, 0));
+      expect(() => numbers.randomInt(1, 1)).to.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('randomInt', 1, 1));
+      expect(() => numbers.randomInt(-1, -2)).to.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('randomInt', -1, -2));
+      expect(() => numbers.randomInt(3, 2)).to.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('randomInt', 3, 2));
     });
 
     it('# should accept two safe integers a, b with a < b', function () {
-      numbers.randomInt.bind(null, 0, 1).should.not.throw();
-      numbers.randomInt.bind(null, -1, 1).should.not.throw();
-      numbers.randomInt.bind(null, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER).should.not.throw();
+      expect(() => numbers.randomInt(0, 1)).not.to.throw();
+      expect(() => numbers.randomInt(-1, 1)).not.to.throw();
+      expect(() => numbers.randomInt(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)).not.to.throw();
     });
   });
 
@@ -184,16 +184,16 @@ describe('randomString()', () => {
     });
 
     it('# should throw if a is not a safe non-negative integer', function () {
-      strings.randomString.bind(null, -1).should.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH(-1));
-      strings.randomString.bind(null, 'a').should.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH('a'));
-      strings.randomString.bind(null, '1').should.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH('1'));
-      strings.randomString.bind(null, null).should.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH(null));
-      strings.randomString.bind(null, Number.MAX_VALUE).should.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH(Number.MAX_VALUE));
-      strings.randomString.bind(null, Number.MIN_VALUE).should.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH(Number.MIN_VALUE));
+      expect(() => strings.randomString(-1)).to.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH(-1));
+      expect(() => strings.randomString('a')).to.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH('a'));
+      expect(() => strings.randomString('1')).to.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH('1'));
+      expect(() => strings.randomString(null)).to.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH(null));
+      expect(() => strings.randomString(Number.MAX_VALUE)).to.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH(Number.MAX_VALUE));
+      expect(() => strings.randomString(Number.MIN_VALUE)).to.throw(errors.ERROR_MSG_RANDOM_STRING_LENGTH(Number.MIN_VALUE));
     });
 
     it('# should throw if the size of the string would be too big to allocate it', function () {
-      strings.randomString.bind(null, Number.MAX_SAFE_INTEGER).should.throw(errors.ERROR_MSG_RANDOM_STRING_TOO_LARGE(Number.MAX_SAFE_INTEGER));
+      expect(() => strings.randomString(Number.MAX_SAFE_INTEGER)).to.throw(errors.ERROR_MSG_RANDOM_STRING_TOO_LARGE(Number.MAX_SAFE_INTEGER));
     });
 
     it('# should accept any safe non-negative integer', function () {
@@ -233,56 +233,56 @@ describe('range()', () => {
     });
 
     it('# should throw if a is not a safe integer', function () {
-      numbers.range.bind(null, 'a').should.throw(errors.ERROR_MSG_RANGE_LOWER('range', 'a'));
-      numbers.range.bind(null, '1').should.throw(errors.ERROR_MSG_RANGE_LOWER('range', '1'));
-      numbers.range.bind(null, 2.3).should.throw(errors.ERROR_MSG_RANGE_LOWER('range', 2.3));
-      numbers.range.bind(null, null).should.throw(errors.ERROR_MSG_RANGE_LOWER('range', null));
-      numbers.range.bind(null, Number.MAX_VALUE).should.throw(errors.ERROR_MSG_RANGE_LOWER('range', Number.MAX_VALUE));
-      numbers.range.bind(null, Number.MIN_VALUE).should.throw(errors.ERROR_MSG_RANGE_LOWER('range', Number.MIN_VALUE));
+      expect(() => numbers.range('a')).to.throw(errors.ERROR_MSG_RANGE_LOWER('range', 'a'));
+      expect(() => numbers.range('1')).to.throw(errors.ERROR_MSG_RANGE_LOWER('range', '1'));
+      expect(() => numbers.range(2.3)).to.throw(errors.ERROR_MSG_RANGE_LOWER('range', 2.3));
+      expect(() => numbers.range(null)).to.throw(errors.ERROR_MSG_RANGE_LOWER('range', null));
+      expect(() => numbers.range(Number.MAX_VALUE)).to.throw(errors.ERROR_MSG_RANGE_LOWER('range', Number.MAX_VALUE));
+      expect(() => numbers.range(Number.MIN_VALUE)).to.throw(errors.ERROR_MSG_RANGE_LOWER('range', Number.MIN_VALUE));
     });
 
     it('# should throw if b is not a safe integer', function () {
-      numbers.range.bind(null, 1, 'a').should.throw(errors.ERROR_MSG_RANGE_UPPER('range', 'a'));
-      numbers.range.bind(null, 1, '1').should.throw(errors.ERROR_MSG_RANGE_UPPER('range', '1'));
-      numbers.range.bind(null, 1, 1.2).should.throw(errors.ERROR_MSG_RANGE_UPPER('range', 1.2));
-      numbers.range.bind(null, 1, null).should.throw(errors.ERROR_MSG_RANGE_UPPER('range', null));
-      numbers.range.bind(null, 1, Number.MAX_VALUE).should.throw(errors.ERROR_MSG_RANGE_UPPER('range', Number.MAX_VALUE));
-      numbers.range.bind(null, 1, Number.MIN_VALUE).should.throw(errors.ERROR_MSG_RANGE_UPPER('range', Number.MIN_VALUE));
+      expect(() => numbers.range(1, 'a')).to.throw(errors.ERROR_MSG_RANGE_UPPER('range', 'a'));
+      expect(() => numbers.range(1, '1')).to.throw(errors.ERROR_MSG_RANGE_UPPER('range', '1'));
+      expect(() => numbers.range(1, 1.2)).to.throw(errors.ERROR_MSG_RANGE_UPPER('range', 1.2));
+      expect(() => numbers.range(1, null)).to.throw(errors.ERROR_MSG_RANGE_UPPER('range', null));
+      expect(() => numbers.range(1, Number.MAX_VALUE)).to.throw(errors.ERROR_MSG_RANGE_UPPER('range', Number.MAX_VALUE));
+      expect(() => numbers.range(1, Number.MIN_VALUE)).to.throw(errors.ERROR_MSG_RANGE_UPPER('range', Number.MIN_VALUE));
     });
 
     it('# should throw if step is not a safe integer', function () {
-      numbers.range.bind(null, 1, 1, 'a').should.throw(errors.ERROR_MSG_RANGE_STEP('range', 'a'));
-      numbers.range.bind(null, 1, 1, '1').should.throw(errors.ERROR_MSG_RANGE_STEP('range', '1'));
-      numbers.range.bind(null, 1, 1, 3.14).should.throw(errors.ERROR_MSG_RANGE_STEP('range', 3.14));
-      numbers.range.bind(null, 1, 1, null).should.throw(errors.ERROR_MSG_RANGE_STEP('range', null));
-      numbers.range.bind(null, 1, 1, Number.MAX_VALUE).should.throw(errors.ERROR_MSG_RANGE_STEP('range', Number.MAX_VALUE));
-      numbers.range.bind(null, 1, 1, Number.MIN_VALUE).should.throw(errors.ERROR_MSG_RANGE_STEP('range', Number.MIN_VALUE));
+      expect(() => numbers.range(1, 1, 'a')).to.throw(errors.ERROR_MSG_RANGE_STEP('range', 'a'));
+      expect(() => numbers.range(1, 1, '1')).to.throw(errors.ERROR_MSG_RANGE_STEP('range', '1'));
+      expect(() => numbers.range(1, 1, 3.14)).to.throw(errors.ERROR_MSG_RANGE_STEP('range', 3.14));
+      expect(() => numbers.range(1, 1, null)).to.throw(errors.ERROR_MSG_RANGE_STEP('range', null));
+      expect(() => numbers.range(1, 1, Number.MAX_VALUE)).to.throw(errors.ERROR_MSG_RANGE_STEP('range', Number.MAX_VALUE));
+      expect(() => numbers.range(1, 1, Number.MIN_VALUE)).to.throw(errors.ERROR_MSG_RANGE_STEP('range', Number.MIN_VALUE));
     });
 
     it('# should throw if b < a', function () {
-      numbers.range.bind(null, 1, 0).should.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('range', 1, 0));
-      numbers.range.bind(null, -1, -2).should.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('range', -1, -2));
-      numbers.range.bind(null, 3, 2).should.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('range', 3, 2));
+      expect(() => numbers.range(1, 0)).to.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('range', 1, 0));
+      expect(() => numbers.range(-1, -2)).to.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('range', -1, -2));
+      expect(() => numbers.range(3, 2)).to.throw(errors.ERROR_MSG_RANGE_BOUNDARIES('range', 3, 2));
     });
 
     it('# should throw if step is not positive', function () {
-      numbers.range.bind(null, 1, 1, 0).should.throw(errors.ERROR_MSG_RANGE_STEP('range', 0));
-      numbers.range.bind(null, 1, 1, -2).should.throw(errors.ERROR_MSG_RANGE_STEP('range',-2));
+      expect(() => numbers.range(1, 1, 0)).to.throw(errors.ERROR_MSG_RANGE_STEP('range', 0));
+      expect(() => numbers.range(1, 1, -2)).to.throw(errors.ERROR_MSG_RANGE_STEP('range',-2));
     });
 
     it('# should throw if the array for the numbers.range is too big', function () {
-      numbers.range.bind(null, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER).should.throw(errors.ERROR_MSG_RANGE_TOO_LARGE('range', Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER));
+      expect(() => numbers.range(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)).to.throw(errors.ERROR_MSG_RANGE_TOO_LARGE('range', Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER));
     });
 
     it('# should accept two safe integers a, b with a < b', function () {
-      numbers.range.bind(null, 0, 1).should.not.throw();
-      numbers.range.bind(null, -1, 1).should.not.throw();
-      numbers.range.bind(null, -10000, 10000).should.not.throw();
+      expect(() => numbers.range(0, 1)).not.to.throw();
+      expect(() => numbers.range(-1, 1)).not.to.throw();
+      expect(() => numbers.range(-10000, 10000)).not.to.throw();
     });
 
     it('# should accept a positive step', function () {
-      numbers.range.bind(null, 0, 1, 1).should.not.throw();
-      numbers.range.bind(null, -1, 1, 10).should.not.throw();
+      expect(() => numbers.range(0, 1, 1)).not.to.throw();
+      expect(() => numbers.range(-1, 1, 10)).not.to.throw();
     });
   });
 
@@ -388,20 +388,19 @@ describe('xrange()', () => {
     });
 
     it('# should accept two safe integers a, b with a < b', function () {
-      numbers.xrange.bind(null, 0, 1).should.not.throw();
-      numbers.xrange.bind(null, -1, 1).should.not.throw();
-      numbers.xrange.bind(null, -10000, 10000).should.not.throw();
+      expect(() => numbers.xrange(0, 1)).not.to.throw();
+      expect(() => numbers.xrange(-1, 1)).not.to.throw();
+      expect(() => numbers.xrange(-10000, 10000)).not.to.throw();
     });
 
     it('# should accept a positive step', function () {
-      numbers.xrange.bind(null, 0, 1, 1).should.not.throw();
-      numbers.xrange.bind(null, -1, 1, 10).should.not.throw();
+      expect(() => numbers.xrange(0, 1, 1)).not.to.throw();
+      expect(() => numbers.xrange(-1, 1, 10)).not.to.throw();
     });
   });
 
   describe('Behaviour', () => {
     it('# should return a generator', function () {
-      expect(numbers.xrange(-10, 10)).to.be.a('object');
       expect(numbers.xrange(-10, 10).next).to.be.a('function');
     });
 

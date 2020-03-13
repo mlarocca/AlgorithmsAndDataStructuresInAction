@@ -18,35 +18,35 @@ describe('Murmur Hashing', () => {
     });
 
     it('# should fail if mandatory arguments aren\'t provided', () => {
-      murmurHash32.bind(null).should.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32'));
+      expect(() => murmurHash32()).to.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32'));
     });
 
     it('# should accept only ASCII strings as first parameter', () => {
-      murmurHash32.bind(null, null).should.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', null));
-      murmurHash32.bind(null, 1).should.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', 1));
-      murmurHash32.bind(null, ['s']).should.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', ['s']));
-      murmurHash32.bind(null, {'s': 't'}).should.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', {'s': 't'}));
-      murmurHash32.bind(null, () => 's').should.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', () => 's'));
+      expect(() => murmurHash32(null)).to.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', null));
+      expect(() => murmurHash32(1)).to.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', 1));
+      expect(() => murmurHash32(['s'])).to.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', ['s']));
+      expect(() => murmurHash32({'s': 't'})).to.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', {'s': 't'}));
+      expect(() => murmurHash32(() => 's')).to.throw(ERROR_MSG_HASH_KEY_TYPE('murmurHash32', () => 's'));
     });
 
     it('# should NOT accept empty strings for `key`', () => {
-      murmurHash32.bind(null, '').should.throw(ERROR_MSG_HASH_KEY_EMPTY('murmurHash32'));
+      expect(() => murmurHash32('')).to.throw(ERROR_MSG_HASH_KEY_EMPTY('murmurHash32'));
     });
 
     it('# should accept only integers as second parameter', () => {
-      murmurHash32.bind(null, 'xyz', 0.14).should.throw(ERROR_MSG_HASH_SEED('murmurHash32',0.14));
-      murmurHash32.bind(null, 'xyz', Number.MIN_SAFE_INTEGER - 1).should.throw(ERROR_MSG_HASH_SEED('murmurHash32',Number.MIN_SAFE_INTEGER - 1));
-      murmurHash32.bind(null, 'xyz', Number.MAX_SAFE_INTEGER + 1).should.throw(ERROR_MSG_HASH_SEED('murmurHash32',Number.MAX_SAFE_INTEGER + 1));
-      murmurHash32.bind(null, 'xyz', '5').should.throw(ERROR_MSG_HASH_SEED('murmurHash32','5'));
-      murmurHash32.bind(null, 'xyz', [5]).should.throw(ERROR_MSG_HASH_SEED('murmurHash32',[5]));
-      murmurHash32.bind(null, 'xyz', {'s': 't'}).should.throw(ERROR_MSG_HASH_SEED('murmurHash32',{'s': 't'}));
-      murmurHash32.bind(null, 'xyz', {'s': 't'}).should.throw(ERROR_MSG_HASH_SEED('murmurHash32',{'s': 't'}));
+      expect(() => murmurHash32('xyz', 0.14)).to.throw(ERROR_MSG_HASH_SEED('murmurHash32',0.14));
+      expect(() => murmurHash32('xyz', Number.MIN_SAFE_INTEGER - 1)).to.throw(ERROR_MSG_HASH_SEED('murmurHash32',Number.MIN_SAFE_INTEGER - 1));
+      expect(() => murmurHash32('xyz', Number.MAX_SAFE_INTEGER + 1)).to.throw(ERROR_MSG_HASH_SEED('murmurHash32',Number.MAX_SAFE_INTEGER + 1));
+      expect(() => murmurHash32('xyz', '5')).to.throw(ERROR_MSG_HASH_SEED('murmurHash32','5'));
+      expect(() => murmurHash32('xyz', [5])).to.throw(ERROR_MSG_HASH_SEED('murmurHash32',[5]));
+      expect(() => murmurHash32('xyz', {'s': 't'})).to.throw(ERROR_MSG_HASH_SEED('murmurHash32',{'s': 't'}));
+      expect(() => murmurHash32('xyz', {'s': 't'})).to.throw(ERROR_MSG_HASH_SEED('murmurHash32',{'s': 't'}));
     });
 
     it('# should not throw with valid parametrs', () => {
-      murmurHash32.bind(null, 'x', 5).should.not.throw();
-      murmurHash32.bind(null, ' ', 0).should.not.throw();
-      murmurHash32.bind(null, ' ', -10).should.not.throw();
+      expect(() => murmurHash32('x', 5)).not.to.throw();
+      expect(() => murmurHash32(' ', 0)).not.to.throw();
+      expect(() => murmurHash32(' ', -10)).not.to.throw();
     });
   });
 
@@ -106,24 +106,24 @@ describe('FNV1a Hashing', () => {
     });
 
     it('# should fail if mandatory arguments aren\'t provided', () => {
-      fnv1Hash32.bind(null).should.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32'));
+      expect(() => fnv1Hash32()).to.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32'));
     });
 
     it('# should accept only ASCII strings as first parameter', () => {
-      fnv1Hash32.bind(null, null).should.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', null));
-      fnv1Hash32.bind(null, 1).should.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', 1));
-      fnv1Hash32.bind(null, ['s']).should.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', ['s']));
-      fnv1Hash32.bind(null, {'s': 't'}).should.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', {'s': 't'}));
-      fnv1Hash32.bind(null, () => 's').should.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', () => 's'));
+      expect(() => fnv1Hash32(null)).to.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', null));
+      expect(() => fnv1Hash32(1)).to.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', 1));
+      expect(() => fnv1Hash32(['s'])).to.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', ['s']));
+      expect(() => fnv1Hash32({'s': 't'})).to.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', {'s': 't'}));
+      expect(() => fnv1Hash32(() => 's')).to.throw(ERROR_MSG_HASH_KEY_TYPE('fnv1Hash32', () => 's'));
     });
 
     it('# should NOT accept empty strings for `key`', () => {
-      fnv1Hash32.bind(null, '').should.throw(ERROR_MSG_HASH_KEY_EMPTY('fnv1Hash32'));
+      expect(() => fnv1Hash32('')).to.throw(ERROR_MSG_HASH_KEY_EMPTY('fnv1Hash32'));
     });
 
     it('# should not throw with valid parametrs', () => {
-      fnv1Hash32.bind(null, 'x').should.not.throw();
-      fnv1Hash32.bind(null, ' ').should.not.throw();
+      expect(() => fnv1Hash32('x')).not.to.throw();
+      expect(() => fnv1Hash32(' ')).not.to.throw();
     });
   });
 

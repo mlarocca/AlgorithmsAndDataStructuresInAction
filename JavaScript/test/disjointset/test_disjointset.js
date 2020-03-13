@@ -1,8 +1,8 @@
 import DisjointSet from '../../src/disjointset/disjointset.js';
 import DisjointSetLists from '../../src/disjointset/variants/disjointset_lists.js';
 import DisjointSetTrees from '../../src/disjointset/variants/disjointset_trees.js';
-import {ERROR_MSG_INVALID_ARGUMENT} from '../../src/common/errors.js';
-import {testAPI} from '../utils/test_common.js';
+import { ERROR_MSG_INVALID_ARGUMENT } from '../../src/common/errors.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -29,7 +29,7 @@ function assertFind(arg, expected, result) {
   }
 }
 
-let test = klass => {
+let testCase = klass => {
   describe(`Testing ${klass.name}`, () => {
     describe('klass Module interface', () => {
       it('# Module should have all the constructor methods', () => {
@@ -49,35 +49,35 @@ let test = klass => {
       describe('# Illegal arguments should throw', function () {
         it('> Not an array', () => {
           let arg = '123';
-          klass.bind({}, arg).should.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(arg, klass.name));
-          arg = {1: 1, 2: 'c', 'a': 3};
-          klass.bind({}, arg).should.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(arg, klass.name));
+          expect(() => new klass(arg)).to.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(arg, klass.name));
+          arg = { 1: 1, 2: 'c', 'a': 3 };
+          expect(() => new klass(arg)).to.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(arg, klass.name));
         });
 
         it('> An array containing undefined or null', () => {
-          klass.bind({}, ['1', null]).should.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(null, klass.name));
-          klass.bind({}, ['a', undefined, '3',]).should.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(undefined, klass.name));
+          expect(() => new klass(['1', null])).to.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(null, klass.name));
+          expect(() => new klass(['a', undefined, '3',])).to.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT(undefined, klass.name));
         });
 
         it('> Non-unique objects', () => {
-          klass.bind({}, ['1', '1']).should.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_DUPLICATE_ELEMENT('1', klass.name));
-          klass.bind({}, ['a', '2', '3', 'a']).should.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_DUPLICATE_ELEMENT('a', klass.name));
+          expect(() => new klass(['1', '1'])).to.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_DUPLICATE_ELEMENT('1', klass.name));
+          expect(() => new klass(['a', '2', '3', 'a'])).to.throw(ERROR_MSG_UNION_FIND_CONSTRUCTOR_DUPLICATE_ELEMENT('a', klass.name));
         });
       });
 
       describe('Shouldn\'t throw', () => {
         it('> with iterables', () => {
-          klass.bind({}, [1, 2, 'a', new Set()]).should.not.throw();
-          klass.bind({}, new Set(['a', 'bcd', [1, 2, 3]])).should.not.throw();
-          klass.bind({}, new Map([[1, x => x], ['s', x => x.toString()]])).should.not.throw();
+          expect(() => new klass([1, 2, 'a', new Set()])).not.to.throw();
+          expect(() => new klass(new Set(['a', 'bcd', [1, 2, 3]]))).not.to.throw();
+          expect(() => new klass(new Map([[1, x => x], ['s', x => x.toString()]]))).not.to.throw();
         });
 
         it('> when elements are different, but alike', () => {
-          klass.bind({}, ['1', 1, '2', 2]).should.not.throw();
-          klass.bind({}, new Set(['1', 1, '2', 2])).should.not.throw();
-          klass.bind({}, new Map([['1', 2], [1, 2]])).should.not.throw();
-          klass.bind({}, new Map([['1', '2'], ['1', 2]])).should.not.throw();
-          klass.bind({}, new Map([['1', '2'], [1, 2]])).should.not.throw();
+          expect(() => new klass(['1', 1, '2', 2])).not.to.throw();
+          expect(() => new klass(new Set(['1', 1, '2', 2]))).not.to.throw();
+          expect(() => new klass(new Map([['1', 2], [1, 2]]))).not.to.throw();
+          expect(() => new klass(new Map([['1', '2'], ['1', 2]]))).not.to.throw();
+          expect(() => new klass(new Map([['1', '2'], [1, 2]]))).not.to.throw();
         });
 
       });
@@ -94,10 +94,10 @@ let test = klass => {
 
       describe('# Illegal arguments should throw', function () {
         it('> Undefined', () => {
-          uf.findPartition.bind(uf).should.throw(ERROR_MSG_INVALID_ARGUMENT('findPartition', 'elem', undefined));
+          expect(() => uf.findPartition()).to.throw(ERROR_MSG_INVALID_ARGUMENT('findPartition', 'elem', undefined));
         });
         it('> Not in the disjoint-set', () => {
-          uf.findPartition.bind(uf, 'x').should.throw(ERROR_MSG_FIND_NOT_IN_SET('x'));
+          expect(() => uf.findPartition('x')).to.throw(ERROR_MSG_FIND_NOT_IN_SET('x'));
         });
       });
 
@@ -119,16 +119,16 @@ let test = klass => {
 
       describe('# Illegal arguments should throw', function () {
         it('> Undefined', () => {
-          uf.merge.bind(uf).should.throw();
-          uf.merge.bind(uf, 'x').should.throw();
+          expect(() => uf.merge()).to.throw();
+          expect(() => uf.merge('x')).to.throw();
         });
         it('> Not in the klass', () => {
-          uf.merge.bind(uf, 'x', 'y').should.throw();
+          expect(() => uf.merge('x', 'y')).to.throw();
         });
       });
 
       it('# Called on existing elements, right after initialization', () => {
-        uf.merge.bind(uf, '1', '2').should.not.throw();
+        expect(() => uf.merge('1', '2')).not.to.throw();
         //Now findPartition should be equal for both
         uf.findPartition('1').should.equal(uf.findPartition('2'));
       });
@@ -152,23 +152,23 @@ let test = klass => {
         uf.merge('1', '2').should.equal(true);
         //INVARIANT: the three with '1' and '2' has already rank 1
         r = uf.findPartition('1'); //INVARIANT: either '1' or '2'
-        uf.merge.bind(uf, '1', '3').should.not.throw();
+        expect(() => uf.merge('1', '3')).not.to.throw();
         //Now findPartition should be equal for both
         uf.findPartition('3').should.equal(r);
 
         //Now merge more
-        uf.merge.bind(uf, '3', '4').should.not.throw();
+        expect(() => uf.merge('3', '4')).not.to.throw();
         uf.findPartition('4').should.equal(uf.findPartition('1'));
         uf.findPartition('4').should.equal(uf.findPartition('2'));
         uf.findPartition('4').should.equal(uf.findPartition('3'));
 
         //Now merge 5 and 6 => their rank should be smaller than 1 -> 2 -> 3 -> 4...
 
-        uf.merge.bind(uf, '5', '6').should.not.throw();
+        expect(() => uf.merge('5', '6')).not.to.throw();
         uf.findPartition('5').should.equal(uf.findPartition('6'));
 
         //... so they should become a subset of the other three
-        uf.merge.bind(uf, '3', '6').should.not.throw();
+        expect(() => uf.merge('3', '6')).not.to.throw();
         uf.findPartition('5').should.equal(r);
         uf.findPartition('6').should.equal(r);
       });
@@ -185,12 +185,12 @@ let test = klass => {
 
       describe('# Illegal arguments should throw', function () {
         it('> Undefined', () => {
-          uf.areDisjoint.bind(uf).should.throw();
-          uf.areDisjoint.bind(uf, 'x').should.throw();
+          expect(() => uf.areDisjoint()).to.throw();
+          expect(() => uf.areDisjoint('x')).to.throw();
         });
 
         it('> Not in the klass', () => {
-          uf.areDisjoint.bind(uf, 'x', 'y').should.throw();
+          expect(() => uf.areDisjoint('x', 'y')).to.throw();
         });
       });
 
@@ -227,10 +227,10 @@ let test = klass => {
 
       describe('# Illegal arguments should throw', function () {
         it('> Undefined', () => {
-          uf.add.bind(uf).should.throw(ERROR_MSG_INVALID_ARGUMENT('add', 'elem', undefined));
+          expect(() => uf.add()).to.throw(ERROR_MSG_INVALID_ARGUMENT('add', 'elem', undefined));
         });
         it('> Null', () => {
-          uf.add.bind(uf, null).should.throw(ERROR_MSG_INVALID_ARGUMENT('add', 'elem', null));
+          expect(() => uf.add(null)).to.throw(ERROR_MSG_INVALID_ARGUMENT('add', 'elem', null));
         });
       });
 
@@ -257,7 +257,6 @@ let test = klass => {
         uf = new klass(keys);
       });
 
-      describe('# After creation', function () {
         it('> Size should be consistent', () => {
           uf.size.should.equal(keys.length);
         });
@@ -269,7 +268,6 @@ let test = klass => {
           uf.merge('3', '2');
           uf.size.should.equal(keys.length);
         });
-      });
 
       it('# Adding element should correctly modify size', () => {
         let testKeys = ['new', [], [2], {}];
@@ -290,4 +288,4 @@ let test = klass => {
 };
 
 // We conveniently run the same tests for the three versions of DisjointSet that we have defined, to show they are equivalent.
-[DisjointSet, DisjointSetLists, DisjointSetTrees].forEach(test);
+[DisjointSet, DisjointSetLists, DisjointSetTrees].forEach(testCase);
