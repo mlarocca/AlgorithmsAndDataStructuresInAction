@@ -1,10 +1,10 @@
 import SsTree from '../../src/ss_tree/ss_tree.js';
 import Point from '../../src/geometric/point.js';
 import Point2D from '../../src/geometric/2d_point.js';
-import {isUndefined} from '../../src/common/basic.js';
-import {ERROR_MSG_METHOD_UNIMPLEMENTED, ERROR_MSG_INVALID_DISTANCE, ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
-import {range, randomInt} from '../../src/common/numbers.js';
-import {testAPI} from '../utils/test_common.js';
+import { isUndefined } from '../../src/common/basic.js';
+import { ERROR_MSG_METHOD_UNIMPLEMENTED, ERROR_MSG_INVALID_DISTANCE, ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
+import { range, randomInt } from '../../src/common/numbers.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -40,7 +40,7 @@ describe('SsTree Creation', () => {
       expect(() => new SsTree(1)).to.throw(ERROR_MSG_PARAM_TYPE('SsTree', 'maybePointsArray', 1, 'array'));
       expect(() => new SsTree(false)).to.throw(ERROR_MSG_PARAM_TYPE('SsTree', 'maybePointsArray', false, 'array'));
       expect(() => new SsTree('s')).to.throw(ERROR_MSG_PARAM_TYPE('SsTree', 'maybePointsArray', 's', 'array'));
-      expect(() => new SsTree({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('SsTree', 'maybePointsArray', {'4': 4}, 'array'));
+      expect(() => new SsTree({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('SsTree', 'maybePointsArray', { '4': 4 }, 'array'));
     });
 
     it('should throw if the array doesn\'t hold only points', () => {
@@ -89,7 +89,7 @@ describe('Attributes', () => {
     beforeEach(function () {
       ssTree = new SsTree([], 2);
     });
-    
+
     it('should be 0 for an empty tree', () => {
       ssTree.height.should.equal(0);
     });
@@ -128,7 +128,7 @@ describe('Attributes', () => {
     beforeEach(function () {
       ssTree = new SsTree([], 2);
     });
-    
+
     it('should be 0 for an empty tree', () => {
       ssTree.size.should.equal(0);
     });
@@ -157,7 +157,7 @@ describe('Attributes', () => {
       let points;
 
       beforeEach(() => {
-        points = [new Point2D(1, 2), new Point(0,1), new Point(3,3), new Point(1.5,2), new Point(5,-1)];
+        points = [new Point2D(1, 2), new Point(0, 1), new Point(3, 3), new Point(1.5, 2), new Point(5, -1)];
         ssTree = new SsTree(points);
       });
 
@@ -219,7 +219,7 @@ describe('Methods', () => {
       var point4D = new Point(1, 2, 3, 4);
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -235,7 +235,7 @@ describe('Methods', () => {
         expect(() => ssTree.add(1)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.add', 1));
         expect(() => ssTree.add(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.add', false));
         expect(() => ssTree.add('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.add', 's'));
-        expect(() => ssTree.add({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.add', {'4': 4}));
+        expect(() => ssTree.add({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.add', { '4': 4 }));
       });
 
       it('should throw if the argument is a valid point with a different dimensionality', () => {
@@ -261,7 +261,7 @@ describe('Methods', () => {
     describe('Behaviour', () => {
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -317,7 +317,7 @@ describe('Methods', () => {
       var point3D = new Point(1, 2, 4);
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -333,7 +333,7 @@ describe('Methods', () => {
         expect(() => ssTree.delete(1)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.delete', 1));
         expect(() => ssTree.delete(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.delete', false));
         expect(() => ssTree.delete('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.delete', 's'));
-        expect(() => ssTree.delete({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.delete', {'4': 4}));
+        expect(() => ssTree.delete({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.delete', { '4': 4 }));
       });
 
       it('should throw if the argument is a valid point with a different dimensionality', () => {
@@ -369,7 +369,7 @@ describe('Methods', () => {
       var points;
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         p = new Point2D(1, 2);
         ssTree = new SsTree();
         points = range(0, 10).map(_ => Point2D.random());
@@ -410,7 +410,7 @@ describe('Methods', () => {
       var point3D = new Point(1, 2, 3);
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -426,7 +426,7 @@ describe('Methods', () => {
         expect(() => ssTree.contains(1)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.contains', 1));
         expect(() => ssTree.contains(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.contains', false));
         expect(() => ssTree.contains('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.contains', 's'));
-        expect(() => ssTree.contains({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.contains', {'4': 4}));
+        expect(() => ssTree.contains({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.contains', { '4': 4 }));
       });
 
       it('should throw if the argument is a valid point with a different dimensionality', () => {
@@ -459,7 +459,7 @@ describe('Methods', () => {
       var p3;
       var p4;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
         p1 = new Point2D(1, 2);
         p2 = new Point2D(-1, 22);
@@ -537,7 +537,7 @@ describe('Methods', () => {
       var point = new Point2D(1, 2);
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -551,7 +551,7 @@ describe('Methods', () => {
       var p1;
       var p2;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
         p1 = new Point2D(1, 2);
         p2 = new Point2D(-1, 22);
@@ -596,10 +596,10 @@ describe('Methods', () => {
   describe('nearestNeighbour()', () => {
     describe('API', () => {
       var point2D = new Point2D(1, 2);
-      var point3D = new Point(1,2, 3);
+      var point3D = new Point(1, 2, 3);
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -615,7 +615,7 @@ describe('Methods', () => {
         expect(() => ssTree.nearestNeighbour(1)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.nearestNeighbour', 1));
         expect(() => ssTree.nearestNeighbour(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.nearestNeighbour', false));
         expect(() => ssTree.nearestNeighbour('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.nearestNeighbour', 's'));
-        expect(() => ssTree.nearestNeighbour({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.nearestNeighbour', {'4': 4}));
+        expect(() => ssTree.nearestNeighbour({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.nearestNeighbour', { '4': 4 }));
       });
 
       it('should throw if the argument is not a point with a different dimensionality', () => {
@@ -643,7 +643,7 @@ describe('Methods', () => {
       var point = new Point2D(1, 2);
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -661,7 +661,7 @@ describe('Methods', () => {
       });
 
       it('should return the closest point (2D)', () => {
-        let points = [new Point2D(1, 2), new Point(0,1), new Point(3,3), new Point(1.5,2), new Point(5,-1)];
+        let points = [new Point2D(1, 2), new Point(0, 1), new Point(3, 3), new Point(1.5, 2), new Point(5, -1)];
         let [p1, p2, p3, p4, p5] = points;
 
         ssTree = new SsTree(points);
@@ -699,7 +699,7 @@ describe('Methods', () => {
       var point = new Point2D(1, 2);
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -715,13 +715,13 @@ describe('Methods', () => {
         expect(() => [...ssTree.pointsWithinDistanceFrom(1)]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.pointsWithinDistanceFrom', 1));
         expect(() => [...ssTree.pointsWithinDistanceFrom(false)]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.pointsWithinDistanceFrom', false));
         expect(() => [...ssTree.pointsWithinDistanceFrom('s')]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.pointsWithinDistanceFrom', 's'));
-        expect(() => [...ssTree.pointsWithinDistanceFrom({'4': 4})]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.pointsWithinDistanceFrom', {'4': 4}));
+        expect(() => [...ssTree.pointsWithinDistanceFrom({ '4': 4 })]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('SsTree.pointsWithinDistanceFrom', { '4': 4 }));
       });
 
       it('should throw if the second argument is not non-negative number', () => {
         expect(() => [...ssTree.pointsWithinDistanceFrom(point, false)]).to.throw(ERROR_MSG_INVALID_DISTANCE('SsTree.pointsWithinDistanceFrom', false));
         expect(() => [...ssTree.pointsWithinDistanceFrom(point, 's')]).to.throw(ERROR_MSG_INVALID_DISTANCE('SsTree.pointsWithinDistanceFrom', 's'));
-        expect(() => [...ssTree.pointsWithinDistanceFrom(point, {'4': 4})]).to.throw(ERROR_MSG_INVALID_DISTANCE('SsTree.pointsWithinDistanceFrom', {'4': 4}));
+        expect(() => [...ssTree.pointsWithinDistanceFrom(point, { '4': 4 })]).to.throw(ERROR_MSG_INVALID_DISTANCE('SsTree.pointsWithinDistanceFrom', { '4': 4 }));
         expect(() => [...ssTree.pointsWithinDistanceFrom(point, -1)]).to.throw(ERROR_MSG_INVALID_DISTANCE('SsTree.pointsWithinDistanceFrom', -1));
       });
 
@@ -745,7 +745,7 @@ describe('Methods', () => {
       var points3D = [new Point(0, 0, 0), new Point(-1, 2, 3.5), new Point(0.55, 30, -10), new Point(1, 1.2, 1.5), new Point(4.25, 0.37, 0)];
       var ssTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         ssTree = new SsTree();
       });
 
@@ -801,7 +801,7 @@ describe('Methods', () => {
       });
 
       it('should return all the points within distance (2D)', () => {
-        let points = [new Point2D(1, 2), new Point(0,1), new Point(3,3), new Point(1.5,2), new Point(5,-1)];
+        let points = [new Point2D(1, 2), new Point(0, 1), new Point(3, 3), new Point(1.5, 2), new Point(5, -1)];
         let [p1, p2, p3, p4, p5] = points;
         let result;
 

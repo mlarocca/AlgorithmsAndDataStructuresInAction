@@ -2,10 +2,10 @@ import KdTree from '../../src/kd_tree/kd_tree.js';
 import Point from '../../src/geometric/point.js';
 import Point2D from '../../src/geometric/2d_point.js';
 import Cube from '../../src/geometric/cube.js';
-import {isUndefined} from '../../src/common/basic.js';
-import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_INVALID_DISTANCE, ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
-import {range} from '../../src/common/numbers.js';
-import {expectSetEquality, testAPI} from '../utils/test_common.js';
+import { isUndefined } from '../../src/common/basic.js';
+import { ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_INVALID_DISTANCE, ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
+import { range } from '../../src/common/numbers.js';
+import { expectSetEquality, testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
@@ -43,7 +43,7 @@ describe('KdTree Creation', () => {
       expect(() => new KdTree(1)).to.throw(ERROR_MSG_PARAM_TYPE('KdTree', 'maybePointsArray', 1, 'array'));
       expect(() => new KdTree(false)).to.throw(ERROR_MSG_PARAM_TYPE('KdTree', 'maybePointsArray', false, 'array'));
       expect(() => new KdTree('s')).to.throw(ERROR_MSG_PARAM_TYPE('KdTree', 'maybePointsArray', 's', 'array'));
-      expect(() => new KdTree({'4': 4})).to.throw(ERROR_MSG_PARAM_TYPE('KdTree', 'maybePointsArray', {'4': 4}, 'array'));
+      expect(() => new KdTree({ '4': 4 })).to.throw(ERROR_MSG_PARAM_TYPE('KdTree', 'maybePointsArray', { '4': 4 }, 'array'));
     });
 
     it('should throw if the array doesn\'t hold only points', () => {
@@ -62,7 +62,7 @@ describe('KdTree Creation', () => {
 
   describe('Behaviour', () => {
     it('should add all the points in the list (2D)', () => {
-      let points = [new Point2D(1, 2), new Point2D(0,1), new Point2D(3,3), new Point2D(1.5,2), new Point2D(5,-1)];
+      let points = [new Point2D(1, 2), new Point2D(0, 1), new Point2D(3, 3), new Point2D(1.5, 2), new Point2D(5, -1)];
       let kdTree = new KdTree(points);
       points.every(p => kdTree.contains(p)).should.be.true();
     });
@@ -112,7 +112,7 @@ describe('Attributes', () => {
       let points;
 
       beforeEach(() => {
-        points = [new Point2D(1, 2), new Point(0,1), new Point(3,3), new Point(1.5,2), new Point(5,-1)];
+        points = [new Point2D(1, 2), new Point(0, 1), new Point(3, 3), new Point(1.5, 2), new Point(5, -1)];
         kdTree = new KdTree(points);
       });
 
@@ -152,7 +152,7 @@ describe('Attributes', () => {
       });
     });
   });
-  
+
   describe('height', () => {
     beforeEach(function () {
       kdTree = new KdTree();
@@ -186,7 +186,7 @@ describe('Attributes', () => {
       let points;
 
       beforeEach(() => {
-        points = [new Point2D(1, 2), new Point(0,1), new Point(3,3), new Point(1.5,2), new Point(5,-1)];
+        points = [new Point2D(1, 2), new Point(0, 1), new Point(3, 3), new Point(1.5, 2), new Point(5, -1)];
         kdTree = new KdTree(points);
       });
 
@@ -196,7 +196,7 @@ describe('Attributes', () => {
         kdTree.delete(new Point(1, 2, 4));
         kdTree.height.should.equal(0);
       });
-      
+
       it('should update height deleting a leaf node of a complex tree', () => {
         kdTree.delete(new Point(5, -1));
         kdTree.height.should.equal(3);
@@ -222,7 +222,7 @@ describe('Methods', () => {
       var point4D = new Point(1, 2, 3, 4);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -238,7 +238,7 @@ describe('Methods', () => {
         expect(() => kdTree.add(1)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.add', 1));
         expect(() => kdTree.add(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.add', false));
         expect(() => kdTree.add('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.add', 's'));
-        expect(() => kdTree.add({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.add', {'4': 4}));
+        expect(() => kdTree.add({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.add', { '4': 4 }));
       });
 
       it('should throw if the argument is a valid point with a different dimensionality', () => {
@@ -264,7 +264,7 @@ describe('Methods', () => {
     describe('Behaviour', () => {
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -313,7 +313,7 @@ describe('Methods', () => {
       var point3D = new Point(1, 2, 4);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -329,7 +329,7 @@ describe('Methods', () => {
         expect(() => kdTree.delete(1)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.delete', 1));
         expect(() => kdTree.delete(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.delete', false));
         expect(() => kdTree.delete('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.delete', 's'));
-        expect(() => kdTree.delete({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.delete', {'4': 4}));
+        expect(() => kdTree.delete({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.delete', { '4': 4 }));
       });
 
       it('should throw if the argument is a valid point with a different dimensionality', () => {
@@ -360,7 +360,7 @@ describe('Methods', () => {
       var points;
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         p = new Point2D(1, 2);
         kdTree = new KdTree();
         points = range(0, 10).map(_ => Point2D.random());
@@ -397,7 +397,7 @@ describe('Methods', () => {
       var point3D = new Point(1, 2, 3);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -413,7 +413,7 @@ describe('Methods', () => {
         expect(() => kdTree.contains(1)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.contains', 1));
         expect(() => kdTree.contains(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.contains', false));
         expect(() => kdTree.contains('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.contains', 's'));
-        expect(() => kdTree.contains({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.contains', {'4': 4}));
+        expect(() => kdTree.contains({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.contains', { '4': 4 }));
       });
 
       it('should throw if the argument is a valid point with a different dimensionality', () => {
@@ -446,7 +446,7 @@ describe('Methods', () => {
       var p3;
       var p4;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
         p1 = new Point2D(1, 2);
         p2 = new Point2D(-1, 22);
@@ -520,7 +520,7 @@ describe('Methods', () => {
       var point = new Point2D(1, 2);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -534,7 +534,7 @@ describe('Methods', () => {
       var p1;
       var p2;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
         p1 = new Point2D(1, 2);
         p2 = new Point2D(-1, 22);
@@ -579,7 +579,7 @@ describe('Methods', () => {
       var point = new Point2D(1, 2);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree([point]);
       });
 
@@ -591,7 +591,7 @@ describe('Methods', () => {
         expect(() => kdTree.findMin(1.2)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMin', 1.2, 2));
         expect(() => kdTree.findMin(false)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMin', false, 2));
         expect(() => kdTree.findMin('s')).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMin', 's', 2));
-        expect(() => kdTree.findMin({'4': 4})).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMin', {'4': 4}, 2));
+        expect(() => kdTree.findMin({ '4': 4 })).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMin', { '4': 4 }, 2));
       });
 
       it('should throw if the argument is an integer but negative or greather than K - 1', () => {
@@ -624,7 +624,7 @@ describe('Methods', () => {
       var p2;
       var points;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
         p1 = new Point2D(1, 2);
         p2 = new Point2D(-1, 22);
@@ -702,7 +702,7 @@ describe('Methods', () => {
       var point = new Point(1, 2, 3);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree([point]);
       });
 
@@ -714,7 +714,7 @@ describe('Methods', () => {
         expect(() => kdTree.findMax(1.2)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMax', 1.2, 3));
         expect(() => kdTree.findMax(false)).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMax', false, 3));
         expect(() => kdTree.findMax('s')).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMax', 's', 3));
-        expect(() => kdTree.findMax({'4': 4})).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMax', {'4': 4}, 3));
+        expect(() => kdTree.findMax({ '4': 4 })).to.throw(ERROR_MSG_INVALID_DIMENSION_INDEX('KdTree.findMax', { '4': 4 }, 3));
       });
 
       it('should throw if the argument is an integer but negative or greather than K - 1', () => {
@@ -747,7 +747,7 @@ describe('Methods', () => {
       var p2;
       var points;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
         p1 = new Point2D(1, 2);
         p2 = new Point2D(-1, 22);
@@ -825,10 +825,10 @@ describe('Methods', () => {
   describe('nearestNeighbour()', () => {
     describe('API', () => {
       var point2D = new Point2D(1, 2);
-      var point3D = new Point(1,2, 3);
+      var point3D = new Point(1, 2, 3);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -844,7 +844,7 @@ describe('Methods', () => {
         expect(() => kdTree.nearestNeighbour(1)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.nearestNeighbour', 1));
         expect(() => kdTree.nearestNeighbour(false)).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.nearestNeighbour', false));
         expect(() => kdTree.nearestNeighbour('s')).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.nearestNeighbour', 's'));
-        expect(() => kdTree.nearestNeighbour({'4': 4})).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.nearestNeighbour', {'4': 4}));
+        expect(() => kdTree.nearestNeighbour({ '4': 4 })).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.nearestNeighbour', { '4': 4 }));
       });
 
       it('should throw if the argument is not a point with a different dimensionality', () => {
@@ -872,7 +872,7 @@ describe('Methods', () => {
       var point = new Point2D(1, 2);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -890,7 +890,7 @@ describe('Methods', () => {
       });
 
       it('should return the closest point (2D)', () => {
-        let points = [new Point2D(1, 2), new Point(0,1), new Point(3,3), new Point(1.5,2), new Point(5,-1)];
+        let points = [new Point2D(1, 2), new Point(0, 1), new Point(3, 3), new Point(1.5, 2), new Point(5, -1)];
         let [p1, p2, p3, p4, p5] = points;
 
         kdTree = new KdTree(points);
@@ -928,7 +928,7 @@ describe('Methods', () => {
       var point = new Point2D(1, 2);
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -944,13 +944,13 @@ describe('Methods', () => {
         expect(() => [...kdTree.pointsWithinDistanceFrom(1)]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.pointsWithinDistanceFrom', 1));
         expect(() => [...kdTree.pointsWithinDistanceFrom(false)]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.pointsWithinDistanceFrom', false));
         expect(() => [...kdTree.pointsWithinDistanceFrom('s')]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.pointsWithinDistanceFrom', 's'));
-        expect(() => [...kdTree.pointsWithinDistanceFrom({'4': 4})]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.pointsWithinDistanceFrom', {'4': 4}));
+        expect(() => [...kdTree.pointsWithinDistanceFrom({ '4': 4 })]).to.throw(ERROR_MSG_PARAM_INVALID_POINT('KdTree.pointsWithinDistanceFrom', { '4': 4 }));
       });
 
       it('should throw if the second argument is not non-negative number', () => {
         expect(() => [...kdTree.pointsWithinDistanceFrom(point, false)]).to.throw(ERROR_MSG_INVALID_DISTANCE('KdTree.pointsWithinDistanceFrom', false));
         expect(() => [...kdTree.pointsWithinDistanceFrom(point, 's')]).to.throw(ERROR_MSG_INVALID_DISTANCE('KdTree.pointsWithinDistanceFrom', 's'));
-        expect(() => [...kdTree.pointsWithinDistanceFrom(point, {'4': 4})]).to.throw(ERROR_MSG_INVALID_DISTANCE('KdTree.pointsWithinDistanceFrom', {'4': 4}));
+        expect(() => [...kdTree.pointsWithinDistanceFrom(point, { '4': 4 })]).to.throw(ERROR_MSG_INVALID_DISTANCE('KdTree.pointsWithinDistanceFrom', { '4': 4 }));
         expect(() => [...kdTree.pointsWithinDistanceFrom(point, -1)]).to.throw(ERROR_MSG_INVALID_DISTANCE('KdTree.pointsWithinDistanceFrom', -1));
       });
 
@@ -1024,7 +1024,7 @@ describe('Methods', () => {
       });
 
       it('should return all the points within distance (2D)', () => {
-        let points = [new Point2D(1, 2), new Point(0,1), new Point(3,3), new Point(1.5,2), new Point(5,-1)];
+        let points = [new Point2D(1, 2), new Point(0, 1), new Point(3, 3), new Point(1.5, 2), new Point(5, -1)];
         let [p1, p2, p3, p4, p5] = points;
         let result;
 
@@ -1064,7 +1064,7 @@ describe('Methods', () => {
       var cube;
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
         point1 = new Point(-1, -2);
         point2 = new Point2D(1, 2);
@@ -1083,7 +1083,7 @@ describe('Methods', () => {
         expect(() => [...kdTree.pointsInRegion(1)]).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('KdTree.pointsInRegion', 1));
         expect(() => [...kdTree.pointsInRegion(false)]).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('KdTree.pointsInRegion', false));
         expect(() => [...kdTree.pointsInRegion('s')]).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('KdTree.pointsInRegion', 's'));
-        expect(() => [...kdTree.pointsInRegion({'4': 4})]).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('KdTree.pointsInRegion', {'4': 4}));
+        expect(() => [...kdTree.pointsInRegion({ '4': 4 })]).to.throw(ERROR_MSG_PARAM_INVALID_CUBE('KdTree.pointsInRegion', { '4': 4 }));
       });
 
       it('should accept a cube', () => {
@@ -1096,7 +1096,7 @@ describe('Methods', () => {
       var cube;
       var kdTree;
 
-      beforeEach(() =>{
+      beforeEach(() => {
         kdTree = new KdTree();
       });
 
@@ -1110,7 +1110,7 @@ describe('Methods', () => {
       it('should only return points in the quadrant selected', () => {
         points = range(0, 50).map(_ => Point2D.random());
         kdTree = new KdTree(points);
-        let origin = new Point(0,0);
+        let origin = new Point(0, 0);
         let firstQuadrant = Cube.R(2).intersectWithBottomBound(origin, 0).intersectWithBottomBound(origin, 1);
         let thirdQuadrant = Cube.R(2).intersectWithTopBound(origin, 0).intersectWithTopBound(origin, 1);
         let result = [...kdTree.pointsInRegion(firstQuadrant)];
@@ -1121,7 +1121,7 @@ describe('Methods', () => {
         result.every(p => p.x <= 0 && p.y <= 0).should.be.true();
       });
 
-      it ('should only return points in the cube selected', () => {
+      it('should only return points in the cube selected', () => {
         points = range(0, 500).map(_ => new Point((Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100));
         kdTree = new KdTree(points);
         let pointA = new Point(-5, 1, -0.3);

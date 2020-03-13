@@ -1,13 +1,13 @@
 import Trie from '../../src/trie/trie.js';
-import {ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
-import {testAPI} from '../utils/test_common.js';
+import { ERROR_MSG_PARAM_TYPE } from '../../src/common/errors.js';
+import { testAPI } from '../utils/test_common.js';
 
 import 'mjs-mocha';
 import chai from "chai";
 import should from "should";
 const expect = chai.expect;
 
-const ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING = (fname, val, pname='key') => `Illegal argument for ${fname}: ${pname} = ${val} must be a non-empty string`;
+const ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING = (fname, val, pname = 'key') => `Illegal argument for ${fname}: ${pname} = ${val} must be a non-empty string`;
 
 describe('Trie API', () => {
 
@@ -27,7 +27,7 @@ describe('Trie API', () => {
 describe('Trie Creation', () => {
   it('# Constructor shoulf take no arguments', function () {
     Trie.length.should.equal(0);
-    Trie.bind({}).should.not.throw();
+    expect(() => new Trie()).not.to.throw();
   });
 });
 
@@ -100,7 +100,7 @@ describe('Methods', () => {
         expect(() => trie.put(null)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('put', null));
         expect(() => trie.put(2)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('put', 2));
         expect(() => trie.put([])).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('put', []));
-        expect(() => trie.put({'4': 4})).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('put', {'4': 4}));
+        expect(() => trie.put({ '4': 4 })).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('put', { '4': 4 }));
       });
 
       it('should throw with non-empty strings', () => {
@@ -115,10 +115,10 @@ describe('Methods', () => {
       });
 
       it('should accept any value for the second parameter (defaulting to null)', () => {
-        expect(() => trie.put.bind(trie, 'a', 1)).not.to.throw();
-        expect(() => trie.put.bind(trie, '0', null)).not.to.throw();
-        expect(() => trie.put.bind(trie, 'this is a test', 'x')).not.to.throw();
-        expect(() => trie.put.bind(trie, 'Aa;&1-\\@*Z', [])).not.to.throw();
+        expect(() => trie.put('a', 1)).not.to.throw();
+        expect(() => trie.put('0', null)).not.to.throw();
+        expect(() => trie.put('this is a test', 'x')).not.to.throw();
+        expect(() => trie.put('Aa;&1-\\@*Z', [])).not.to.throw();
       });
     });
 
@@ -190,7 +190,7 @@ describe('Methods', () => {
         expect(() => trie.get(null)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('get', null));
         expect(() => trie.get(2)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('get', 2));
         expect(() => trie.get([])).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('get', []));
-        expect(() => trie.get({'4': 4})).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('get', {'4': 4}));
+        expect(() => trie.get({ '4': 4 })).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('get', { '4': 4 }));
         let f = () => '4';
         expect(() => trie.get(f)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('get', f));
       });
@@ -277,7 +277,7 @@ describe('Methods', () => {
         expect(() => trie.delete(null)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('delete', null));
         expect(() => trie.delete(2)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('delete', 2));
         expect(() => trie.delete([])).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('delete', []));
-        expect(() => trie.delete({'4': 4})).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('delete', {'4': 4}));
+        expect(() => trie.delete({ '4': 4 })).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('delete', { '4': 4 }));
         let f = () => '4';
         expect(() => trie.delete(f)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('delete', f));
       });
@@ -359,7 +359,7 @@ describe('Methods', () => {
         expect(() => trie.contains(null)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('contains', null));
         expect(() => trie.contains(2)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('contains', 2));
         expect(() => trie.contains([])).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('contains', []));
-        expect(() => trie.contains({'4': 4})).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('contains', {'4': 4}));
+        expect(() => trie.contains({ '4': 4 })).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('contains', { '4': 4 }));
         let f = () => '4';
         expect(() => trie.contains(f)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('contains', f));
       });
@@ -490,7 +490,7 @@ describe('Methods', () => {
         expect(() => trie.longestPrefixOf(null)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('longestPrefixOf', null, 's'));
         expect(() => trie.longestPrefixOf(2)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('longestPrefixOf', 2, 's'));
         expect(() => trie.longestPrefixOf([])).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('longestPrefixOf', [], 's'));
-        expect(() => trie.longestPrefixOf({'4': 4})).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('longestPrefixOf', {'4': 4}, 's'));
+        expect(() => trie.longestPrefixOf({ '4': 4 })).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('longestPrefixOf', { '4': 4 }, 's'));
         let f = () => '4';
         expect(() => trie.longestPrefixOf(f)).to.throw(ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING('longestPrefixOf', f, 's'));
       });
@@ -552,7 +552,7 @@ describe('Methods', () => {
         expect(() => trie.keysWithPrefix(null).next()).to.throw(ERROR_MSG_PARAM_TYPE('keysWithPrefix', 's', null, 'string'));
         expect(() => trie.keysWithPrefix(2).next()).to.throw(ERROR_MSG_PARAM_TYPE('keysWithPrefix', 's', 2, 'string'));
         expect(() => trie.keysWithPrefix([]).next()).to.throw(ERROR_MSG_PARAM_TYPE('keysWithPrefix', 's', [], 'string'));
-        expect(() => trie.keysWithPrefix({'4': 4}).next()).to.throw(ERROR_MSG_PARAM_TYPE('keysWithPrefix', 's', {'4': 4}, 'string'));
+        expect(() => trie.keysWithPrefix({ '4': 4 }).next()).to.throw(ERROR_MSG_PARAM_TYPE('keysWithPrefix', 's', { '4': 4 }, 'string'));
         let f = () => '4';
         expect(() => trie.keysWithPrefix(f).next()).to.throw(ERROR_MSG_PARAM_TYPE('keysWithPrefix', 's', f, 'string'));
       });
@@ -568,7 +568,7 @@ describe('Methods', () => {
         expect(() => trie.keysWithPrefix('this is a test')).not.to.throw();
         expect(() => trie.keysWithPrefix('Aa;&1-\\@*Z')).not.to.throw();
       });
-      
+
     });
 
     describe('Behaviour', () => {
@@ -577,17 +577,17 @@ describe('Methods', () => {
       beforeEach(function () {
         trie = new Trie();
         items = [
-          {key: 'a', value: 1},
-          {key: 'b', value: 2},
-          {key: 'ab', value: 3},
-          {key: 'test', value: 4},
-          {key: 'test1', value: 5},
-          {key: 'test12', value: 6},
-          {key: 'test123', value: 7},
-          {key: 'test1234', value: 8},
-          {key: 'Aa;&1-\\@*Z', value: 9}
+          { key: 'a', value: 1 },
+          { key: 'b', value: 2 },
+          { key: 'ab', value: 3 },
+          { key: 'test', value: 4 },
+          { key: 'test1', value: 5 },
+          { key: 'test12', value: 6 },
+          { key: 'test123', value: 7 },
+          { key: 'test1234', value: 8 },
+          { key: 'Aa;&1-\\@*Z', value: 9 }
         ];
-        items.forEach(({key, value}) => {
+        items.forEach(({ key, value }) => {
           trie.put(key, value);
         });
       });
@@ -601,7 +601,7 @@ describe('Methods', () => {
         prefixes.forEach(prefix => {
           let result = [...trie.keysWithPrefix(prefix)];
 
-          let expected = items.map(({key, value})=> key).filter(key => key.startsWith(prefix));
+          let expected = items.map(({ key, value }) => key).filter(key => key.startsWith(prefix));
           result.should.be.an.Array();
           result.length.should.eql(expected.length);
           result.should.eql(result.sort());
@@ -624,17 +624,17 @@ describe('Methods', () => {
       beforeEach(function () {
         trie = new Trie();
         items = [
-          {key: 'a', value: 1},
-          {key: 'b', value: 2},
-          {key: 'ab', value: 3},
-          {key: 'test', value: 4},
-          {key: 'test1', value: 5},
-          {key: 'test12', value: 6},
-          {key: 'test123', value: 7},
-          {key: 'test1234', value: 8},
-          {key: 'Aa;&1-\\@*Z', value: 9}
+          { key: 'a', value: 1 },
+          { key: 'b', value: 2 },
+          { key: 'ab', value: 3 },
+          { key: 'test', value: 4 },
+          { key: 'test1', value: 5 },
+          { key: 'test12', value: 6 },
+          { key: 'test123', value: 7 },
+          { key: 'test1234', value: 8 },
+          { key: 'Aa;&1-\\@*Z', value: 9 }
         ];
-        items.forEach(({key, value}) => {
+        items.forEach(({ key, value }) => {
           trie.put(key, value);
         });
       });
@@ -645,7 +645,7 @@ describe('Methods', () => {
         result.should.be.an.Array();
         result.length.should.eql(size);
         result.should.eql(result.sort());
-        result.should.eql(items.map(({key, value})=> key).sort());
+        result.should.eql(items.map(({ key, value }) => key).sort());
       });
 
       it('# should all the keys currently in the trie', () => {
@@ -656,7 +656,7 @@ describe('Methods', () => {
         result.should.be.an.Array();
         result.length.should.eql(size);
         result.should.eql(result.sort());
-        result.should.eql(items.map(({key, value})=> key).filter(key => deletedKeys.indexOf(key) < 0).sort());
+        result.should.eql(items.map(({ key, value }) => key).filter(key => deletedKeys.indexOf(key) < 0).sort());
       });
     });
 
@@ -675,17 +675,17 @@ describe('Methods', () => {
       beforeEach(function () {
         trie = new Trie();
         items = [
-          {key: 'a', value: 1},
-          {key: 'b', value: 2},
-          {key: 'ab', value: 3},
-          {key: 'test', value: 4},
-          {key: 'test1', value: 5},
-          {key: 'test12', value: 6},
-          {key: 'test123', value: 7},
-          {key: 'test1234', value: 8},
-          {key: 'Aa;&1-\\@*Z', value: 9}
+          { key: 'a', value: 1 },
+          { key: 'b', value: 2 },
+          { key: 'ab', value: 3 },
+          { key: 'test', value: 4 },
+          { key: 'test1', value: 5 },
+          { key: 'test12', value: 6 },
+          { key: 'test123', value: 7 },
+          { key: 'test1234', value: 8 },
+          { key: 'Aa;&1-\\@*Z', value: 9 }
         ];
-        items.forEach(({key, value}) => {
+        items.forEach(({ key, value }) => {
           trie.put(key, value);
         });
       });
@@ -696,7 +696,7 @@ describe('Methods', () => {
         result.should.be.an.Array();
         result.length.should.eql(size);
         result.should.eql(result.sort());
-        result.should.eql(items.sort(((it1, it2) => it1.key > it2.key)));
+        result.should.eql(items.sort(((it1, it2) => it1.key <= it2.key ? -1 : 1)));
       });
     });
 
@@ -709,17 +709,17 @@ describe('Methods', () => {
       beforeEach(function () {
         trie = new Trie();
         items = [
-          {key: 'a', value: 1},
-          {key: 'b', value: 2},
-          {key: 'ab', value: 3},
-          {key: 'test', value: 4},
-          {key: 'test1', value: 5},
-          {key: 'test12', value: 6},
-          {key: 'test123', value: 7},
-          {key: 'test1234', value: 8},
-          {key: 'Aa;&1-\\@*Z', value: 9}
+          { key: 'a', value: 1 },
+          { key: 'b', value: 2 },
+          { key: 'ab', value: 3 },
+          { key: 'test', value: 4 },
+          { key: 'test1', value: 5 },
+          { key: 'test12', value: 6 },
+          { key: 'test123', value: 7 },
+          { key: 'test1234', value: 8 },
+          { key: 'Aa;&1-\\@*Z', value: 9 }
         ];
-        items.forEach(({key, value}) => {
+        items.forEach(({ key, value }) => {
           trie.put(key, value);
         });
       });
@@ -733,7 +733,7 @@ describe('Methods', () => {
         result.should.be.an.Array();
         result.length.should.eql(size);
         result.should.eql(result.sort());
-        result.should.eql(items.sort(((it1, it2) => it1.key > it2.key)));
+        result.should.eql(items.sort(((it1, it2) => it1.key <= it2.key ? -1 : 1)));
       });
     });
 

@@ -27,7 +27,7 @@ describe('RadixTree API', () => {
 describe('RadixTree Creation', () => {
   it('# Constructor shoulf take no arguments', function () {
     RadixTree.length.should.equal(0);
-    RadixTree.bind({}).should.not.throw();
+    expect(() => new RadixTree()).not.to.throw();
   });
 });
 
@@ -115,10 +115,10 @@ describe('Methods', () => {
       });
 
       it('should accept any value for the second parameter (defaulting to null)', () => {
-        expect(() => radixTree.put.bind(radixTree, 'a', 1)).not.to.throw();
-        expect(() => radixTree.put.bind(radixTree, '0', null)).not.to.throw();
-        expect(() => radixTree.put.bind(radixTree, 'this is a test', 'x')).not.to.throw();
-        expect(() => radixTree.put.bind(radixTree, 'Aa;&1-\\@*Z', [])).not.to.throw();
+        expect(() => radixTree.put('a', 1)).not.to.throw();
+        expect(() => radixTree.put('0', null)).not.to.throw();
+        expect(() => radixTree.put('this is a test', 'x')).not.to.throw();
+        expect(() => radixTree.put('Aa;&1-\\@*Z', [])).not.to.throw();
       });
     });
 
@@ -707,7 +707,7 @@ describe('Methods', () => {
         result.should.be.an.Array();
         result.length.should.eql(size);
         result.should.eql(result.sort());
-        result.should.eql(items.sort(((it1, it2) => it1.key > it2.key)));
+        result.should.eql(items.sort(((it1, it2) => it1.key <= it2.key ? -1 : 1)));
       });
     });
 
@@ -744,7 +744,8 @@ describe('Methods', () => {
         result.should.be.an.Array();
         result.length.should.eql(size);
         result.should.eql(result.sort());
-        result.should.eql(items.sort(((it1, it2) => it1.key > it2.key)));
+        console.log(result)
+        result.should.eql(items.sort(((it1, it2) => it1.key <= it2.key ? -1 : 1)));
       });
     });
   });
