@@ -1,5 +1,6 @@
-const chai = require('chai');
+import chai from "chai";
 const expect = chai.expect;
+
 const setDifference = (set1, set2) => new Set([...set1].filter(_ => !set2.has(_)));
 
 export function testAPI(obj, expectedAttributes = [], expectedMethods = [], prototypeMethods = []) {

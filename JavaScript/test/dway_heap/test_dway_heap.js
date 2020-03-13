@@ -1,8 +1,9 @@
 import DWayHeap from '../../src/dway_heap/dway_heap.js';
 import {testAPI} from '../utils/test_common.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
 const expect = chai.expect;
 
 const ERROR_MSG_DWAYHEAP_CONSTRUCTOR_FST_PARAM = (str) => `Illegal argument for DWayHeap constructor: branchFactor ${str}`;

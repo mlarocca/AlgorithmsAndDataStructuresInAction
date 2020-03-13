@@ -1,7 +1,8 @@
 import * as utils from '../../src/utils/utils.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
 const expect = chai.expect;
 
 const ERROR_MSG_RANDOM_STRING_LENGTH =  val => `Illegal argument for randomString: length = ${val} must be a non-negative SafeInteger`;

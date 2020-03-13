@@ -5,8 +5,9 @@ import {range} from '../../src/common/numbers.js';
 import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
 import {testAPI} from '../utils/test_common.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
 const expect = chai.expect;
 
 const ERROR_MSG_PARAM_INVALID_CUBE = (fname, val, dimension, pname = 'cube') =>

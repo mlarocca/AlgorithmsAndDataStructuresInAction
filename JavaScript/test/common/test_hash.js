@@ -1,7 +1,8 @@
 import {fnv1Hash32, murmurHash32} from '../../src/common/hash.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
 const expect = chai.expect;
 
 const ERROR_MSG_HASH_KEY_TYPE = (fname, val) => `Illegal parameter for ${fname}: key = ${val} must be a String`;

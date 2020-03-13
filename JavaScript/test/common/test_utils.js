@@ -5,8 +5,9 @@ import * as numbers from '../../src/common/numbers.js';
 import * as sort from '../../src/common/sort.js';
 import * as strings from '../../src/common/strings.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
 const expect = chai.expect;
 
 describe('consistentStringify()', () => {

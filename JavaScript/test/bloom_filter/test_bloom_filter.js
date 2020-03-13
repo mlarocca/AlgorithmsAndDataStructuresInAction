@@ -2,8 +2,10 @@ import BloomFilter from '../../src/bloom_filter/bloom_filter.js';
 import {range, randomInt} from '../../src/common/numbers.js';
 import {testAPI} from '../utils/test_common.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
+const expect = chai.expect;
 
 const ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE = val => `Illegal argument for BloomFilter constructor: tolerance = ${val} must be a number t, 0 < t < 1`;
 const ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE = val => `Illegal argument for BloomFilter constructor: maxSize = ${val} must be a number`;
@@ -37,97 +39,97 @@ describe('BloomFilter Creation', () => {
     describe('# 1st argument (mandatory)', () => {
 
       it('should throw when it\'s not a number', () => {
-        BloomFilter.bind(null, []).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE([]));
-        BloomFilter.bind(null, 'h').should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE('h'));
-        BloomFilter.bind(null, {'4': 4}).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE({'4': 4}));
+        expect(() => new BloomFilter([])).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE([]));
+        expect(() => new BloomFilter('h')).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE('h'));
+        expect(() => new BloomFilter({'4': 4})).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE({'4': 4}));
       });
 
       it('should throw with non positive numbers', () => {
-        BloomFilter.bind({}, 0).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE(0));
-        BloomFilter.bind({}, -2).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE(-2));
+        expect(() => new BloomFilter(0)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE(0));
+        expect(() => new BloomFilter(-2)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE(-2));
       });
 
       it('should throw for null', () => {
-        BloomFilter.bind(null, null).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE(null));
+        expect(() => new BloomFilter(null)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE(null));
       });
 
       it('shouldn\'t throw with positive numbers', () => {
-        BloomFilter.bind({}, 1).should.not.throw();
-        BloomFilter.bind({}, 12).should.not.throw();
+        expect(() => new BloomFilter(1)).not.to.throw();
+        expect(() => new BloomFilter(12)).not.to.throw();
       });
     });
 
     describe('# 2nd argument (optional)', () => {
       it('should have default value for tolerance', () => {
-        new BloomFilter(2).should.not.throw();
+        expect(() => new BloomFilter(2)).not.to.throw();
       });
 
       it('should throw with non-numeric tolerance', () => {
-        BloomFilter.bind(null, 3, []).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE([]));
-        BloomFilter.bind(null, 4, 'g').should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE('g'));
-        BloomFilter.bind(null, 1, {'1': 2}).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE({'1': 2}));
+        expect(() => new BloomFilter(3, [])).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE([]));
+        expect(() => new BloomFilter(4, 'g')).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE('g'));
+        expect(() => new BloomFilter(1, {'1': 2})).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE({'1': 2}));
       });
 
       it('should throw with tolerance <= 0', () => {
-        BloomFilter.bind(null, 1, -1).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE(-1));
-        BloomFilter.bind(null, 2, 0).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE(0));
-        BloomFilter.bind(null, 33, '-1.99').should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE('-1.99'));
+        expect(() => new BloomFilter(1, -1)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE(-1));
+        expect(() => new BloomFilter(2, 0)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE(0));
+        expect(() => new BloomFilter(33, '-1.99')).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE('-1.99'));
       });
 
       it('should throw with tolerance >= 1', () => {
-        BloomFilter.bind(null, 44, 1).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE(1));
-        BloomFilter.bind(null, 5, '1.001').should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE('1.001'));
+        expect(() => new BloomFilter(44, 1)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE(1));
+        expect(() => new BloomFilter(5, '1.001')).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE('1.001'));
       });
 
       it('should throw for null', () => {
-        BloomFilter.bind(null, 2, null).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE(null));
+        expect(() => new BloomFilter(2, null)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_TOLERANCE(null));
       });
 
       it('should NOT throw with max tolerance parsable to a number > 0 and < 1', () => {
-        BloomFilter.bind({}, 6, 0.3).should.not.throw();
-        BloomFilter.bind({}, 7, '0.121').should.not.throw();
+        expect(() => new BloomFilter(6, 0.3)).not.to.throw();
+        expect(() => new BloomFilter(7, '0.121')).not.to.throw();
       });
     });
 
     describe('# 3rd argument (optional)', () => {
       it('should have default value for seed', () => {
-        new BloomFilter(2, 0.1).should.not.throw();
+        expect(() => new BloomFilter(2, 0.1)).not.to.throw();
       });
 
       it('should throw with non-numeric seed', () => {
-        BloomFilter.bind(null, 3, 0.1, []).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED([]));
-        BloomFilter.bind(null, 4, 0.1, 'g').should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED('g'));
-        BloomFilter.bind(null, 1, 0.1, {'1': 2}).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED({'1': 2}));
+        expect(() => new BloomFilter(3, 0.1, [])).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED([]));
+        expect(() => new BloomFilter(4, 0.1, 'g')).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED('g'));
+        expect(() => new BloomFilter(1, 0.1, {'1': 2})).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED({'1': 2}));
       });
 
       it('should throw when seed isn\'t an integer', () => {
-        BloomFilter.bind(null, 44, 0.1, 0.1).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(0.1));
-        BloomFilter.bind(null, 5, 0.1, 1.1).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(1.1));
+        expect(() => new BloomFilter(44, 0.1, 0.1)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(0.1));
+        expect(() => new BloomFilter(5, 0.1, 1.1)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(1.1));
       });
 
       it('should throw when seed is too large (not a safe integer)', () => {
-        BloomFilter.bind(null, 44, 0.2, Number.MAX_VALUE).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(Number.MAX_VALUE));
-        BloomFilter.bind(null, 5, 0.2, Number.MIN_VALUE).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(Number.MIN_VALUE));
+        expect(() => new BloomFilter(44, 0.2, Number.MAX_VALUE)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(Number.MAX_VALUE));
+        expect(() => new BloomFilter(5, 0.2, Number.MIN_VALUE)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(Number.MIN_VALUE));
       });
 
       it('should throw for null', () => {
-        BloomFilter.bind(null, 2, 0.1, null).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(null));
+        expect(() => new BloomFilter(2, 0.1, null)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SEED(null));
       });
 
       it('should NOT throw when a safe integer is passed', () => {
-        BloomFilter.bind({}, 6, 0.3, 0).should.not.throw();
-        BloomFilter.bind({}, 6, 0.3, 1).should.not.throw();
-        BloomFilter.bind({}, 6, 0.3, -22).should.not.throw();
-        BloomFilter.bind({}, 7, '0.121', Number.MAX_SAFE_INTEGER).should.not.throw();
-        BloomFilter.bind({}, 7, '0.121', Number.MIN_SAFE_INTEGER).should.not.throw();
+        expect(() => new BloomFilter(6, 0.3, 0)).not.to.throw();
+        expect(() => new BloomFilter(6, 0.3, 1)).not.to.throw();
+        expect(() => new BloomFilter(6, 0.3, -22)).not.to.throw();
+        expect(() => new BloomFilter(7, '0.121', Number.MAX_SAFE_INTEGER)).not.to.throw();
+        expect(() => new BloomFilter(7, '0.121', Number.MIN_SAFE_INTEGER)).not.to.throw();
       });
     });
 
     describe('# Allocation error', () => {
       it('should throw an exception if the desired precision requires too big an array to be allocated', () => {
-        BloomFilter.bind({}, 1000000000, 0.1).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
-        BloomFilter.bind({}, 100000000, 0.0000000001).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
-        BloomFilter.bind({}, 10000000, 1e-55).should.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
+        expect(() => new BloomFilter(1000000000, 0.1)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
+        expect(() => new BloomFilter(100000000, 0.0000000001)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
+        expect(() => new BloomFilter(10000000, 1e-55)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
       });
     });
   });

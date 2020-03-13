@@ -2,8 +2,9 @@ import Trie from '../../src/trie/trie.js';
 import {ERROR_MSG_PARAM_TYPE} from '../../src/common/errors.js';
 import {testAPI} from '../utils/test_common.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
 const expect = chai.expect;
 
 const ERROR_MSG_PARAM_KEY_NON_EMPTY_STRING = (fname, val, pname='key') => `Illegal argument for ${fname}: ${pname} = ${val} must be a non-empty string`;

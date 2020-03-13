@@ -7,8 +7,9 @@ import {ERROR_MSG_INVALID_DIMENSION_INDEX, ERROR_MSG_INVALID_DISTANCE, ERROR_MSG
 import {range} from '../../src/common/numbers.js';
 import {testAPI} from '../utils/test_common.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
 const expect = chai.expect;
 
 const ERROR_MSG_PARAM_INVALID_POINT = (fname, val, dimension, pname = 'point') => `Illegal argument for ${fname}: ${pname} = ${val} must be of class Point${isUndefined(dimension) ? '' : ` (${dimension}D)`}`;

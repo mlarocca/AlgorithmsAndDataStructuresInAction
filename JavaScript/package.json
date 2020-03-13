@@ -2,10 +2,11 @@
   "name": "js-datastruct",
   "version": "0.0.1",
   "description": "Code for js-datastruct book",
-  "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:mocha-traceur test"
+    "test": "node --experimental-modules --es-module-specifier-resolution=node",
+    "lint": "jslint --max-warnings 0 --fix --ext .js,.ts src/"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sitepoint/book-jsdatastruct1.git"
@@ -17,14 +18,16 @@
   },
   "homepage": "https://github.com/sitepoint/book-jsdatastruct1#readme",
   "devDependencies": {
-    "babel-core": "^6.21.0",
-    "chai": "^3.5.0",
-    "gulp": "^3.9.1",
-    "jshint": "^2.9.2",
-    "mocha": "^2.4.5",
-    "mocha-es6": "^0.4.4",
+    "chai": "^4.2.0",
+    "jshint": "^2.11.0",
+    "mjs-mocha": "^3.0.0",
+    "mocha": "7.0.0",
     "mocha-traceur": "^2.1.0",
-    "should": "^8.3.1",
-    "traceur": "0.0.108"
+    "should": "^13.2.3",
+    "traceur": "0.0.111"
+  },
+  "dependencies": {
+    "@std/esm": "^0.26.0",
+    "esm": "^3.2.25"
   }
 }

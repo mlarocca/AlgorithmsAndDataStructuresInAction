@@ -4,8 +4,10 @@ import DisjointSetTrees from '../../src/disjointset/variants/disjointset_trees.j
 import {ERROR_MSG_INVALID_ARGUMENT} from '../../src/common/errors.js';
 import {testAPI} from '../utils/test_common.js';
 
-const should = require('should');
-const chai = require('chai');
+import 'mjs-mocha';
+import chai from "chai";
+import should from "should";
+const expect = chai.expect;
 
 const ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT = (val, klassName) => `Illegal argument for ${klassName} constructor: ${val}`;
 const ERROR_MSG_UNION_FIND_CONSTRUCTOR_DUPLICATE_ELEMENT = (val, klassName) => `Duplicate element in initial set for ${klassName} constructor: ${val}`;
