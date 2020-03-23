@@ -1,11 +1,3 @@
-<style type="text/css" rel="stylesheet">
-img[src*="#thumbnail"] {
-   max-width:250px;
-   heigh: auto;
-   max-height:250px;
-}
-</style>
-
 # Link to MEAP
 You can buy the book on Manning's web site:
 https://www.manning.com/books/algorithms-and-data-structures-in-action
@@ -120,7 +112,7 @@ The idea behind `OPTICS` is that the order in which points are processed does ma
 The canopy clustering algorithm is faster and simpler than k-means, as it runs in a single pass, doesn’t have to compute the centroids for the canopies (spherical pseudo-clusters), and doesn’t compare each point to each centroid; instead, it elects one point in the dataset as the center of each canopy, and adds points around it to the canopy.
 
 
-## **Graph** [Chapter 14](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-14) | [Java](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/Java/src/org/mlarocca/graph) | JavaScript [JsGraphs](https://github.com/mlarocca/jsgraphs)
+## **Graph** [Chapter 14](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-14) | [Java](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/Java/src/org/mlarocca/graph) | JavaScript [JsGraphs](https://github.com/mlarocca/jsgraphs/tree/embedding)
 
 [![Graph versus Tree](./readme/graph_vs_tree.png#thumbnail)](./readme/graph_vs_tree.png)
 
@@ -136,3 +128,12 @@ Graphs are very similar to trees. They are both made of entities (vertices/nodes
 
 Furthermore, trees have other peculiar characteristics that makes them a strict subset of the whole set of graphs; in particular, any tree is a _simple_, _undirected_, _connected_ and _acyclic_ graph.
 
+<html>
+   <style type="text/css" rel="stylesheet">
+   img[src*="#thumbnail"] {
+      max-width:250px;
+      heigh: auto;
+      max-height:250px;
+   }
+   </style>
+</html>
