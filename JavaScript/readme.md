@@ -4,7 +4,7 @@ A collection of data structures implementing what's presented in the book ["Algo
 
 From the base folder:
 
-```
+```bash
 nvm install stable
 
 npm install
@@ -15,13 +15,13 @@ npm install
 
 From the base folder:
 
-```
+```bash
 npm t test/$FOLDER/$TEST
 ```
 
 For instance
 
-```
+```bash
 npm t test/geometric/test_point.js
 ```
 
@@ -34,7 +34,7 @@ Depending on what operations are performed more frequently on the heap, a larger
 
 [![Top method on a d-ary heap](readme/d-way_heap.png)](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-2)
 
-## [Bloom Filter](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-2)
+## [Bloom Filter](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-4)
 
 Bloom  filters  work like sets, storing entries and allowing fast lookup. In exchange of a (tunable) ratio of false positives, they allow  to store  large  sets  using  only a constant number of bits per key (while hash-tables, for instance, would require space proportional to the size of the keys).
 
@@ -72,7 +72,7 @@ Ss+-trees cluster data in overalpping hyperspheres, using a few heuristics to ma
 Although  none of these structures can offer any  guarantee  on  the worst-case  running time,  in  practice they  perform  better  than  k-d  trees in  many  situations,  and  especially for higher-dimensional data.
 
 [![An example of a similarity-search tree](readme/ss_tree.png)](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-10)
- 
+
 ## Needleman-Wunsch algorithm for string alignment
 
 The Needleman–Wunsch algorithm is an algorithm used in bioinformatics to align protein or nucleotide sequences.
