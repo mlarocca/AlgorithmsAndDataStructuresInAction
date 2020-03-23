@@ -22,12 +22,11 @@
     "jshint": "^2.11.0",
     "mjs-mocha": "^3.0.0",
     "mocha": "7.0.0",
-    "mocha-traceur": "^2.1.0",
-    "should": "^13.2.3",
-    "traceur": "0.0.111"
+    "should": "^13.2.3"
   },
   "dependencies": {
     "@std/esm": "^0.26.0",
-    "esm": "^3.2.25"
+    "esm": "^3.2.25",
+    "minimist": ">=1.2.2"
   }
 }
