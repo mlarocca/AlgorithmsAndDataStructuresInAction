@@ -61,7 +61,7 @@ This data structure allows to more efficiently store and query large sets of str
 Storing  tries  can be cheaper  than holding  these  values  in  binary  search trees  or  hash  tables, but  it  can require  a  lot of  memory. Radix  tries  compress  paths, whenever  possible, to provide  a  more  compact  representation  of  these  tries,  without having to compromise interms of complexity or performance.
 
 
-## _Extra_: **Needleman-Wunsch** algorithm for string alignment | [JavaScript](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/JavaScript/src/strings)
+## _Extra_: **Needleman-Wunsch** String Alignment Algorithm | [JavaScript](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/JavaScript/src/strings)
 
 The Needleman–Wunsch algorithm is an algorithm used in bioinformatics to align protein or nucleotide sequences.
 
