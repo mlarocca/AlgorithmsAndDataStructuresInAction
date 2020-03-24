@@ -40,7 +40,7 @@ Treap is  the _portmanteau_ of tree and heap: binary search trees, in fact, offe
 Bloom  filters  work like sets, storing entries and allowing fast lookup. In exchange of a (tunable) ratio of false positives, they allow  to store  large  sets  using  only a constant number of bits per key (while hash-tables, for instance, would require space proportional to the size of the keys).
 
 
-## **Disjoint Set** [Chapter 5](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-5) | [JavaScript] (https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/JavaScript/src/disjointset)
+## **Disjoint Set** [Chapter 5](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-5) | [JavaScript](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/JavaScript/src/disjointset)
 
 [![An example of disjoint set](./readme/thumbs/union_find.md.jpg)](./readme/union_find.jpg)
 
@@ -61,7 +61,7 @@ This data structure allows to more efficiently store and query large sets of str
 Storing  tries  can be cheaper  than holding  these  values  in  binary  search trees  or  hash  tables, but  it  can require  a  lot of  memory. Radix  tries  compress  paths, whenever  possible, to provide  a  more  compact  representation  of  these  tries,  without having to compromise interms of complexity or performance.
 
 
-## _Extra_: **Needleman-Wunsch** algorithm for string alignment [JavaScript](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/JavaScript/src/strings)
+## _Extra_: **Needleman-Wunsch** algorithm for string alignment | [JavaScript](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/JavaScript/src/strings)
 
 The Needleman–Wunsch algorithm is an algorithm used in bioinformatics to align protein or nucleotide sequences.
 
@@ -90,13 +90,13 @@ Ss+-trees cluster data in overalpping hyperspheres, using a few heuristics to ma
 
 Although  none of these structures can offer any  guarantee  on  the worst-case  running time,  in  practice they  perform  better  than  k-d  trees in  many  situations,  and  especially for higher-dimensional data.
 
-## **K-means** [Chapter 12](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-12) - [Chapter 13]((https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-13)) | [Python](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/datastructures/clustering/kmeans.py) | [Jupyter notebook (demo)](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/notebooks/k_means.ipynb) | [Jupyter Notebook (profiling)](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/notebooks/kmeans_profiling.ipynb)
+## **K-means** [Chapter 12](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-12) | [Chapter 13 (MapReduce)](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-13) | [Python](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/datastructures/clustering/kmeans.py) | [Jupyter notebook (demo)](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/notebooks/k_means.ipynb) | [Jupyter Notebook (profiling)](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/notebooks/kmeans_profiling.ipynb)
 
 [![K-means](./readme/thumbs/k-means.md.jpg)](./readme/k-means.jpg)
 
 `k-means` is the simplest and oldest clustering algorithm; it partitions data in a pre-determined number of spherical clusters.
 
-## **DBSCAN** [Chapter 12](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-12) - [Chapter 13]((https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-13)) | [Python](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/datastructures/clustering/dbscan.py) | [Jupyter notebook (demo)](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/notebooks/dbscan.ipynb)
+## **DBSCAN** [Chapter 12](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-12) | [Chapter 13 (MapReduce)](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-13) | [Python](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/datastructures/clustering/dbscan.py) | [Jupyter notebook (demo)](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Python/mlarocca/notebooks/dbscan.ipynb)
 
 [![DBSCAN](./readme/thumbs/db_scan_steps.md.jpg)](./readme/db_scan_steps.jpg)
 
