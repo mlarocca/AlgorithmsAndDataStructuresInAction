@@ -167,7 +167,7 @@ The canopy clustering algorithm is faster and simpler than k-means, as it runs i
 
 
 # **Graph**
-## | [Chapter 14](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-14) | [Java](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/Java/src/org/mlarocca/graph) | JavaScript: [JsGraphs](https://github.com/mlarocca/jsgraphs/tree/embedding) lib |
+## | [Chapter 14](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-14) | [Java](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/Java/src/org/mlarocca/graph) | JavaScript: [JsGraphs](https://github.com/mlarocca/jsgraphs/) lib |
 
 
 [![Graph versus Tree](./readme/thumbs/graph_vs_tree.md.jpg)](./readme/graph_vs_tree.jpg)
