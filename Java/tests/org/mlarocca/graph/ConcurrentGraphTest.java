@@ -652,6 +652,21 @@ public class ConcurrentGraphTest {
         ))));
     }
 
+    @Test
+    public void testToJson() throws Exception {
+        ConcurrentGraph<String> g = new ConcurrentGraph<>();
+
+        g.addVertex("abc");
+        g.addVertex("1");
+        g.addVertex("3.1415");
+        g.addVertex("what", -3);
+
+        g.addEdge("abc", "1", -0.1e14);
+        g.addEdge("3.1415", "what", 33);
+
+        String expected = "{\"vertices\":[{\"weight\":0.0,\"label\":\"1\"},{\"weight\":0.0,\"label\":\"abc\"},{\"weight\":-3.0,\"label\":\"what\"},{\"weight\":0.0,\"label\":\"3.1415\"}],\"edges\":[{\"destination\":{\"weight\":1.0,\"label\":\"what\"},\"weight\":33.0,\"source\":{\"weight\":1.0,\"label\":\"3.1415\"}},{\"destination\":{\"weight\":1.0,\"label\":\"1\"},\"weight\":-1.0E13,\"source\":{\"weight\":1.0,\"label\":\"abc\"}}]}";
+        assertEquals(expected, g.toJson());
+    }
 
     private static <T> T getRandomCollectionElement(Collection<T> collection) {
         int n = collection.size();

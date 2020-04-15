@@ -1,5 +1,8 @@
 package org.mlarocca.graph;
 
+import org.json.simple.JSONObject;
+
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -8,6 +11,8 @@ public interface Vertex<T> {
     double getWeight();
     Collection<Edge<T>> getOutEdges();
     Optional<Edge<T>> getEdgeTo(T destination);
+    JSONObject toJsonObject();
+    String toJson() throws IOException;
 }
 
 interface VertexInternal<T> extends Vertex<T> {

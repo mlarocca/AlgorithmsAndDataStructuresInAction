@@ -1,12 +1,18 @@
 package org.mlarocca.graph;
 
+import org.json.simple.JSONObject;
+
+import java.io.IOException;
+import java.io.StringWriter;
+
 class ConcurrentEdge<T> implements Edge<T> {
     private T source;
     private T destination;
     private double weight;
 
+    // Edge's weight should default to 1
     public ConcurrentEdge(T source, T destination) {
-        this(source, destination, 0);
+        this(source, destination, 1.0);
     }
 
     public ConcurrentEdge(T source, T destination, double weight) {
@@ -61,5 +67,25 @@ class ConcurrentEdge<T> implements Edge<T> {
     @Override
     public String toString() {
         return String.format("Edge(%s, %s, %.3f)", source.toString(), destination.toString(), weight);
+    }
+
+    @Override
+    public JSONObject toJsonObject() {
+        JSONObject edge = new JSONObject();
+        edge.put("source", new ConcurrentVertex<>(this.getSource()).toJsonObject());
+        edge.put("destination", new ConcurrentVertex<>(this.getDestination()).toJsonObject());
+        edge.put("weight", this.getWeight());
+
+        return edge;
+    }
+
+    @Override
+    public String toJson() throws IOException {
+        JSONObject edge = this.toJsonObject();
+
+        StringWriter stringWriter = new StringWriter();
+        edge.writeJSONString(stringWriter);
+
+        return stringWriter.toString();
     }
 }
