@@ -2,6 +2,8 @@ package org.mlarocca.graph;
 
 import org.mlarocca.containers.priorityqueue.heap.Heap;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,6 +13,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.json.simple.JSONObject;
 
 public class ConcurrentGraph<T> implements Graph<T> {
 
@@ -322,6 +326,19 @@ public class ConcurrentGraph<T> implements Graph<T> {
         } finally {
             readLock.unlock();
         }
+    }
+
+    public String toJson() throws IOException {
+        JSONObject graph = new JSONObject();
+        List<JSONObject> vertices = this.getVertices().stream().map(Vertex::toJsonObject).collect(Collectors.toList());
+        graph.put("vertices", vertices);
+        List<JSONObject>  edges = this.getEdges().stream().map(Edge::toJsonObject).collect(Collectors.toList());
+        graph.put("edges", edges);
+
+        StringWriter stringWriter = new StringWriter();
+        graph.writeJSONString(stringWriter);
+
+        return stringWriter.toString();
     }
 
     private String vertexErrorMessage(T label) {

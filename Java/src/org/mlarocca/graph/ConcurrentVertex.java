@@ -1,5 +1,9 @@
 package org.mlarocca.graph;
 
+import org.json.simple.JSONObject;
+
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 
 class ConcurrentVertex<T> implements VertexInternal<T> {
@@ -7,8 +11,9 @@ class ConcurrentVertex<T> implements VertexInternal<T> {
     private double weight;
     private Map<T, ConcurrentEdge<T>> adj;
 
+    // Weight should default to 1
     public ConcurrentVertex(T label) throws IllegalArgumentException {
-        this(label, 0);
+        this(label, 1.0);
     }
 
     public ConcurrentVertex(T label, double weight) throws IllegalArgumentException {
@@ -33,6 +38,25 @@ class ConcurrentVertex<T> implements VertexInternal<T> {
     @Override
     public synchronized Optional<Edge<T>> getEdgeTo(T destination) throws IllegalArgumentException {
         return Optional.ofNullable(adj.get(destination));
+    }
+
+    @Override
+    public JSONObject toJsonObject() {
+        JSONObject vertex = new JSONObject();
+        vertex.put("label", this.getLabel());
+        vertex.put("weight", this.getWeight());
+
+        return vertex;
+    }
+
+    @Override
+    public String toJson() throws IOException {
+        JSONObject vertex = this.toJsonObject();
+
+        StringWriter stringWriter = new StringWriter();
+        vertex.writeJSONString(stringWriter);
+
+        return stringWriter.toString();
     }
 
     @Override

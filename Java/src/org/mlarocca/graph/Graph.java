@@ -1,5 +1,6 @@
 package org.mlarocca.graph;
 
+import java.io.IOException;
 import java.util.*;
 
 public interface Graph<T> {
@@ -45,4 +46,6 @@ public interface Graph<T> {
     Map<Vertex<T>, GraphSearchResult<T>> Dijkstra(T source) throws NoSuchElementException ;
     GraphSearchResult<T> Dijkstra(T source, T destination) throws NoSuchElementException ;
     //GraphSearchResult<T> AStar(T source) throws NoSuchElementException ;
+
+    String toJson() throws IOException;
 }

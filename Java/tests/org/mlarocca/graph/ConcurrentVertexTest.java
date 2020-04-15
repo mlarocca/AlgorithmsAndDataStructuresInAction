@@ -62,4 +62,11 @@ public class ConcurrentVertexTest {
         assertEquals("Vertex(3.14159, 3,142)", v.toString());
     }
 
+    @Test
+    public void testToJson() throws Exception {
+        ConcurrentVertex<Double> v = new ConcurrentVertex<>(3.14159, -0.2);
+        assertEquals("{\"weight\":-0.2,\"label\":3.14159}", v.toJson());
+        ConcurrentVertex<String> u = new ConcurrentVertex<String>("I'm a vertex", 1e-10);
+        assertEquals("{\"weight\":1.0E-10,\"label\":\"I'm a vertex\"}", u.toJson());
+    }
 }
