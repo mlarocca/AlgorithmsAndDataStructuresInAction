@@ -1,7 +1,7 @@
 package org.mlarocca.huffman;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlarocca.containers.priorityqueue.Heap;
+import org.mlarocca.containers.priorityqueue.heap.Heap;
 import org.mlarocca.containers.priorityqueue.PriorityQueue;
 
 import java.util.*;

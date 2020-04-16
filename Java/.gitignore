@@ -1,0 +1,7 @@
+.idea
+lib
+out
+src/org/mlarocca/dynamic/
+src/org/mlarocca/exercises/
+*.csv
+*.iml

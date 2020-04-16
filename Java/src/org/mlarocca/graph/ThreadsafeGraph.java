@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -300,7 +301,75 @@ public class ThreadsafeGraph<T> implements Graph<T> {
         int n = this.vertices.size();
         // Graphs are stored as directed graphs: this means there are two directed edges per pair of vertices
         // So the total number of possible edges is  2 * [n * (n-1) / 2] = n * (n-1)
-        return this.getSimpleEdges().size() == n * (n-1);
+        return this.getSimpleEdges().size() == n * (n - 1);
+    }
+
+    @Override
+    public boolean isBipartite(List<Set<Vertex<T>>> partitions) {
+        if (!this.isConnected()) {
+            // Disconnected graphs can't be bipartite
+            return false;
+        }
+        int n = this.vertices.size();
+
+        if (n < 2) {
+            return false;
+        }
+
+        // Make sure we check  with an undirected graph
+        Graph<T> sC = this.symmetricClosure();
+
+        Queue<Vertex<T>> queue = new LinkedBlockingDeque<>();
+
+        final Map<Vertex<T>, Boolean> colors = new HashMap<>(n);
+
+        Vertex<T> source = sC.getVertices().iterator().next();
+
+        colors.put(source, false);
+        queue.add(source);
+
+        do {
+            // INVARIANT: queue is not empty
+            Vertex<T> current = queue.remove();
+            boolean color = colors.get(current);
+
+            for (Edge<T> edge : sC.getEdgesFrom(current.getLabel())) {
+                Vertex<T> dest = sC.getVertex(edge.getDestination()).get();
+
+                // if the destination has already been colored with the same color as current vertex, the graph
+                // can't be bipartite
+                if (colors.containsKey(dest)) {
+                    if (colors.get(dest) == color) {
+                        return false;
+                    }
+                } else {
+                    colors.put(dest, !color);
+                    queue.add(dest);
+                }
+            }
+        } while (!queue.isEmpty());
+
+        // If it gets here, the graph is bipartite: we can add the
+        partitions.clear();
+        partitions.add(sC.getVertices().stream().filter(v -> colors.get(v) == true).collect(Collectors.toSet()));
+        partitions.add(sC.getVertices().stream().filter(v -> colors.get(v) == false).collect(Collectors.toSet()));
+        return true;
+    }
+
+    @Override
+    public boolean isCompleteBipartite() {
+        List<Set<Vertex<T>>> partitions = new ArrayList<>();
+        if (!isBipartite(partitions)) {
+            return false;
+        }
+        // Invariant: if a graph is bipartite, there should be exactly two non-empty partitions
+        assert (partitions.size() == 2 && partitions.get(0).size() * partitions.get(1).size() > 0);
+
+        int n = partitions.get(0).size();
+        int m = partitions.get(1).size();
+
+        // Graphs are stored as directed graphs, so there are 2 directed edges for each pair of vertices in opposite partitions
+        return this.getSimpleEdges().size() == 2 * n * m;
     }
 
     @Override
@@ -550,7 +619,7 @@ public class ThreadsafeGraph<T> implements Graph<T> {
             double currentDistance = distances.get(current);
 
             for (Edge<T> edge : current.getOutEdges()) {
-                // If a vertex contains already been dequeued, we have already found its distance
+                // If a vertex has already been dequeued, we have already found its distance
                 if (dequeued.contains(edge.getDestination())) {
                     continue;
                 }
