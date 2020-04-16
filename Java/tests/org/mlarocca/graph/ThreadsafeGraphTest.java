@@ -529,8 +529,15 @@ public class ThreadsafeGraphTest {
         assertFalse(g1.isCompleteBipartite());
 
         g1 = new ThreadsafeGraph<>();
+        assertFalse(g1.isCompleteBipartite());
+        assertFalse(g1.isBipartite(new ArrayList<>()));
+
         g1.addVertex(1);
+        assertFalse(g1.isCompleteBipartite());
+        assertFalse(g1.isBipartite(new ArrayList<>()));
         g1.addVertex(2);
+        assertFalse(g1.isCompleteBipartite());
+        assertFalse(g1.isBipartite(new ArrayList<>()));
         g1.addVertex(3);
         g1.addVertex(4);
         g1.addVertex(5);
