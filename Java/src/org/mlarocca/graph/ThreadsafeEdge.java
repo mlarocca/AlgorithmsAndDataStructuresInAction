@@ -43,6 +43,11 @@ class ThreadsafeEdge<T> implements Edge<T> {
     }
 
     @Override
+    public boolean isLoop() {
+        return getSource().equals(getDestination());
+    }
+
+    @Override
     public int hashCode() {
         long hash = 17L * (source.hashCode() * 31L + destination.hashCode());
         return (int) hash % Integer.MAX_VALUE;

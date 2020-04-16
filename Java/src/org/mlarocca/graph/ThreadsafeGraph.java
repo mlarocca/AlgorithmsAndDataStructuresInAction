@@ -157,6 +157,12 @@ public class ThreadsafeGraph<T> implements Graph<T> {
     }
 
     @Override
+    public Collection<Edge<T>> getSimpleEdges() {
+        // getEdges is already synchronized, no need to wrap it in another lock
+        return getEdges().stream().filter(e -> !e.isLoop()).collect(Collectors.toSet());
+    }
+
+    @Override
     public Collection<Edge<T>> getEdgesFrom(T source) {
         readLock.lock();
         try {
@@ -267,8 +273,10 @@ public class ThreadsafeGraph<T> implements Graph<T> {
     public boolean isConnected() {
         readLock.lock();
         try {
-            // TODO
-            return false;
+            Set<Set<Vertex<T>>> ccs = connectedComponents();
+            // iff there is only 1 Connected Component, and it contains all the vertices
+            return ccs.size() == 1
+                    && ccs.stream().findFirst().get().size() == this.vertices.size();
         } finally {
             readLock.unlock();
         }
@@ -285,6 +293,14 @@ public class ThreadsafeGraph<T> implements Graph<T> {
         } finally {
             readLock.unlock();
         }
+    }
+
+    @Override
+    public boolean isComplete() {
+        int n = this.vertices.size();
+        // Graphs are stored as directed graphs: this means there are two directed edges per pair of vertices
+        // So the total number of possible edges is  2 * [n * (n-1) / 2] = n * (n-1)
+        return this.getSimpleEdges().size() == n * (n-1);
     }
 
     @Override

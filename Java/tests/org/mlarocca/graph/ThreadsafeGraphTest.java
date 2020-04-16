@@ -426,17 +426,82 @@ public class ThreadsafeGraphTest {
 
     @Test
     public void isAcyclic() throws Exception {
+        Graph<Integer> g1 = ccGraph();
+        assertFalse(g1.isAcyclic());
 
+        g1 = new ThreadsafeGraph<>();
+        g1.addVertex(1);
+        g1.addVertex(2);
+        g1.addVertex(3);
+
+        assertTrue(g1.isAcyclic());
+        g1.addEdge(1, 2);
+        assertTrue(g1.isAcyclic());
+        g1.addEdge(2, 3);
+        assertTrue(g1.isAcyclic());
+        g1.addEdge(1, 3);
+        assertTrue(g1.isAcyclic());
+        g1.addEdge(3, 1);
+        assertFalse(g1.isAcyclic());
     }
 
     @Test
     public void isConnected() throws Exception {
-
+        Graph<Integer> g1 = ccGraph();
+        assertFalse(g1.isConnected());
+        Graph<String> g2 = sccGraph();
+        assertTrue(g2.isConnected());
     }
+
 
     @Test
     public void isStronglyConnected() throws Exception {
+        Graph<Integer> g1 = ccGraph();
+        assertFalse(g1.isStronglyConnected());
+        Graph<String> g2 = sccGraph();
+        assertFalse(g2.isStronglyConnected());
 
+        g1 = new ThreadsafeGraph<>();
+        g1.addVertex(1);
+        g1.addVertex(2);
+        g1.addVertex(3);
+
+        assertFalse(g1.isStronglyConnected());
+        g1.addEdge(1, 2);
+        assertFalse(g1.isStronglyConnected());
+        g1.addEdge(2, 3);
+        assertFalse(g1.isStronglyConnected());
+        g1.addEdge(1, 3);
+        assertFalse(g1.isStronglyConnected());
+        g1.addEdge(3, 1);
+        assertTrue(g1.isStronglyConnected());
+    }
+
+    @Test
+    public void isComplete() throws Exception {
+        Graph<Integer> g1 = ccGraph();
+        assertFalse(g1.isComplete());
+        Graph<String> g2 = sccGraph();
+        assertFalse(g2.isComplete());
+
+        g1 = new ThreadsafeGraph<>();
+        g1.addVertex(1);
+        g1.addVertex(2);
+        g1.addVertex(3);
+        g1.addVertex(4);
+
+        assertFalse(g1.isComplete());
+
+        for (int i = 1; i <= 4; i++) {
+            for (int j = i+1; j <= 4; j++) {
+                g1.addEdge(i,j);
+                g1.addEdge(j,i);
+            }
+        }
+
+        assertTrue(g1.isComplete());
+        g1.deleteEdge(1,2);
+        assertFalse(g1.isComplete());
     }
 
     @Test
