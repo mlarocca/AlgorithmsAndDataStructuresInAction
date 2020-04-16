@@ -50,12 +50,24 @@ public interface Graph<T> {
     GraphSearchResult<T> BFS(T source, T destination) throws NoSuchElementException ;
 
     List<Vertex<T>> topologicalSort();
+
     boolean isAcyclic();
+
     boolean isConnected();
+
     boolean isStronglyConnected();
+
     boolean isComplete();
-//    boolean isBipartite();
-//    boolean isCompleteBipartite();
+
+    /**
+     *
+     * @param partitions This set is used to return the partitions found for the graph.
+     *                   WARNING: the list will be cleared of any previous content.
+     * @return
+     */
+    boolean isBipartite(List<Set<Vertex<T>>> partitions);
+
+    boolean isCompleteBipartite();
 
     Graph<T> transpose();
 

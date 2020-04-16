@@ -505,6 +505,62 @@ public class ThreadsafeGraphTest {
     }
 
     @Test
+    public void isCompleteBipartite() throws Exception {
+        Graph<Integer> g1 = ccGraph();
+        assertFalse(g1.isCompleteBipartite());
+        Graph<String> g2 = sccGraph();
+        assertFalse(g2.isCompleteBipartite());
+
+        g1 = new ThreadsafeGraph<>();
+        g1.addVertex(1);
+        g1.addVertex(2);
+        g1.addVertex(3);
+        g1.addVertex(4);
+
+        assertFalse(g1.isComplete());
+
+        for (int i = 1; i <= 4; i++) {
+            for (int j = i+1; j <= 4; j++) {
+                g1.addEdge(i,j);
+                g1.addEdge(j,i);
+            }
+        }
+
+        assertFalse(g1.isCompleteBipartite());
+
+        g1 = new ThreadsafeGraph<>();
+        g1.addVertex(1);
+        g1.addVertex(2);
+        g1.addVertex(3);
+        g1.addVertex(4);
+        g1.addVertex(5);
+        g1.addVertex(6);
+
+        assertFalse(g1.isCompleteBipartite());
+        assertFalse(g1.isBipartite(new ArrayList<>()));
+
+        for (int i = 1; i <= 3; i++) {
+            for (int j = 4; j <= 6; j++) {
+                g1.addEdge(i,j);
+                g1.addEdge(j,i);
+            }
+        }
+
+        assertTrue(g1.isBipartite(new ArrayList<>()));
+        assertTrue(g1.isCompleteBipartite());
+
+        g1.addEdge(1 ,2);
+        assertFalse(g1.isCompleteBipartite());
+        assertFalse(g1.isBipartite(new ArrayList<>()));
+
+        g1.deleteEdge(1 ,2);
+        g1.deleteEdge(1 ,4);
+        assertFalse(g1.isCompleteBipartite());
+        assertTrue(g1.isBipartite(new ArrayList<>()));
+    }
+
+
+    @Test
     public void transpose() throws Exception {
         String v1 = "A1";
         String v2 = "B2";
