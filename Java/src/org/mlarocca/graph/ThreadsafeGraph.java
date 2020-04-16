@@ -1,5 +1,7 @@
 package org.mlarocca.graph;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.json.simple.JSONObject;
 import org.mlarocca.containers.priorityqueue.heap.Heap;
 
 import java.io.IOException;
@@ -14,27 +16,25 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.json.simple.JSONObject;
+public class ThreadsafeGraph<T> implements Graph<T> {
 
-public class ConcurrentGraph<T> implements Graph<T> {
-
-    private Map<T, ConcurrentVertex<T>> vertices;
+    private Map<T, ThreadsafeVertex<T>> vertices;
     private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private ReentrantReadWriteLock.ReadLock readLock = readWriteLock.readLock();
     private ReentrantReadWriteLock.WriteLock writeLock = readWriteLock.writeLock();
 
-    public ConcurrentGraph() {
+    public ThreadsafeGraph() {
         vertices = new ConcurrentHashMap<>();
     }
 
-    public ConcurrentGraph(Collection<T> labels) throws IllegalArgumentException {
+    public ThreadsafeGraph(Collection<T> labels) throws IllegalArgumentException {
         this();
         labels.forEach(label -> {
             addVertex(label);
         });
     }
 
-    public ConcurrentGraph(Collection<Vertex<T>> vertices, Collection<Edge<T>> edges) throws IllegalArgumentException {
+    public ThreadsafeGraph(Collection<Vertex<T>> vertices, Collection<Edge<T>> edges) throws IllegalArgumentException {
         this();
         for (Vertex<T> vertex : vertices) {
             addVertex(vertex.getLabel(), vertex.getWeight());
@@ -48,7 +48,7 @@ public class ConcurrentGraph<T> implements Graph<T> {
     public void addVertex(T label, double weight) throws IllegalArgumentException {
         writeLock.lock();
         try {
-            this.vertices.put(label, new ConcurrentVertex<>(label, weight));
+            this.vertices.put(label, new ThreadsafeVertex<>(label, weight));
         } finally {
             writeLock.unlock();
         }
@@ -137,7 +137,7 @@ public class ConcurrentGraph<T> implements Graph<T> {
     public Optional<Edge<T>> deleteEdge(T source, T destination) {
         writeLock.lock();
         try {
-            return getVertex(source).flatMap(vertex -> ((ConcurrentVertex<T>) vertex).deleteEdgeTo(destination));
+            return getVertex(source).flatMap(vertex -> ((ThreadsafeVertex<T>) vertex).deleteEdgeTo(destination));
         } finally {
             writeLock.unlock();
         }
@@ -247,8 +247,17 @@ public class ConcurrentGraph<T> implements Graph<T> {
     public boolean isAcyclic() {
         readLock.lock();
         try {
-            // TODO
-            return false;
+            final Set<Vertex<T>> visited = new HashSet<>();
+            final Map<Vertex<T>, Integer> exitTime = new HashMap<>();
+            final AtomicBoolean isCyclic = new AtomicBoolean(false);
+            final AtomicInteger currentTime = new AtomicInteger(this.vertices.size());
+
+            this.getVertices().forEach(v -> {
+                if (currentTime.get() > 0 && !visited.contains(v)) {
+                    DFS(v, visited, exitTime, currentTime, isCyclic);
+                }
+            });
+            return !isCyclic.get();
         } finally {
             readLock.unlock();
         }
@@ -279,15 +288,59 @@ public class ConcurrentGraph<T> implements Graph<T> {
     }
 
     @Override
-    public ConcurrentGraph<T> transpose() {
+    public ThreadsafeGraph<T> transpose() {
         readLock.lock();
         try {
-            Stream<ConcurrentEdge<T>> transposedEdges = getEdges().stream()
-                    .map(edge -> new ConcurrentEdge(
+            Stream<ThreadsafeEdge<T>> transposedEdges = getEdges().stream()
+                    .map(edge -> new ThreadsafeEdge(
                             edge.getDestination(),
                             edge.getSource(),
                             edge.getWeight()));
-            return new ConcurrentGraph<T>(this.getVertices(), transposedEdges.collect(Collectors.toSet()));
+            return new ThreadsafeGraph<T>(this.getVertices(), transposedEdges.collect(Collectors.toSet()));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public Graph<T> symmetricClosure() {
+        var edges = this.getEdges();
+        Graph symmetricClosure = new ThreadsafeGraph(this.getVertices(), edges);
+        for (Edge<T> e : edges) {
+            if (!symmetricClosure.hasEdge(e.getDestination(), e.getSource())) {
+                symmetricClosure.addEdge(e.getDestination(), e.getSource());
+            }
+        }
+        return symmetricClosure;
+    }
+
+    public Graph<T> transitiveClosure() {
+        throw new NotImplementedException("transitive closure");
+    }
+
+    @Override
+    public Set<Set<Vertex<T>>> connectedComponents() {
+        readLock.lock();
+        try {
+            ThreadsafeGraph<T> undirectedGraph = (ThreadsafeGraph<T>) this.symmetricClosure();
+
+            final Set<Set<Vertex<T>>> components = new HashSet<>();
+            final Set<Vertex<T>> visited = new HashSet<>();
+            final AtomicBoolean isCyclic = new AtomicBoolean(false);
+            final AtomicInteger currentTime = new AtomicInteger(this.vertices.size());
+
+            // call DFS for every scc starting from the next remaining sink
+            this.getVertices().forEach(v -> {
+                if (currentTime.get() > 0 && !visited.contains(v)) {
+                    // We don't actually need exit times here, so we reuse the map to keep track of the elements added at each call
+                    final Map<Vertex<T>, Integer> exitTime = new HashMap<>();
+                    undirectedGraph.DFS(v, visited, exitTime, currentTime, isCyclic);
+                    Set<Vertex<T>> newComponent = exitTime.keySet();
+                    if (newComponent.size() > 1) {
+                        components.add(newComponent);
+                    }
+                }
+            });
+            return components;
         } finally {
             readLock.unlock();
         }
@@ -328,17 +381,32 @@ public class ConcurrentGraph<T> implements Graph<T> {
         }
     }
 
+    public JSONObject toJsonObject() {
+        readLock.lock();
+        try {
+            JSONObject graph = new JSONObject();
+            List<JSONObject> vertices = this.getVertices().stream().map(Vertex::toJsonObject).collect(Collectors.toList());
+            graph.put("vertices", vertices);
+            List<JSONObject> edges = this.getEdges().stream().map(Edge::toJsonObject).collect(Collectors.toList());
+            graph.put("edges", edges);
+            return graph;
+        } finally {
+            readLock.unlock();
+        }
+    }
+
     public String toJson() throws IOException {
-        JSONObject graph = new JSONObject();
-        List<JSONObject> vertices = this.getVertices().stream().map(Vertex::toJsonObject).collect(Collectors.toList());
-        graph.put("vertices", vertices);
-        List<JSONObject>  edges = this.getEdges().stream().map(Edge::toJsonObject).collect(Collectors.toList());
-        graph.put("edges", edges);
+        readLock.lock();
+        try {
+            JSONObject graph = this.toJsonObject();
 
-        StringWriter stringWriter = new StringWriter();
-        graph.writeJSONString(stringWriter);
+            StringWriter stringWriter = new StringWriter();
+            graph.writeJSONString(stringWriter);
 
-        return stringWriter.toString();
+            return stringWriter.toString();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     private String vertexErrorMessage(T label) {
@@ -351,7 +419,7 @@ public class ConcurrentGraph<T> implements Graph<T> {
         final AtomicBoolean isCyclic = new AtomicBoolean(false);
         final AtomicInteger currentTime = new AtomicInteger(this.vertices.size());
 
-        this.getVertices().forEach(v  -> {
+        this.getVertices().forEach(v -> {
             if (currentTime.get() > 0 && !visited.contains(v)) {
                 DFS(v, visited, exitTime, currentTime, isCyclic);
             }
@@ -369,10 +437,10 @@ public class ConcurrentGraph<T> implements Graph<T> {
      * @param isCyclic
      */
     void DFS(final Vertex<T> first,
-            final Set<Vertex<T>> visited,
-            final Map<Vertex<T>, Integer> exitTime,
-            final AtomicInteger currentTime,
-            final AtomicBoolean isCyclic) {
+             final Set<Vertex<T>> visited,
+             final Map<Vertex<T>, Integer> exitTime,
+             final AtomicInteger currentTime,
+             final AtomicBoolean isCyclic) {
 
         if (visited.contains(first)) {
             // Safety check (never trust callers :D)
@@ -435,9 +503,9 @@ public class ConcurrentGraph<T> implements Graph<T> {
                 .stream()
                 .parallel()
                 .collect(
-                    Collectors.toMap(
-                        Function.identity(),
-                        destVertex -> makeSearchResult(sourceVertex, destVertex, intermediateResult)));
+                        Collectors.toMap(
+                                Function.identity(),
+                                destVertex -> makeSearchResult(sourceVertex, destVertex, intermediateResult)));
     }
 
     private IntermediateSearchResult search(
@@ -473,7 +541,7 @@ public class ConcurrentGraph<T> implements Graph<T> {
                 // INVARIANT: edge belongs to G, so edge.destination MUST belong to G
                 Vertex<T> dest = this.getVertex(edge.getDestination()).get();
                 double newDistance = currentDistance + computeDistance.apply(edge);
-                if (newDistance < distances.getOrDefault(dest, Double.POSITIVE_INFINITY)){
+                if (newDistance < distances.getOrDefault(dest, Double.POSITIVE_INFINITY)) {
                     distances.put(dest, newDistance);
                     predecessors.put(dest, current);
                     queue.add(new HeapEntry<>(dest, newDistance));

@@ -5,17 +5,17 @@ import org.json.simple.JSONObject;
 import java.io.IOException;
 import java.io.StringWriter;
 
-class ConcurrentEdge<T> implements Edge<T> {
+class ThreadsafeEdge<T> implements Edge<T> {
     private T source;
     private T destination;
     private double weight;
 
     // Edge's weight should default to 1
-    public ConcurrentEdge(T source, T destination) {
+    public ThreadsafeEdge(T source, T destination) {
         this(source, destination, 1.0);
     }
 
-    public ConcurrentEdge(T source, T destination, double weight) {
+    public ThreadsafeEdge(T source, T destination, double weight) {
         if (source == null) {
             throw new IllegalArgumentException("source can't be null");
         }
@@ -59,7 +59,7 @@ class ConcurrentEdge<T> implements Edge<T> {
             return false;
         }
 
-        ConcurrentEdge<T> otherEdge = (ConcurrentEdge<T>)other;
+        ThreadsafeEdge<T> otherEdge = (ThreadsafeEdge<T>)other;
         return this.source.equals(otherEdge.getSource())
                 && this.destination.equals(otherEdge.getDestination());
     }
@@ -72,8 +72,8 @@ class ConcurrentEdge<T> implements Edge<T> {
     @Override
     public JSONObject toJsonObject() {
         JSONObject edge = new JSONObject();
-        edge.put("source", new ConcurrentVertex<>(this.getSource()).toJsonObject());
-        edge.put("destination", new ConcurrentVertex<>(this.getDestination()).toJsonObject());
+        edge.put("source", new ThreadsafeVertex<>(this.getSource()).toJsonObject());
+        edge.put("destination", new ThreadsafeVertex<>(this.getDestination()).toJsonObject());
         edge.put("weight", this.getWeight());
 
         return edge;
