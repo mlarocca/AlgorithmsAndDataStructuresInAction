@@ -24,7 +24,7 @@ interface VertexInternal<T> extends Vertex<T> {
      * @throws IllegalArgumentException If destination is null.
      *          is already present.
      */
-    abstract boolean addEdgeTo(T destination, double weight) throws IllegalArgumentException;
+    boolean addEdgeTo(T destination, double weight) throws IllegalArgumentException;
 
     /**
      *
@@ -32,7 +32,7 @@ interface VertexInternal<T> extends Vertex<T> {
      * @return true if the edge overwrote an existing edge, false otherwise.
      * @throws IllegalArgumentException If edge is null.
      */
-    abstract boolean addEdge(Edge<T> edge) throws IllegalArgumentException;
+    boolean addEdge(Edge<T> edge) throws IllegalArgumentException;
 
     /**
      *

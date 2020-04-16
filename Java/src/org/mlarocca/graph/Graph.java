@@ -1,5 +1,7 @@
 package org.mlarocca.graph;
 
+import org.json.simple.JSONObject;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -41,11 +43,28 @@ public interface Graph<T> {
 
     Graph<T> transpose();
 
+    /**
+     * Computes the symmetric closure of a directed graph G.
+     * If G is an undirected graphs, it returns a graph isomorphic to G.
+     *
+     * @return A graph G' that, for each edge (u,v) in G, has both (u,v) and (v,u).
+     */
+    Graph<T> symmetricClosure();
+
+    /**
+     * Computes the transitive closure of a graph G.
+     *
+     * @return A graph G' with an edge (u,v) for each pair of vertices in G such that v is reachable from u.
+     */
+    Graph<T> transitiveClosure();
+
+    Set<Set<Vertex<T>>> connectedComponents();
     Set<Set<Vertex<T>>> stronglyConnectedComponents();
 
     Map<Vertex<T>, GraphSearchResult<T>> Dijkstra(T source) throws NoSuchElementException ;
     GraphSearchResult<T> Dijkstra(T source, T destination) throws NoSuchElementException ;
     //GraphSearchResult<T> AStar(T source) throws NoSuchElementException ;
 
+    JSONObject toJsonObject();
     String toJson() throws IOException;
 }
