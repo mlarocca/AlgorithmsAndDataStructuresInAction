@@ -8,6 +8,7 @@ public interface Edge<T> {
     T getSource();
     T getDestination();
     double getWeight();
+    boolean isLoop();
     JSONObject toJsonObject();
     String toJson() throws IOException;
 }

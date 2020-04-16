@@ -29,7 +29,20 @@ public interface Graph<T> {
 
     Optional<Edge<T>> deleteEdge(T source, T destination) throws NoSuchElementException;
 
+    /**
+     * Returns all edges in the graph (including loops).
+     *
+     * @return A collection containing all edges in the graph (including loops).
+     */
     Collection<Edge<T>> getEdges();
+
+    /**
+     * Returns simple edges in the graph (loops are excluded).
+     *
+     * @return A collection containing all simple edges in the graph (all edges that aren't loops).
+     */
+    Collection<Edge<T>> getSimpleEdges();
+
     Collection<Edge<T>> getEdgesFrom(T source) throws NoSuchElementException;
     Collection<Edge<T>> getEdgesTo(T destination) throws NoSuchElementException;
 
@@ -40,6 +53,9 @@ public interface Graph<T> {
     boolean isAcyclic();
     boolean isConnected();
     boolean isStronglyConnected();
+    boolean isComplete();
+//    boolean isBipartite();
+//    boolean isCompleteBipartite();
 
     Graph<T> transpose();
 
