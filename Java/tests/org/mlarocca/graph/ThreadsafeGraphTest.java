@@ -505,6 +505,52 @@ public class ThreadsafeGraphTest {
     }
 
     @Test
+    public void isBipartite() throws Exception {
+        List<Set<Vertex<Integer>>> partitions = new ArrayList<>();
+        Graph<Integer> g1 = new ThreadsafeGraph<>();
+        assertFalse(g1.isBipartite(partitions));
+
+        g1.addVertex(1);
+        assertFalse(g1.isBipartite(partitions));
+
+        g1.addVertex(2);
+        assertFalse(g1.isBipartite(partitions));
+
+        g1.addVertex(3);
+        g1.addVertex(4);
+        g1.addVertex(5);
+        g1.addVertex(6);
+
+        assertFalse(g1.isBipartite(partitions));
+
+        for (int i = 1; i <= 3; i++) {
+            for (int j = 4; j <= 6; j++) {
+                g1.addEdge(i,j);
+                g1.addEdge(j,i);
+            }
+        }
+
+        assertTrue(g1.isBipartite(partitions));
+        Set<Vertex<Integer>> expectedSet = new HashSet<>();
+        // Check that the two sets are created correctly
+        expectedSet.add(g1.getVertex(1).get());
+        expectedSet.add(g1.getVertex(2).get());
+        expectedSet.add(g1.getVertex(3).get());
+        assertEquals(partitions.get(1), expectedSet);
+
+        expectedSet = new HashSet<>();
+        expectedSet.add(g1.getVertex(4).get());
+        expectedSet.add(g1.getVertex(5).get());
+        expectedSet.add(g1.getVertex(6).get());
+        assertEquals(partitions.get(0), expectedSet);
+
+        // Loops are not allowed in bipartite graphs
+
+        g1.addEdge(1, 1);
+        assertFalse(g1.isBipartite(partitions));
+    }
+
+    @Test
     public void isCompleteBipartite() throws Exception {
         Graph<Integer> g1 = ccGraph();
         assertFalse(g1.isCompleteBipartite());

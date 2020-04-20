@@ -48,6 +48,7 @@ public interface Graph<T> {
 
     Map<Vertex<T>, GraphSearchResult<T>> BFS(T source) throws NoSuchElementException;
     GraphSearchResult<T> BFS(T source, T destination) throws NoSuchElementException ;
+    Map<Vertex<T>, Integer> DFS();
 
     List<Vertex<T>> topologicalSort();
 

@@ -498,11 +498,13 @@ public class ThreadsafeGraph<T> implements Graph<T> {
         return "Unknown vertex " + label;
     }
 
-    private Map<Vertex<T>, Integer> DFS() {
-        final Set<Vertex<T>> visited = new HashSet<>();
-        final Map<Vertex<T>, Integer> exitTime = new HashMap<>();
+    public Map<Vertex<T>, Integer> DFS() {
+        final int n = this.vertices.size();
+        final Set<Vertex<T>> visited = new HashSet<>(n);
+        final Map<Vertex<T>, Integer> exitTime = new HashMap<>(n);
         final AtomicBoolean isCyclic = new AtomicBoolean(false);
-        final AtomicInteger currentTime = new AtomicInteger(this.vertices.size());
+        // Starts at n and decreases it as we finish visiting a vertices. Quick check for when we are done.
+        final AtomicInteger currentTime = new AtomicInteger(n);
 
         this.getVertices().forEach(v -> {
             if (currentTime.get() > 0 && !visited.contains(v)) {
@@ -521,16 +523,13 @@ public class ThreadsafeGraph<T> implements Graph<T> {
      * @param currentTime
      * @param isCyclic
      */
-    void DFS(final Vertex<T> first,
+    protected void DFS(final Vertex<T> first,
              final Set<Vertex<T>> visited,
              final Map<Vertex<T>, Integer> exitTime,
              final AtomicInteger currentTime,
              final AtomicBoolean isCyclic) {
 
-        if (visited.contains(first)) {
-            // Safety check (never trust callers :D)
-            return;
-        }
+        assert(!visited.contains(first));
 
         final Set<Vertex<T>> popped = new HashSet<>();
         final Stack<Vertex<T>> stack = new Stack<>();
@@ -541,24 +540,23 @@ public class ThreadsafeGraph<T> implements Graph<T> {
             if (popped.contains(current)) {
                 // We are popping the vertex for the second time, so we have already DFS-ed all its neighbours
                 exitTime.put(current, currentTime.decrementAndGet());
-                continue;
             } else {
                 visited.add(current);
                 popped.add(current);
                 stack.push(current);
-            }
 
-            current.getOutEdges().forEach(edge -> {
-                // INVARIANT: if (v, u) is in G, then both u and v are in G
-                Vertex<T> u = getVertex(edge.getDestination()).get();
-                if (!visited.contains(u)) {
-                    visited.add(u);
-                    stack.push(u);
-                } else if (!exitTime.containsKey(u)) {
-                    // There is a cycle!
-                    isCyclic.set(true);
-                }
-            });
+                current.getOutEdges().forEach(edge -> {
+                    // INVARIANT: if (v, u) is in G, then both u and v are in G
+                    Vertex<T> u = getVertex(edge.getDestination()).get();
+                    if (!visited.contains(u)) {
+                        visited.add(u);
+                        stack.push(u);
+                    } else if (!exitTime.containsKey(u)) {
+                        // There is a cycle!
+                        isCyclic.set(true);
+                    }
+                });
+            }
         } while (!stack.empty());
     }
 
