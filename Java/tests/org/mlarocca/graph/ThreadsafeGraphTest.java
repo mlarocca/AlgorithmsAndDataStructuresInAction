@@ -493,14 +493,14 @@ public class ThreadsafeGraphTest {
         assertFalse(g1.isComplete());
 
         for (int i = 1; i <= 4; i++) {
-            for (int j = i+1; j <= 4; j++) {
-                g1.addEdge(i,j);
-                g1.addEdge(j,i);
+            for (int j = i + 1; j <= 4; j++) {
+                g1.addEdge(i, j);
+                g1.addEdge(j, i);
             }
         }
 
         assertTrue(g1.isComplete());
-        g1.deleteEdge(1,2);
+        g1.deleteEdge(1, 2);
         assertFalse(g1.isComplete());
     }
 
@@ -525,8 +525,8 @@ public class ThreadsafeGraphTest {
 
         for (int i = 1; i <= 3; i++) {
             for (int j = 4; j <= 6; j++) {
-                g1.addEdge(i,j);
-                g1.addEdge(j,i);
+                g1.addEdge(i, j);
+                g1.addEdge(j, i);
             }
         }
 
@@ -566,9 +566,9 @@ public class ThreadsafeGraphTest {
         assertFalse(g1.isComplete());
 
         for (int i = 1; i <= 4; i++) {
-            for (int j = i+1; j <= 4; j++) {
-                g1.addEdge(i,j);
-                g1.addEdge(j,i);
+            for (int j = i + 1; j <= 4; j++) {
+                g1.addEdge(i, j);
+                g1.addEdge(j, i);
             }
         }
 
@@ -594,20 +594,20 @@ public class ThreadsafeGraphTest {
 
         for (int i = 1; i <= 3; i++) {
             for (int j = 4; j <= 6; j++) {
-                g1.addEdge(i,j);
-                g1.addEdge(j,i);
+                g1.addEdge(i, j);
+                g1.addEdge(j, i);
             }
         }
 
         assertTrue(g1.isBipartite(new ArrayList<>()));
         assertTrue(g1.isCompleteBipartite());
 
-        g1.addEdge(1 ,2);
+        g1.addEdge(1, 2);
         assertFalse(g1.isCompleteBipartite());
         assertFalse(g1.isBipartite(new ArrayList<>()));
 
-        g1.deleteEdge(1 ,2);
-        g1.deleteEdge(1 ,4);
+        g1.deleteEdge(1, 2);
+        g1.deleteEdge(1, 4);
         assertFalse(g1.isCompleteBipartite());
         assertTrue(g1.isBipartite(new ArrayList<>()));
     }
@@ -840,7 +840,7 @@ public class ThreadsafeGraphTest {
             assertTrue(gSC.hasEdge(e.getDestination(), e.getSource()));
         }
     }
-    
+
     @Test
     public void connectedComponents() throws Exception {
         Graph<Integer> g1 = ccGraph();
@@ -877,6 +877,44 @@ public class ThreadsafeGraphTest {
                 g2.getVertex("h").get(),
                 g2.getVertex("i").get()
         ))));
+    }
+
+    @Test
+    public void inducedSubGraph() throws Exception {
+        Graph<Integer> g = ccGraph();
+        Set<Integer> subset = new HashSet<>();
+        subset.add(1);
+        subset.add(5);
+        subset.add(6);
+
+        Graph<Integer> gI = g.inducedSubGraph(subset);
+        assertEquals(3, gI.getVertices().size());
+        assertEquals(subset, gI.getVertices().stream().map(Vertex::getLabel).collect(Collectors.toSet()));
+
+        Set<Edge<Integer>> expectedEdges = new HashSet<>(
+                Arrays.asList(
+                        new ThreadsafeEdge<>(1, 5),
+                        new ThreadsafeEdge<>(5, 6),
+                        new ThreadsafeEdge<>(6, 1)
+                ));
+        assertEquals(expectedEdges, gI.getEdges());
+
+        subset.clear();
+        subset.add(2);
+        subset.add(3);
+        subset.add(7);
+        subset.add(9);
+
+        gI = g.inducedSubGraph(subset);
+        assertEquals(4, gI.getVertices().size());
+        assertEquals(subset, gI.getVertices().stream().map(Vertex::getLabel).collect(Collectors.toSet()));
+
+        expectedEdges = new HashSet<>(
+                Arrays.asList(
+                        new ThreadsafeEdge<>(2, 3),
+                        new ThreadsafeEdge<>(9, 7)
+                ));
+        assertEquals(expectedEdges, gI.getEdges());
     }
 
     @Test
