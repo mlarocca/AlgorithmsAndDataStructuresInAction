@@ -71,7 +71,7 @@ class ThreadsafeEdge<T> implements Edge<T> {
 
     @Override
     public String toString() {
-        return String.format("Edge(%s, %s, %.3f)", source.toString(), destination.toString(), weight);
+        return String.format("Edge(%s -> %s | %.3f)", source.toString(), destination.toString(), weight);
     }
 
     @Override

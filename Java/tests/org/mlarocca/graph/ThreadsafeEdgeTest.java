@@ -29,7 +29,7 @@ public class ThreadsafeEdgeTest {
         Double weight = Math.E;
         ThreadsafeEdge<Double> e = new ThreadsafeEdge<>(source, dest, weight);
         // Notice how labels, which are printed as strings, have a  dot instead of a comma as separator
-        assertEquals("Edge(3.14159, 0.12, 2,718)", e.toString());
+        assertEquals("Edge(3.14159 -> 0.12 | 2,718)", e.toString());
     }
     @Test
     public void testToJson() throws Exception {

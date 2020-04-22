@@ -242,7 +242,7 @@ public class ThreadsafeGraph<T> implements Graph<T> {
             Map<Vertex<T>, Integer> exitTime = DFS();
             return exitTime.entrySet()
                     .stream()
-                    .sorted((o1, o2) -> Integer.compare(o1.getValue(), o2.getValue()))
+                    .sorted(Comparator.comparingInt(Map.Entry::getValue))
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toList());
         } finally {
@@ -370,6 +370,26 @@ public class ThreadsafeGraph<T> implements Graph<T> {
 
         // Graphs are stored as directed graphs, so there are 2 directed edges for each pair of vertices in opposite partitions
         return this.getSimpleEdges().size() == 2 * n * m;
+    }
+
+    /**
+     * Computes the induced sub-graph of this graph, given a subset of its vertices.
+     * The induced sub-graph of a graph G is a new graph, with only a subset of its vertices; only the edges in G
+     * that are adjacent to vertices in the sub-graph are included.
+     *
+     * @return The sub-graph induced by vertices.
+     */
+    @Override
+    public Graph<T> inducedSubGraph(Set<T> vertices) {
+        if (!this.getVertices().stream().map(Vertex::getLabel).collect(Collectors.toSet()).containsAll(vertices)) {
+            throw new IllegalArgumentException("Invalid sub-graph: not all vertices passed belongs to the graph");
+        }
+        return new ThreadsafeGraph<>(
+                this.getVertices().stream().filter(v -> vertices.contains(v.getLabel())).collect(Collectors.toSet()),
+                getEdges()
+                        .stream()
+                        .filter(e -> vertices.contains(e.getSource()) && vertices.contains(e.getDestination()))
+                        .collect(Collectors.toSet()));
     }
 
     @Override
@@ -524,12 +544,12 @@ public class ThreadsafeGraph<T> implements Graph<T> {
      * @param isCyclic
      */
     protected void DFS(final Vertex<T> first,
-             final Set<Vertex<T>> visited,
-             final Map<Vertex<T>, Integer> exitTime,
-             final AtomicInteger currentTime,
-             final AtomicBoolean isCyclic) {
+                       final Set<Vertex<T>> visited,
+                       final Map<Vertex<T>, Integer> exitTime,
+                       final AtomicInteger currentTime,
+                       final AtomicBoolean isCyclic) {
 
-        assert(!visited.contains(first));
+        assert (!visited.contains(first));
 
         final Set<Vertex<T>> popped = new HashSet<>();
         final Stack<Vertex<T>> stack = new Stack<>();
