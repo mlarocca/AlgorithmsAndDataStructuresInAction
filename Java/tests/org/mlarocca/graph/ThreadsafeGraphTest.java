@@ -502,6 +502,8 @@ public class ThreadsafeGraphTest {
         assertTrue(g1.isComplete());
         g1.deleteEdge(1, 2);
         assertFalse(g1.isComplete());
+
+        assertTrue(ThreadsafeGraph.completeGraph(6).isComplete());
     }
 
     @Test
@@ -610,6 +612,8 @@ public class ThreadsafeGraphTest {
         g1.deleteEdge(1, 4);
         assertFalse(g1.isCompleteBipartite());
         assertTrue(g1.isBipartite(new ArrayList<>()));
+
+        assertTrue(ThreadsafeGraph.completeBipartiteGraph(6, 6).isCompleteBipartite());
     }
 
 
@@ -915,6 +919,60 @@ public class ThreadsafeGraphTest {
                         new ThreadsafeEdge<>(9, 7)
                 ));
         assertEquals(expectedEdges, gI.getEdges());
+    }
+
+    @Test
+    public void isPlanar() throws Exception {
+        // complete with less than 5 vertices: planar
+        for (int n = 1; n < 5; n++) {
+            assertTrue(ThreadsafeGraph.completeGraph(n).isPlanar());
+        }
+        // complete with 5 or more vertices: not planar
+        for (int n = 5; n <= 10; n++) {
+            assertFalse(ThreadsafeGraph.completeGraph(n).isPlanar());
+        }
+
+        // bipartite complete with 1 partition having less than 3 vertices: planar
+        for (int n = 1; n < 6; n++) {
+            assertTrue(ThreadsafeGraph.completeBipartiteGraph(2, n).isPlanar());
+        }
+        // complete with 5 or more vertices: not planar
+        for (int n = 3; n <= 7; n++) {
+            assertFalse(ThreadsafeGraph.completeBipartiteGraph(3, n).isPlanar());
+            assertFalse(ThreadsafeGraph.completeBipartiteGraph(4, n).isPlanar());
+        }
+
+        Graph<Integer> g = ThreadsafeGraph.completeGraph(5);
+        g.deleteEdge(1, 2);
+        g.deleteEdge(2, 1);
+        assertTrue(g.isPlanar());
+
+        g.addEdge(1, 2);
+        g.addEdge(2, 1);
+        assertFalse(g.isPlanar());
+
+        // Disconnected graph
+//        g.addVertex(10);
+//        assertFalse(g.isPlanar());
+//
+//        g.addVertex(11);
+//        g.addEdge(10, 11);
+//        assertFalse(g.isPlanar());
+
+//        g = ThreadsafeGraph.completeBipartiteGraph(3, 3);
+//        g.deleteEdge(1, 4);
+//        g.deleteEdge(4, 1);
+//        assertTrue(g.isPlanar());
+//
+//        g.addEdge(1, 4);
+//        g.addEdge(4, 1);
+//        assertFalse(g.isPlanar());
+//
+//        // Make it non-bipartite (test recursion on spanning sub-graph)
+//        g.addEdge(1,2);
+//        assertFalse(g.isPlanar());
+//        g.addEdge(4,5);
+//        assertFalse(g.isPlanar());
     }
 
     @Test

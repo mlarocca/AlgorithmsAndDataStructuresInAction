@@ -24,6 +24,49 @@ public class ThreadsafeGraph<T> implements Graph<T> {
     private ReentrantReadWriteLock.ReadLock readLock = readWriteLock.readLock();
     private ReentrantReadWriteLock.WriteLock writeLock = readWriteLock.writeLock();
 
+    public static ThreadsafeGraph<Integer> completeGraph(int n) {
+        if (n < 1) {
+            throw new IllegalArgumentException("n must be positive");
+        }
+        ThreadsafeGraph<Integer> graph = new ThreadsafeGraph<>();
+        for (int i = 1; i <= n; i++) {
+            graph.addVertex(i);
+        }
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = i + 1; j <= n; j++) {
+                graph.addEdge(i, j);
+                graph.addEdge(j, i);
+            }
+        }
+
+        return graph;
+    }
+
+    public static ThreadsafeGraph<Integer> completeBipartiteGraph(int n, int m) {
+        if (n < 1) {
+            throw new IllegalArgumentException("n must be positive");
+        }
+        if (m < 1) {
+            throw new IllegalArgumentException("m must be positive");
+        }
+        ThreadsafeGraph<Integer> graph = new ThreadsafeGraph<>();
+        for (int i = 1; i <= n; i++) {
+            graph.addVertex(i);
+        }
+        for (int j = 1; j <= m; j++) {
+            graph.addVertex(n + j);
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = n + 1; j <= n + m; j++) {
+                graph.addEdge(i, j);
+                graph.addEdge(j, i);
+            }
+        }
+
+        return graph;
+    }
+
     public ThreadsafeGraph() {
         vertices = new ConcurrentHashMap<>();
     }
@@ -365,13 +408,22 @@ public class ThreadsafeGraph<T> implements Graph<T> {
         // Invariant: if a graph is bipartite, there should be exactly two non-empty partitions
         assert (partitions.size() == 2 && partitions.get(0).size() * partitions.get(1).size() > 0);
 
-        int n = partitions.get(0).size();
-        int m = partitions.get(1).size();
-
         // Graphs are stored as directed graphs, so there are 2 directed edges for each pair of vertices in opposite partitions
-        return this.getSimpleEdges().size() == 2 * n * m;
+        return this.bipartiteIsComplete(partitions.get(0), partitions.get(1));
     }
 
+    /**
+     * Check if a bipartite graph is also complete
+     * @param partition1
+     * @param partition2
+     * @return
+     */
+    private boolean bipartiteIsComplete(Set<Vertex<T>> partition1, Set<Vertex<T>> partition2) {
+        // Invariant: this is a bipartite graph
+        int n = partition1.size();
+        int m = partition2.size();
+        return this.getSimpleEdges().size() == 2 * n * m;
+    }
     /**
      * Computes the induced sub-graph of this graph, given a subset of its vertices.
      * The induced sub-graph of a graph G is a new graph, with only a subset of its vertices; only the edges in G
@@ -484,6 +536,16 @@ public class ThreadsafeGraph<T> implements Graph<T> {
         } finally {
             readLock.unlock();
         }
+    }
+
+    /**
+     * Check if a graph is planar.
+     * WARNING: implements the Kuratowski's method, which is factorial in (n+m): it can be used for small graphs only,
+     *          do not call this method when n+m > 15.
+     * @return True iff the graph is planar
+     */
+    public boolean isPlanar() {
+        return isPlanar(this.symmetricClosure());
     }
 
     public JSONObject toJsonObject() {
@@ -706,6 +768,74 @@ public class ThreadsafeGraph<T> implements Graph<T> {
         }
         Collections.reverse(path);
         return Optional.of(path);
+    }
+
+    /**
+     * Takes an undirected graph (the symmetric closure of any directed graph) and checks if its planar.
+     */
+    private static <T> boolean isPlanar(Graph<T> graph) {
+        // A graph is planar iff all its connected components are planar.
+        return graph
+                .connectedComponents()
+                .stream()
+                .allMatch(cc -> isPlanarConnectedComponent(
+                        graph.inducedSubGraph(cc.stream().map(Vertex::getLabel).collect(Collectors.toSet()))));
+    }
+
+    /**
+     * Takes a connected, undirected graph, and check if its planar (by using Kuratowski's theorem)
+     */
+    private static <T> boolean isPlanarConnectedComponent(Graph<T> graph) {
+        // invariant: graph is a connected symmetric closure
+        int n = graph.getVertices().size();
+        int m = graph.getSimpleEdges().size() / 2;
+
+        if (n < 5) {
+            return true;
+        }
+        if (m > 3 * n - 6) {
+            return false;
+        }
+
+        if (graph.isComplete()) {
+            // n >= 5
+            return false;
+        }
+
+        List<Set<Vertex<T>>> partitions = new ArrayList<>();
+        if (graph.isBipartite(partitions)) {
+            int s1 = partitions.get(0).size();
+            int s2 = partitions.get(1).size();
+            // Check if it's complete bipartite and if both partitions are larger than 3 vertices
+            if (s1 >= 3 && s2 >= 3 && m >= s1 * s2) {
+                // K_3_3 or larger
+                return false;
+            }
+        }
+
+        Set<T> vertexLabels = graph.getVertices().stream().map(Vertex::getLabel).collect(Collectors.toSet());
+        for (Vertex<T> v : graph.getVertices()) {
+            vertexLabels.remove(v.getLabel());
+            if (!isPlanar(graph.inducedSubGraph(vertexLabels))) {
+                return false;
+            }
+            vertexLabels.add(v.getLabel());
+        }
+
+        Graph<T> subG = new ThreadsafeGraph<>(graph.getVertices(), graph.getEdges());
+        for (Edge<T> e : graph.getSimpleEdges()) {
+            if (e.getSource().toString().compareTo(e.getDestination().toString()) < 0) {
+                subG.deleteEdge(e.getSource(), e.getDestination());
+                subG.deleteEdge(e.getDestination(), e.getSource());
+                if (!isPlanar(subG)) {
+                    return false;
+                }
+                // We don't care about weight here
+                subG.addEdge(e.getSource(), e.getDestination());
+                subG.addEdge(e.getDestination(), e.getSource());
+            }
+        }
+        return true;
     }
 
     private class IntermediateSearchResult {

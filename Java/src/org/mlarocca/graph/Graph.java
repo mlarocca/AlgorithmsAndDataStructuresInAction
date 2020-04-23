@@ -79,6 +79,8 @@ public interface Graph<T> {
 
     Graph<T> transpose();
 
+    boolean isPlanar();
+
     /**
      * Computes the symmetric closure of a directed graph G.
      * If G is an undirected graphs, it returns a graph isomorphic to G.
