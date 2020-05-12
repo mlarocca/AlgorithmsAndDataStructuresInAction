@@ -37,10 +37,10 @@ public class ThreadsafeGraphTest {
         Double[] v2 = {-1.2};
         Double[] v3 = {.0, -Math.E};
 
-        List<Double[]> labels = Arrays.asList(v1, v2, v3);
-        Set<Vertex<Double[]>> vertices = labels
+        List<Double[]> names = Arrays.asList(v1, v2, v3);
+        Set<Vertex<Double[]>> vertices = names
                 .stream()
-                .map(label -> new ThreadsafeVertex<>(label))
+                .map(name -> new ThreadsafeVertex<>(name))
                 .collect(Collectors.toSet());
         Set<Edge<Double[]>> edges = new HashSet<>(Arrays.asList(
                 new ThreadsafeEdge<>(v1, v2),
@@ -79,82 +79,82 @@ public class ThreadsafeGraphTest {
 
     @Test
     public void addVertex() throws Exception {
-        String label1 = "test";
-        assertFalse(graph.hasVertex(label1));
-        graph.addVertex(label1);
-        assertTrue(graph.hasVertex(label1));
-        assertEquals(label1, graph.getVertex(label1).get().getLabel());
-        assertEquals(0, graph.getVertex(label1).get().getWeight(), PRECISION);
+        String name1 = "test";
+        assertFalse(graph.hasVertex(name1));
+        graph.addVertex(name1);
+        assertTrue(graph.hasVertex(name1));
+        assertEquals(name1, graph.getVertex(name1).get().getName());
+        assertEquals(0, graph.getVertex(name1).get().getWeight(), PRECISION);
 
-        String label2 = "second test";
+        String name2 = "second test";
         double weight2 = -3.1415;
 
-        graph.addVertex(label2, weight2);
-        assertTrue(graph.hasVertex(label2));
-        assertEquals(label2, graph.getVertex(label2).get().getLabel());
-        assertEquals(weight2, graph.getVertex(label2).get().getWeight(), PRECISION);
-        assertTrue(graph.hasVertex(label1));
-        assertEquals(label1, graph.getVertex(label1).get().getLabel());
-        assertEquals(0, graph.getVertex(label1).get().getWeight(), PRECISION);
+        graph.addVertex(name2, weight2);
+        assertTrue(graph.hasVertex(name2));
+        assertEquals(name2, graph.getVertex(name2).get().getName());
+        assertEquals(weight2, graph.getVertex(name2).get().getWeight(), PRECISION);
+        assertTrue(graph.hasVertex(name1));
+        assertEquals(name1, graph.getVertex(name1).get().getName());
+        assertEquals(0, graph.getVertex(name1).get().getWeight(), PRECISION);
 
         for (Vertex<String> v : testVertices) {
-            graph.addVertex(v.getLabel(), v.getWeight());
+            graph.addVertex(v.getName(), v.getWeight());
         }
 
         for (Vertex<String> v : testVertices) {
-            String label = v.getLabel();
-            assertTrue(graph.hasVertex(label));
-            assertEquals(label, graph.getVertex(label).get().getLabel());
-            assertEquals(v.getWeight(), graph.getVertex(label).get().getWeight(), PRECISION);
+            String name = v.getName();
+            assertTrue(graph.hasVertex(name));
+            assertEquals(name, graph.getVertex(name).get().getName());
+            assertEquals(v.getWeight(), graph.getVertex(name).get().getWeight(), PRECISION);
         }
     }
 
     @Test
     public void deleteVertex() throws Exception {
         for (Vertex<String> v : testVertices) {
-            graph.addVertex(v.getLabel(), v.getWeight());
+            graph.addVertex(v.getName(), v.getWeight());
         }
 
-        String deletedLabel1 = getRandomCollectionElement(testVertices).getLabel();
+        String deletedname1 = getRandomCollectionElement(testVertices).getName();
 
-        graph.deleteVertex(deletedLabel1);
-        assertFalse(graph.hasVertex(deletedLabel1));
+        graph.deleteVertex(deletedname1);
+        assertFalse(graph.hasVertex(deletedname1));
 
         for (Vertex<String> v : testVertices) {
-            String label = v.getLabel();
-            if (!label.equals(deletedLabel1)) {
-                assertTrue(graph.hasVertex(label));
-                assertEquals(label, graph.getVertex(label).get().getLabel());
-                assertEquals(v.getWeight(), graph.getVertex(label).get().getWeight(), PRECISION);
+            String name = v.getName();
+            if (!name.equals(deletedname1)) {
+                assertTrue(graph.hasVertex(name));
+                assertEquals(name, graph.getVertex(name).get().getName());
+                assertEquals(v.getWeight(), graph.getVertex(name).get().getWeight(), PRECISION);
             }
         }
 
-        String deletedLabel2;
+        String deletedname2;
         do {
-            deletedLabel2 = getRandomCollectionElement(testVertices).getLabel();
-        } while (deletedLabel1.equals(deletedLabel2));
-        graph.deleteVertex(deletedLabel2);
+            deletedname2 = getRandomCollectionElement(testVertices).getName();
+        } while (deletedname1.equals(deletedname2));
+        graph.deleteVertex(deletedname2);
 
-        assertFalse(graph.hasVertex(deletedLabel1));
-        assertFalse(graph.hasVertex(deletedLabel2));
+        assertFalse(graph.hasVertex(deletedname1));
+        assertFalse(graph.hasVertex(deletedname2));
 
         for (Vertex<String> v : testVertices) {
-            String label = v.getLabel();
-            if (!label.equals(deletedLabel1) && !label.equals(deletedLabel2)) {
-                assertTrue(graph.hasVertex(label));
-                assertEquals(label, graph.getVertex(label).get().getLabel());
-                assertEquals(v.getWeight(), graph.getVertex(label).get().getWeight(), PRECISION);
+            String name = v.getName();
+            if (!name.equals(deletedname1) && !name.equals(deletedname2)) {
+                assertTrue(graph.hasVertex(name));
+                assertEquals(name, graph.getVertex(name).get().getName());
+                assertEquals(v.getWeight(), graph.getVertex(name).get().getWeight(), PRECISION);
             }
         }
     }
 
     @Test
     public void getVertex() throws Exception {
-        String label = "xyz1";
-        assertEquals(Optional.empty(), graph.getVertex(label));
-        graph.addVertex(label);
-        assertNotEquals(Optional.empty(), graph.getVertex(label));
-        assertEquals(label, graph.getVertex(label).get().getLabel());
+        String name = "xyz1";
+        assertEquals(Optional.empty(), graph.getVertex(name));
+        graph.addVertex(name);
+        assertNotEquals(Optional.empty(), graph.getVertex(name));
+        assertEquals(name, graph.getVertex(name).get().getName());
     }
 
     @Test
@@ -305,11 +305,11 @@ public class ThreadsafeGraphTest {
         assertEquals(numEdgeReaders * 3 * readIterations, edges.size());
         assertEquals(numVertexReaders * 4 * readIterations, vertices.size());
 
-        List<Integer> verticesLabels = vertices
+        List<Integer> verticesnames = vertices
                 .stream()
-                .map(Vertex::getLabel)
+                .map(Vertex::getName)
                 .collect(Collectors.toList());
-        Map<Integer, Long> verticesCount = verticesLabels
+        Map<Integer, Long> verticesCount = verticesnames
                 .stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
@@ -335,10 +335,10 @@ public class ThreadsafeGraphTest {
         String v4 = "D";
         String v5 = "E";
 
-        List<String> labels = Arrays.asList(v1, v2, v3, v4, v5);
-        Set<Vertex<String>> vertices = labels
+        List<String> names = Arrays.asList(v1, v2, v3, v4, v5);
+        Set<Vertex<String>> vertices = names
                 .stream()
-                .map(label -> new ThreadsafeVertex<>(label))
+                .map(name -> new ThreadsafeVertex<>(name))
                 .collect(Collectors.toSet());
 
         Set<Edge<String>> edges = new HashSet<>(Arrays.asList(
@@ -365,10 +365,10 @@ public class ThreadsafeGraphTest {
         String v2 = "B";
         String v3 = "C";
 
-        List<String> labels = Arrays.asList(v1, v2, v3);
-        Set<Vertex<String>> vertices = labels
+        List<String> names = Arrays.asList(v1, v2, v3);
+        Set<Vertex<String>> vertices = names
                 .stream()
-                .map(label -> new ThreadsafeVertex<>(label))
+                .map(name -> new ThreadsafeVertex<>(name))
                 .collect(Collectors.toSet());
 
         Set<Edge<String>> edges = new HashSet<>(Arrays.asList(
@@ -396,10 +396,10 @@ public class ThreadsafeGraphTest {
         String v4 = "D4";
         String v5 = "E5";
 
-        List<String> labels = Arrays.asList(v1, v2, v3, v4, v5);
-        Set<Vertex<String>> vertices = labels
+        List<String> names = Arrays.asList(v1, v2, v3, v4, v5);
+        Set<Vertex<String>> vertices = names
                 .stream()
-                .map(label -> new ThreadsafeVertex<>(label))
+                .map(name -> new ThreadsafeVertex<>(name))
                 .collect(Collectors.toSet());
 
         Set<Edge<String>> edges = new HashSet<>(Arrays.asList(
@@ -625,10 +625,10 @@ public class ThreadsafeGraphTest {
         String v4 = "D4";
         String v5 = "E5";
 
-        List<String> labels = Arrays.asList(v1, v2, v3, v4, v5);
-        Set<Vertex<String>> vertices = labels
+        List<String> names = Arrays.asList(v1, v2, v3, v4, v5);
+        Set<Vertex<String>> vertices = names
                 .stream()
-                .map(label -> new ThreadsafeVertex<>(label))
+                .map(name -> new ThreadsafeVertex<>(name))
                 .collect(Collectors.toSet());
 
         Set<Edge<String>> edges = new HashSet<>(Arrays.asList(
@@ -644,7 +644,7 @@ public class ThreadsafeGraphTest {
         assertEquals(g.getEdges().size(), gT.getEdges().size());
 
         g.getVertices().forEach(v -> {
-            assertTrue(gT.hasVertex(v.getLabel()));
+            assertTrue(gT.hasVertex(v.getName()));
         });
 
         g.getEdges().forEach(e -> {
@@ -836,7 +836,7 @@ public class ThreadsafeGraphTest {
         Graph<Integer> g = ccGraph();
         Graph<Integer> gSC = g.symmetricClosure();
         for (Vertex<Integer> v : g.getVertices()) {
-            g.hasVertex(v.getLabel());
+            g.hasVertex(v.getName());
         }
 
         for (Edge<Integer> e : g.getEdges()) {
@@ -893,7 +893,7 @@ public class ThreadsafeGraphTest {
 
         Graph<Integer> gI = g.inducedSubGraph(subset);
         assertEquals(3, gI.getVertices().size());
-        assertEquals(subset, gI.getVertices().stream().map(Vertex::getLabel).collect(Collectors.toSet()));
+        assertEquals(subset, gI.getVertices().stream().map(Vertex::getName).collect(Collectors.toSet()));
 
         Set<Edge<Integer>> expectedEdges = new HashSet<>(
                 Arrays.asList(
@@ -911,7 +911,7 @@ public class ThreadsafeGraphTest {
 
         gI = g.inducedSubGraph(subset);
         assertEquals(4, gI.getVertices().size());
-        assertEquals(subset, gI.getVertices().stream().map(Vertex::getLabel).collect(Collectors.toSet()));
+        assertEquals(subset, gI.getVertices().stream().map(Vertex::getName).collect(Collectors.toSet()));
 
         expectedEdges = new HashSet<>(
                 Arrays.asList(
@@ -987,7 +987,7 @@ public class ThreadsafeGraphTest {
         g.addEdge("abc", "1", -0.1e14);
         g.addEdge("3.1415", "what", 33);
 
-        String expected = "{\"vertices\":[{\"weight\":0.0,\"label\":\"1\"},{\"weight\":0.0,\"label\":\"abc\"},{\"weight\":-3.0,\"label\":\"what\"},{\"weight\":0.0,\"label\":\"3.1415\"}],\"edges\":[{\"destination\":{\"weight\":1.0,\"label\":\"what\"},\"weight\":33.0,\"source\":{\"weight\":1.0,\"label\":\"3.1415\"}},{\"destination\":{\"weight\":1.0,\"label\":\"1\"},\"weight\":-1.0E13,\"source\":{\"weight\":1.0,\"label\":\"abc\"}}]}";
+        String expected = "{\"vertices\":[{\"name\":\"1\",\"weight\":0.0},{\"name\":\"abc\",\"weight\":0.0},{\"name\":\"what\",\"weight\":-3.0},{\"name\":\"3.1415\",\"weight\":0.0}],\"edges\":[{\"destination\":{\"name\":\"what\",\"weight\":1.0},\"weight\":33.0,\"source\":{\"name\":\"3.1415\",\"weight\":1.0}},{\"destination\":{\"name\":\"1\",\"weight\":1.0},\"weight\":-1.0E13,\"source\":{\"name\":\"abc\",\"weight\":1.0}}]}";
         assertEquals(expected, g.toJson());
     }
 
@@ -1010,9 +1010,9 @@ public class ThreadsafeGraphTest {
         String ve = "e";
         String vDisco = "disconnected";
 
-        List<String> labels = Arrays.asList(vs, va, vb, vc, vd, ve, vDisco);
+        List<String> names = Arrays.asList(vs, va, vb, vc, vd, ve, vDisco);
 
-        Graph<String> g = new ThreadsafeGraph<>(labels);
+        Graph<String> g = new ThreadsafeGraph<>(names);
 
         g.addEdge(vs, va, 10);
         g.addEdge(vs, vb, 3);
@@ -1039,9 +1039,9 @@ public class ThreadsafeGraphTest {
         String v8 = "h";
         String v9 = "i";
 
-        List<String> labels = Arrays.asList(v1, v2, v3, v4, v5, v6, v7, v8, v9);
+        List<String> names = Arrays.asList(v1, v2, v3, v4, v5, v6, v7, v8, v9);
 
-        Graph<String> g = new ThreadsafeGraph<>(labels);
+        Graph<String> g = new ThreadsafeGraph<>(names);
 
         g.addEdge(v1, v5);
         g.addEdge(v2, v3);
@@ -1069,9 +1069,9 @@ public class ThreadsafeGraphTest {
         Integer v8 = 8;
         Integer v9 = 9;
 
-        List<Integer> labels = Arrays.asList(v1, v2, v3, v4, v5, v6, v7, v8, v9);
+        List<Integer> names = Arrays.asList(v1, v2, v3, v4, v5, v6, v7, v8, v9);
 
-        Graph<Integer> g = new ThreadsafeGraph<>(labels);
+        Graph<Integer> g = new ThreadsafeGraph<>(names);
 
         g.addEdge(v1, v5);
         g.addEdge(v4, v5);

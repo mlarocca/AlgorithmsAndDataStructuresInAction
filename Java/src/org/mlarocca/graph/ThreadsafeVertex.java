@@ -7,27 +7,27 @@ import java.io.StringWriter;
 import java.util.*;
 
 class ThreadsafeVertex<T> implements VertexInternal<T> {
-    private T label;
+    private T name;
     private double weight;
     private Map<T, ThreadsafeEdge<T>> adj;
 
     // Weight should default to 1
-    public ThreadsafeVertex(T label) throws IllegalArgumentException {
-        this(label, 1.0);
+    public ThreadsafeVertex(T name) throws IllegalArgumentException {
+        this(name, 1.0);
     }
 
-    public ThreadsafeVertex(T label, double weight) throws IllegalArgumentException {
-        if (label == null) {
-            throw new IllegalArgumentException("Label can't be null");
+    public ThreadsafeVertex(T name, double weight) throws IllegalArgumentException {
+        if (name == null) {
+            throw new IllegalArgumentException("Name can't be null");
         }
-        this.label = label;
+        this.name = name;
         this.weight = weight;
         this.adj = new HashMap<>();
     }
 
     @Override
-    public synchronized T getLabel() {
-        return label;
+    public synchronized T getName() {
+        return name;
     }
 
     @Override
@@ -43,7 +43,7 @@ class ThreadsafeVertex<T> implements VertexInternal<T> {
     @Override
     public JSONObject toJsonObject() {
         JSONObject vertex = new JSONObject();
-        vertex.put("label", this.getLabel());
+        vertex.put("name", this.getName());
         vertex.put("weight", this.getWeight());
 
         return vertex;
@@ -67,16 +67,16 @@ class ThreadsafeVertex<T> implements VertexInternal<T> {
     @Override
     public synchronized boolean addEdgeTo(T destination, double weight) {
         if (destination == null) {
-            throw new IllegalArgumentException("null destination label");
+            throw new IllegalArgumentException("null destination");
         }
 
-        return addEdge(new ThreadsafeEdge<T>(label, destination, weight));
+        return addEdge(new ThreadsafeEdge<T>(name, destination, weight));
     }
 
     @Override
     public synchronized boolean addEdge(Edge<T> edge) throws IllegalArgumentException{
         if (edge == null) {
-            throw new IllegalArgumentException("null destination label");
+            throw new IllegalArgumentException("null destination");
         } else if (!(edge instanceof ThreadsafeEdge)) {
             throw new IllegalArgumentException("Wrong type for argument Edge: expected ConcurrentEdge");
         }
@@ -95,14 +95,14 @@ class ThreadsafeVertex<T> implements VertexInternal<T> {
     @Override
     public synchronized Optional<Edge<T>> deleteEdgeTo(T destination) throws IllegalArgumentException {
         if (destination == null) {
-            throw new IllegalArgumentException("null destination label");
+            throw new IllegalArgumentException("null destination");
         }
         return Optional.ofNullable(adj.remove(destination));
     }
 
     @Override
     public int hashCode() {
-        return label.hashCode();
+        return name.hashCode();
     }
 
     @Override
@@ -116,11 +116,11 @@ class ThreadsafeVertex<T> implements VertexInternal<T> {
             return false;
         }
 
-        return this.label.equals(((ThreadsafeVertex<T>)other).getLabel());
+        return this.name.equals(((ThreadsafeVertex<T>)other).getName());
     }
 
     @Override
     public String toString() {
-        return String.format("Vertex(%s, %.3f)", label.toString(), weight);
+        return String.format("Vertex(%s, %.3f)", name.toString(), weight);
     }
 }

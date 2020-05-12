@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface Vertex<T> {
-    T getLabel();
+    T getName();
     double getWeight();
     Collection<Edge<T>> getOutEdges();
     Optional<Edge<T>> getEdgeTo(T destination);

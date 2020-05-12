@@ -34,8 +34,8 @@ public class ThreadsafeEdgeTest {
     @Test
     public void testToJson() throws Exception {
         ThreadsafeEdge<Double> e1 = new ThreadsafeEdge<>(3.14159, -0.2);
-        assertEquals("{\"destination\":{\"weight\":1.0,\"label\":-0.2},\"weight\":1.0,\"source\":{\"weight\":1.0,\"label\":3.14159}}", e1.toJson());
+        assertEquals("{\"destination\":{\"name\":-0.2,\"weight\":1.0},\"weight\":1.0,\"source\":{\"name\":3.14159,\"weight\":1.0}}", e1.toJson());
         ThreadsafeEdge<String> e2 = new ThreadsafeEdge<String>("u", "v", 1.4);
-        assertEquals("{\"destination\":{\"weight\":1.0,\"label\":\"v\"},\"weight\":1.4,\"source\":{\"weight\":1.0,\"label\":\"u\"}}", e2.toJson());
+        assertEquals("{\"destination\":{\"name\":\"v\",\"weight\":1.0},\"weight\":1.4,\"source\":{\"name\":\"u\",\"weight\":1.0}}", e2.toJson());
     }
 }

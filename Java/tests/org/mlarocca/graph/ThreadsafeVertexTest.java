@@ -65,8 +65,8 @@ public class ThreadsafeVertexTest {
     @Test
     public void testToJson() throws Exception {
         ThreadsafeVertex<Double> v = new ThreadsafeVertex<>(3.14159, -0.2);
-        assertEquals("{\"weight\":-0.2,\"label\":3.14159}", v.toJson());
+        assertEquals("{\"name\":3.14159,\"weight\":-0.2}", v.toJson());
         ThreadsafeVertex<String> u = new ThreadsafeVertex<String>("I'm a vertex", 1e-10);
-        assertEquals("{\"weight\":1.0E-10,\"label\":\"I'm a vertex\"}", u.toJson());
+        assertEquals("{\"name\":\"I'm a vertex\",\"weight\":1.0E-10}", u.toJson());
     }
 }

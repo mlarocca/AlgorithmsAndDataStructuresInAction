@@ -71,17 +71,17 @@ public class ThreadsafeGraph<T> implements Graph<T> {
         vertices = new ConcurrentHashMap<>();
     }
 
-    public ThreadsafeGraph(Collection<T> labels) throws IllegalArgumentException {
+    public ThreadsafeGraph(Collection<T> names) throws IllegalArgumentException {
         this();
-        labels.forEach(label -> {
-            addVertex(label);
+        names.forEach(name -> {
+            addVertex(name);
         });
     }
 
     public ThreadsafeGraph(Collection<Vertex<T>> vertices, Collection<Edge<T>> edges) throws IllegalArgumentException {
         this();
         for (Vertex<T> vertex : vertices) {
-            addVertex(vertex.getLabel(), vertex.getWeight());
+            addVertex(vertex.getName(), vertex.getWeight());
         }
         for (Edge<T> edge : edges) {
             addEdge(edge.getSource(), edge.getDestination());
@@ -89,47 +89,47 @@ public class ThreadsafeGraph<T> implements Graph<T> {
     }
 
     @Override
-    public void addVertex(T label, double weight) throws IllegalArgumentException {
+    public void addVertex(T name, double weight) throws IllegalArgumentException {
         writeLock.lock();
         try {
-            this.vertices.put(label, new ThreadsafeVertex<>(label, weight));
+            this.vertices.put(name, new ThreadsafeVertex<>(name, weight));
         } finally {
             writeLock.unlock();
         }
     }
 
     @Override
-    public Optional<Vertex<T>> deleteVertex(T label) {
+    public Optional<Vertex<T>> deleteVertex(T name) {
         writeLock.lock();
         try {
-            // First removes all edges to label
+            // First removes all edges to name
             vertices.values().forEach(vertex -> {
-                if (!vertex.getLabel().equals(label)) {
-                    vertex.deleteEdgeTo(label);
+                if (!vertex.getName().equals(name)) {
+                    vertex.deleteEdgeTo(name);
                 }
             });
             // Now it is safe to remove the vertex itself
-            return Optional.ofNullable(vertices.remove(label));
+            return Optional.ofNullable(vertices.remove(name));
         } finally {
             writeLock.unlock();
         }
     }
 
     @Override
-    public Optional<Vertex<T>> getVertex(T label) {
+    public Optional<Vertex<T>> getVertex(T name) {
         readLock.lock();
         try {
-            return Optional.ofNullable(vertices.get(label));
+            return Optional.ofNullable(vertices.get(name));
         } finally {
             readLock.unlock();
         }
     }
 
     @Override
-    public boolean hasVertex(T label) {
+    public boolean hasVertex(T name) {
         readLock.lock();
         try {
-            return this.vertices.containsKey(label);
+            return this.vertices.containsKey(name);
         } finally {
             readLock.unlock();
         }
@@ -376,7 +376,7 @@ public class ThreadsafeGraph<T> implements Graph<T> {
             Vertex<T> current = queue.remove();
             boolean color = colors.get(current);
 
-            for (Edge<T> edge : sC.getEdgesFrom(current.getLabel())) {
+            for (Edge<T> edge : sC.getEdgesFrom(current.getName())) {
                 Vertex<T> dest = sC.getVertex(edge.getDestination()).get();
 
                 // if the destination has already been colored with the same color as current vertex, the graph
@@ -433,11 +433,11 @@ public class ThreadsafeGraph<T> implements Graph<T> {
      */
     @Override
     public Graph<T> inducedSubGraph(Set<T> vertices) {
-        if (!this.getVertices().stream().map(Vertex::getLabel).collect(Collectors.toSet()).containsAll(vertices)) {
+        if (!this.getVertices().stream().map(Vertex::getName).collect(Collectors.toSet()).containsAll(vertices)) {
             throw new IllegalArgumentException("Invalid sub-graph: not all vertices passed belongs to the graph");
         }
         return new ThreadsafeGraph<>(
-                this.getVertices().stream().filter(v -> vertices.contains(v.getLabel())).collect(Collectors.toSet()),
+                this.getVertices().stream().filter(v -> vertices.contains(v.getName())).collect(Collectors.toSet()),
                 getEdges()
                         .stream()
                         .filter(e -> vertices.contains(e.getSource()) && vertices.contains(e.getDestination()))
@@ -519,7 +519,7 @@ public class ThreadsafeGraph<T> implements Graph<T> {
             topologicalOrder.forEach(vT -> {
                 // topologicalOrder contains vertices from the transpose graph
                 // INVARIANT vT in GT => v in G
-                Vertex<T> v = getVertex(vT.getLabel()).get();
+                Vertex<T> v = getVertex(vT.getName()).get();
 
                 if (currentTime.get() > 0 && !visited.contains(vT)) {
                     // We don't actually need exit times here, so we reuse the map to keep track of the elements added at each call
@@ -576,8 +576,8 @@ public class ThreadsafeGraph<T> implements Graph<T> {
         }
     }
 
-    private String vertexErrorMessage(T label) {
-        return "Unknown vertex " + label;
+    private String vertexErrorMessage(T name) {
+        return "Unknown vertex " + name;
     }
 
     public Map<Vertex<T>, Integer> DFS() {
@@ -763,7 +763,7 @@ public class ThreadsafeGraph<T> implements Graph<T> {
                 break;
             }
             // INVARIANT: b/c of how predecessors is constructed, there MUST be an edge predecessor -> destination
-            path.add(getEdge(predecessor.getLabel(), destination.getLabel()).get());
+            path.add(getEdge(predecessor.getName(), destination.getName()).get());
             destination = predecessor;
         }
         Collections.reverse(path);
@@ -779,7 +779,7 @@ public class ThreadsafeGraph<T> implements Graph<T> {
                 .connectedComponents()
                 .stream()
                 .allMatch(cc -> isPlanarConnectedComponent(
-                        graph.inducedSubGraph(cc.stream().map(Vertex::getLabel).collect(Collectors.toSet()))));
+                        graph.inducedSubGraph(cc.stream().map(Vertex::getName).collect(Collectors.toSet()))));
     }
 
     /**
@@ -813,13 +813,13 @@ public class ThreadsafeGraph<T> implements Graph<T> {
             }
         }
 
-        Set<T> vertexLabels = graph.getVertices().stream().map(Vertex::getLabel).collect(Collectors.toSet());
+        Set<T> vertexNames = graph.getVertices().stream().map(Vertex::getName).collect(Collectors.toSet());
         for (Vertex<T> v : graph.getVertices()) {
-            vertexLabels.remove(v.getLabel());
-            if (!isPlanar(graph.inducedSubGraph(vertexLabels))) {
+            vertexNames.remove(v.getName());
+            if (!isPlanar(graph.inducedSubGraph(vertexNames))) {
                 return false;
             }
-            vertexLabels.add(v.getLabel());
+            vertexNames.add(v.getName());
         }
 
         Graph<T> subG = new ThreadsafeGraph<>(graph.getVertices(), graph.getEdges());

@@ -6,17 +6,17 @@ import java.io.IOException;
 import java.util.*;
 
 public interface Graph<T> {
-    default void addVertex(T label) throws IllegalArgumentException {
-        addVertex(label, 0);
+    default void addVertex(T name) throws IllegalArgumentException {
+        addVertex(name, 0);
     }
 
-    void addVertex(T label, double weight) throws IllegalArgumentException;
+    void addVertex(T name, double weight) throws IllegalArgumentException;
 
-    Optional<Vertex<T>> getVertex(T label);
+    Optional<Vertex<T>> getVertex(T name);
 
-    boolean hasVertex(T label);
+    boolean hasVertex(T name);
 
-    Optional<Vertex<T>> deleteVertex(T label);
+    Optional<Vertex<T>> deleteVertex(T name);
 
     Collection<Vertex<T>> getVertices();
 
