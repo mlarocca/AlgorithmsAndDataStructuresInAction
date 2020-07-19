@@ -183,3 +183,38 @@ Graphs are very similar to trees. They are both made of entities (vertices/nodes
 -	In trees edges are somehow implicit: since they can only go from a node to its children, it’s more common to talk about parent/children relations than explicitly list edges. Also, because of this, trees are implicitly represented with adjacency lists.
 
 Furthermore, trees have other peculiar characteristics that makes them a strict subset of the whole set of graphs; in particular, any tree is a _simple_, _undirected_, _connected_ and _acyclic_ graph.
+
+
+# **Graph Embedding**
+## | [Chapter 15](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-15) |
+
+Graphs are abstract data structures: to visualize them, it’s possible to embed a graph to a geometrical space, for example, it’s possible to create embeddings to the plane.
+
+An **embedding** is a mapping between vertices and points in an Euclidean space, and between edges and (Jordan) curves in the same space.
+
+A **planar embedding** is an embedding that maps a graph to the plane, and none of the edges intersect another edge or a vertex (besides its endpoints). A graph that has a planar embedding is called a _planar graph_.
+
+# **Gradient Descent**
+## | [Chapter 16](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-16) |
+
+**Gradient descent** is a local optimization meta-heuristic: usually it starts by selecting a random solution, and then it uses the knowledge we have on the cost function to update the solution.
+
+The algorithm is based on the geometric interpretation of cost functions; for differentiable functions, we assume each solution to the problem can be interpreted as a point in an n-dimensional space, and a single step of gradient descent is performed by computing the gradient of the cost function at current point. Based on the gradient, we can update the n-dimensional point, and find a better solution.
+
+# **Simulated Annealing**
+## | [Chapter 17](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-17) | [JavaScript](https://github.com/mlarocca/jsgraphs/blob/master/src/algo/simulated_annealing.mjs) (JsGraphs lib) |
+
+**Simulated annealing** is a powerful optimization technique, able to balance narrow and broad search, exploring a large portion of the problem space and managing to make local progresses. It’s been around since the 1970s, and that explains why it’s one of the favorite heuristics used in optimization; during the last 20-30 years, new optimization techniques have been developed, but the adoption ratio for simulated annealing remained high, and recently it has also been revived with quantum annealing.
+
+This meta-heuristic takes its name from a technique used in metallurgy, _annealing_, that consists of repeated cycles where a material is heated up and then controllably cooled to improve its strength: something like a blacksmith forging an iron sword by quenching it in cold water, but in a more controlled way (and without water!). Likewise, _simulated annealing_ sometimes goes _uphill_ in the cost function landscape, accepting a transition to a worse solution, in order to try and step out of local minima.
+
+It can be applied to some of the hardest problems on graphs, although it is slower than _gradient descent_ to get to minima: _GD_ takes the fastest route, so it’s hard to beat on a clear course.
+The caveat is that _gradient descent_ requires a differentiable cost function, and gets easily stuck in local minima, while _simulated annealing_ does not.
+
+# **Genetic Algorithms**
+## | [Chapter 18](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-18) | [JavaScript](https://github.com/mlarocca/jsgraphs/blob/master/src/algo/genetic_algorithm.mjs) (JsGraphs lib) |
+
+While *gradient descent* and *simulated annealing* are great optimization techniques, they both have shortcomings: the former if fast but has a tendency to get stuck in local minima, and needs the cost function to be differentiable; the latter can be quite slow in converging.
+
+The **genetic algorithm** is  yet another optimization technique that uses an approach inspired by nature to overcome both issues, providing more resilience to local minima by evolving a pool of solutions, and at the same time speeding up convergence.
+
