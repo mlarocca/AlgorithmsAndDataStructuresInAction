@@ -1,6 +1,6 @@
 # **Algorithms and Data Structures in Action**
 
-This repository contains a collections of data structures and algorithms from the Manning book _Algorithms and Data Structures in Action_-
+This repository contains a collections of data structures and algorithms from the Manning book _Algorithms and Data Structures in Action_
 
 You can buy the book on Manning's web site:
 https://www.manning.com/books/algorithms-and-data-structures-in-action
