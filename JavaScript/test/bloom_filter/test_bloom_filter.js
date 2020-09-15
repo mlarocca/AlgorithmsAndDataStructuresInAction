@@ -127,9 +127,9 @@ describe('BloomFilter Creation', () => {
 
     describe('# Allocation error', () => {
       it('should throw an exception if the desired precision requires too big an array to be allocated', () => {
-        expect(() => new BloomFilter(1000000000, 0.1)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
+        expect(() => new BloomFilter(10000000000000, 0.1)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
         expect(() => new BloomFilter(100000000, 0.0000000001)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
-        expect(() => new BloomFilter(10000000, 1e-55)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
+        expect(() => new BloomFilter(10000000, 1e-155)).to.throw(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_SIZE());
       });
     });
   });

@@ -74,7 +74,7 @@ function writeBit(bitsArray, index) {
  */
 function findBitCoordinates(bitsArray, index) {
   let bitsInElement = 8 * bitsArray.BYTES_PER_ELEMENT;
-  let bufferIndex = Math.ceil(index / bitsInElement);
+  let bufferIndex = Math.floor(index / bitsInElement);
   let bitIndex = index % bitsInElement;
   return [bufferIndex, bitIndex];
 }
