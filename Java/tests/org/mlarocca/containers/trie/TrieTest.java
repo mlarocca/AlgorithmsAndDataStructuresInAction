@@ -243,7 +243,7 @@ public class TrieTest {
         };
 
         Set<String> result = toSet.apply(trie.keys());
-        assertTrue(result.isEmpty());
+        assertTrue("The result should be empty on an empty trie", result.isEmpty());
 
         trie = mockedExample();
         result = toSet.apply(trie.keys());
@@ -252,7 +252,7 @@ public class TrieTest {
                 toSet.apply(
                         Arrays.asList("end", "and", "anti", "be", "top", "so", "tor", "torus", "bee", "bees", "beat"));
 
-        assertEquals(expected, result);
+        assertEquals("It should return all keys in the trie", expected, result);
     }
 
     @Test
@@ -267,7 +267,7 @@ public class TrieTest {
 
         assertTrue(trie.remove("and"));
         assertTrue(trie.remove("anti"));
-\        assertEquals("min returns the shortest string", "be", trie.min().get());
+        assertEquals("min returns the shortest string", "be", trie.min().get());
 
         trie.add("");
         assertEquals("min returns the shortest string", "", trie.min().get());
@@ -285,5 +285,51 @@ public class TrieTest {
 
         assertTrue(trie.remove("torus"));
         assertEquals("tor", trie.max().get());
+    }
+
+    @Test
+    public void keysWithPrefix() {
+        Trie trie = new Trie();
+
+        Function<Iterable<String>, Set<String>> toSet = iterable -> {
+            HashSet<String> keys = new HashSet<>();
+            iterable.forEach(s -> keys.add(s));
+            return keys;
+        };
+
+        Set<String> result = toSet.apply(trie.keysWithPrefix(""));
+        assertTrue("The result should be empty on an empty trie", result.isEmpty());
+
+        trie = mockedExample();
+        result = toSet.apply(trie.keysWithPrefix(""));
+        Set<String> expected =
+                toSet.apply(
+                        Arrays.asList("end", "and", "anti", "be", "top", "so", "tor", "torus", "bee", "bees", "beat"));
+
+        assertEquals("Using an empty string as prefix, it should return all keys", expected, result);
+
+        result = toSet.apply(trie.keysWithPrefix("tor"));
+        expected =
+                toSet.apply(
+                        Arrays.asList("tor", "torus"));
+
+        assertEquals("The result should include the prefix, if stored", expected, result);
+
+        result = toSet.apply(trie.keysWithPrefix("to"));
+        expected =
+                toSet.apply(
+                        Arrays.asList("top", "tor", "torus"));
+
+        assertEquals("It should work also when the prefix is not in the trie", expected, result);
+
+        result = toSet.apply(trie.keysWithPrefix("b"));
+        expected =
+                toSet.apply(
+                        Arrays.asList("be", "bee", "bees", "beat"));
+
+        assertEquals( expected, result);
+
+        result = toSet.apply(trie.keysWithPrefix("geek"));
+        assertTrue("The result should be empty for a prefix not in the trie", result.isEmpty());
     }
 }
