@@ -2,6 +2,7 @@ package org.mlarocca.containers.trie;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class Trie implements StringTree {
 
@@ -39,7 +40,7 @@ public class Trie implements StringTree {
 
     @Override
     public Optional<String> search(String element) {
-        return Optional.ofNullable(root.getNodeFor(element)).map(n -> element);
+        return Optional.ofNullable(root.getNodeFor(element)).map(n -> n.storesKey ? element : null);
     }
 
     @Override
@@ -64,7 +65,7 @@ public class Trie implements StringTree {
 
     @Override
     public Iterable<String> keysWithPrefix(String prefix) {
-        return null;
+        return root.keysWithPrefix(prefix);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class Trie implements StringTree {
             if (charIndex > key.length()) {
                 return null;
             } else if (charIndex == key.length()) {
-                return storesKey ? this : null;
+                return this;
             } else {
                 Character character = key.charAt(charIndex);
                 if (children.containsKey(character)) {
@@ -229,5 +230,14 @@ public class Trie implements StringTree {
             // longer strings are always lexicographically larger (so if we found something in the sub-tree...)
             return maxInSubtree.or(() -> storesKey ? Optional.of(path) : Optional.empty());
         }
+
+        private Iterable<String> keysWithPrefix(String prefix) {
+            TrieNode node = this.getNodeFor(prefix);
+
+            return node == null
+                    ? new HashSet<>()
+                    : node.keys().stream().map(s -> prefix + s).collect(Collectors.toSet());
+        }
+
     }
 }
