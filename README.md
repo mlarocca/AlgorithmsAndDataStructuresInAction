@@ -73,7 +73,7 @@ We use a disjoint-set every time that, starting with a set of objects, we would 
 
 
 # **Trie**
-## | [Chapter 6](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-6) | Java (in progress) | [JavaScript](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/JavaScript/src/trie/trie.js) |
+## | [Chapter 6](https://livebook.manning.com/book/algorithms-and-data-structures-in-action/chapter-6) | [Java](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Java/src/org/mlarocca/containers/trie/Trie.java) | [JavaScript](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/JavaScript/src/trie/trie.js) |
 
 
 [![An example of a trie](./readme/thumbs/trie.md.jpg)](./JavaScript/readme/trie.png)
