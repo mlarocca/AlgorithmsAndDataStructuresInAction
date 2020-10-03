@@ -2,77 +2,153 @@ package org.mlarocca.containers.trie;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class Trie implements StringTree {
 
     TrieNode root;
 
-    /** Creates an empty trie.     *
+    /**
+     * To make this container thread-safe, we need to synchronize all public methods.
+     * Instead of using a generic reentrant lock through the synchronized keyword,
+     * we define a Read/Write lock, so if we have more reads than writes, we can hold the lock
+     * without blocking other reads. Only writes block all other operations.
+     */
+    private ReentrantReadWriteLock.ReadLock readLock;
+    private ReentrantReadWriteLock.WriteLock writeLock;
+
+    /**
+     * Creates an empty trie.
      */
     public Trie() {
         root = new TrieNode();
+
+        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+        readLock = lock.readLock();
+        writeLock = lock.writeLock();
     }
 
     @Override
     public boolean add(String element) {
-        return root.add(element) != null;
+        writeLock.lock();
+        try {
+            return root.add(element) != null;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public boolean remove(String element) {
-        return root.remove(element);
+        writeLock.lock();
+        try {
+            return root.remove(element);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public void clear() {
-        // Let the garbage collector do the heavy lifting
-        this.root = new TrieNode();
+        writeLock.lock();
+        try {
+            // Let the garbage collector do the heavy lifting
+            this.root = new TrieNode();
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public Optional<String> min() {
-        return root.min("");
+        readLock.lock();
+        try {
+            return root.min("");
+
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Optional<String> max() {
-        return root.max("");
+        readLock.lock();
+        try {
+            return root.max("");
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Optional<String> search(String element) {
-        return Optional.ofNullable(root.getNodeFor(element)).map(n -> n.storesKey ? element : null);
+        readLock.lock();
+        try {
+            return Optional.ofNullable(root.getNodeFor(element)).map(n -> n.storesKey ? element : null);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean isEmpty() {
-        return this.size() == 0;
+        readLock.lock();
+        try {
+            return this.size() == 0;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public int size() {
-        return root.size();
+        readLock.lock();
+        try {
+            return root.size();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public int height() {
-        return root.height();
+        readLock.lock();
+        try {
+            return root.height();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Optional<String> longestPrefixOf(String prefix) {
-        return Optional.ofNullable(root.longestPrefixOf(prefix));
+        readLock.lock();
+        try {
+            return Optional.ofNullable(root.longestPrefixOf(prefix));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Iterable<String> keysWithPrefix(String prefix) {
-        return root.keysWithPrefix(prefix);
+        readLock.lock();
+        try {
+            return root.keysWithPrefix(prefix);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Iterable<String> keys() {
-        return root.keys();
+        readLock.lock();
+        try {
+            return root.keys();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**
@@ -86,7 +162,7 @@ public class Trie implements StringTree {
         /**
          * Constructs a new node, and all its descendants needed o store the key passed.
          *
-         * @param key A string to be stored.
+         * @param key       A string to be stored.
          * @param charIndex The index of the next character in the string to be stored in the trie. We use this
          *                  parameters to index string key, so that we don't have to create new strings at each call
          *                  (which would be quite expensive). Instead of splitting the argument into head and tails,
@@ -161,13 +237,12 @@ public class Trie implements StringTree {
         }
 
         /**
-         *
-         * @param key The key to be removed from the trie.
+         * @param key       The key to be removed from the trie.
          * @param charIndex The index of he next character to check in the input string.
-         * @param purge This is set to true if we need to purge the path traversed while deleting a key.
-         *              It may happen, in fact, that a node has only one child, containing a single key: if we delete
-         *              that key, there is no point in keeping the branch (which can be arbitrarily long) now that
-         *              it's empty.
+         * @param purge     This is set to true if we need to purge the path traversed while deleting a key.
+         *                  It may happen, in fact, that a node has only one child, containing a single key: if we delete
+         *                  that key, there is no point in keeping the branch (which can be arbitrarily long) now that
+         *                  it's empty.
          * @return true iff the argument was successfully deleted from the trie.
          */
         private boolean remove(String key, int charIndex, AtomicBoolean purge) {

@@ -327,7 +327,7 @@ public class TrieTest {
                 toSet.apply(
                         Arrays.asList("be", "bee", "bees", "beat"));
 
-        assertEquals( expected, result);
+        assertEquals(expected, result);
 
         result = toSet.apply(trie.keysWithPrefix("geek"));
         assertTrue("The result should be empty for a prefix not in the trie", result.isEmpty());
@@ -371,5 +371,8 @@ public class TrieTest {
 
         assertEquals("Should returns the longest matching prefix", "shells", trie.longestPrefixOf("shells").get());
         assertEquals("Should returns the longest matching prefix", "shells", trie.longestPrefixOf("shellsort").get());
+
+        trie.add("");
+        assertEquals("Should return the empty string when stored", "", trie.longestPrefixOf("").get());
     }
 }
