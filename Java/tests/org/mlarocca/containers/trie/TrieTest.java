@@ -332,4 +332,44 @@ public class TrieTest {
         result = toSet.apply(trie.keysWithPrefix("geek"));
         assertTrue("The result should be empty for a prefix not in the trie", result.isEmpty());
     }
+
+    @Test
+    public void longestPrefixOf() {
+        Trie trie = new Trie();
+        assertTrue(trie.longestPrefixOf("").isEmpty());
+
+        trie.add("she");
+        trie.add("sells");
+        trie.add("sea");
+        trie.add("shells");
+        trie.add("on");
+        trie.add("the");
+        trie.add("shore");
+
+        assertTrue("No prefix for empty string when it's not stored", trie.longestPrefixOf("").isEmpty());
+        assertTrue("Should be empty when no prefix is stored in the trie", trie.longestPrefixOf("s").isEmpty());
+        assertTrue("Should be empty when no prefix is stored in the trie", trie.longestPrefixOf("sh").isEmpty());
+        assertTrue("Should be empty when no prefix is stored in the trie", trie.longestPrefixOf("t").isEmpty());
+        assertTrue("Should be empty when no prefix is stored in the trie", trie.longestPrefixOf("th").isEmpty());
+
+        assertEquals("Should return the longest prefix when it's a perfect match",
+                "she",
+                trie.longestPrefixOf("she").get());
+        assertEquals("Should return the longest prefix when it's a perfect match",
+                "the",
+                trie.longestPrefixOf("the").get());
+
+        assertEquals("Should returns the longest prefix when it's a proper prefix",
+                "she",
+                trie.longestPrefixOf("shell").get());
+        assertEquals("Should returns the longest prefix when it's a proper prefix",
+                "she",
+                trie.longestPrefixOf("shepard").get());
+        assertEquals("Should returns the longest prefix when it's a proper prefix",
+                "the",
+                trie.longestPrefixOf("there").get());
+
+        assertEquals("Should returns the longest matching prefix", "shells", trie.longestPrefixOf("shells").get());
+        assertEquals("Should returns the longest matching prefix", "shells", trie.longestPrefixOf("shellsort").get());
+    }
 }
