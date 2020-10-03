@@ -8,6 +8,8 @@ public class Trie implements StringTree {
 
     TrieNode root;
 
+    /** Creates an empty trie.     *
+     */
     public Trie() {
         root = new TrieNode();
     }
@@ -59,8 +61,8 @@ public class Trie implements StringTree {
     }
 
     @Override
-    public String longestPrefixOf(String s) {
-        return null;
+    public Optional<String> longestPrefixOf(String prefix) {
+        return Optional.ofNullable(root.longestPrefixOf(prefix));
     }
 
     @Override
@@ -73,11 +75,23 @@ public class Trie implements StringTree {
         return root.keys();
     }
 
+    /**
+     * Internal class TrieNode models a single node in the trie.
+     */
     private class TrieNode {
 
         Map<Character, TrieNode> children;
         boolean storesKey;
 
+        /**
+         * Constructs a new node, and all its descendants needed o store the key passed.
+         *
+         * @param key A string to be stored.
+         * @param charIndex The index of the next character in the string to be stored in the trie. We use this
+         *                  parameters to index string key, so that we don't have to create new strings at each call
+         *                  (which would be quite expensive). Instead of splitting the argument into head and tails,
+         *                  we pass a reference to the original string, and only increase the index.
+         */
         private TrieNode(String key, int charIndex) {
             children = new HashMap<>();
             if (charIndex >= key.length()) {
@@ -146,6 +160,16 @@ public class Trie implements StringTree {
             return this.remove(key, 0, new AtomicBoolean(false));
         }
 
+        /**
+         *
+         * @param key The key to be removed from the trie.
+         * @param charIndex The index of he next character to check in the input string.
+         * @param purge This is set to true if we need to purge the path traversed while deleting a key.
+         *              It may happen, in fact, that a node has only one child, containing a single key: if we delete
+         *              that key, there is no point in keeping the branch (which can be arbitrarily long) now that
+         *              it's empty.
+         * @return true iff the argument was successfully deleted from the trie.
+         */
         private boolean remove(String key, int charIndex, AtomicBoolean purge) {
             if (charIndex > key.length()) {
                 return false;
@@ -239,5 +263,27 @@ public class Trie implements StringTree {
                     : node.keys().stream().map(s -> prefix + s).collect(Collectors.toSet());
         }
 
+        private String longestPrefixOf(String prefix) {
+            return this.longestPrefixOf(prefix, 0);
+        }
+
+        private String longestPrefixOf(String prefix, int charIndex) {
+            if (charIndex == prefix.length()) {
+                return storesKey ? prefix : null;
+            } else {
+                char next = prefix.charAt(charIndex);
+                String longestFound = null;
+                // Depth first search: we are looking for the longest common prefix
+                if (children.containsKey(next)) {
+                    longestFound = children.get(next).longestPrefixOf(prefix, charIndex + 1);
+                }
+
+                if (storesKey && longestFound == null) {
+                    return prefix.substring(0, charIndex);
+                } else {
+                    return longestFound;
+                }
+            }
+        }
     }
 }
