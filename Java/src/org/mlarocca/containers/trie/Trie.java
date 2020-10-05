@@ -67,7 +67,7 @@ public class Trie implements StringTree {
     public Optional<String> min() {
         readLock.lock();
         try {
-            return root.min("");
+            return root.min();
 
         } finally {
             readLock.unlock();
@@ -78,7 +78,7 @@ public class Trie implements StringTree {
     public Optional<String> max() {
         readLock.lock();
         try {
-            return root.max("");
+            return root.max();
         } finally {
             readLock.unlock();
         }
@@ -314,7 +314,11 @@ public class Trie implements StringTree {
                     .forEach(entry -> entry.getValue().keys(currentPath + entry.getKey(), keys));
         }
 
-        public Optional<String> min(String path) {
+        public Optional<String> min() {
+            return min("");
+        }
+
+        private Optional<String> min(String path) {
             if (storesKey) {
                 // shorter strings are always lexicographically smaller
                 return Optional.of(path);
@@ -324,7 +328,11 @@ public class Trie implements StringTree {
             }
         }
 
-        public Optional<String> max(String path) {
+        private Optional<String> max() {
+            return max("");
+        }
+
+        private Optional<String> max(String path) {
             // Assumes that we do purge the trie when we remove a key
             Optional<String> maxInSubtree = children.keySet().stream().max(Character::compareTo)
                     .flatMap(c -> children.get(c).max(path + c));
