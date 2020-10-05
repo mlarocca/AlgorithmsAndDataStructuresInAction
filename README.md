@@ -1,5 +1,9 @@
 # **Algorithms and Data Structures in Action**
 
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/mlarocca/AlgorithmsAndDataStructuresInAction.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mlarocca/AlgorithmsAndDataStructuresInAction/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/mlarocca/AlgorithmsAndDataStructuresInAction.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mlarocca/AlgorithmsAndDataStructuresInAction/context:javascript)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/mlarocca/AlgorithmsAndDataStructuresInAction.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mlarocca/AlgorithmsAndDataStructuresInAction/context:python)
+
 This repository contains a collections of data structures and algorithms from the Manning book _Algorithms and Data Structures in Action_
 
 You can buy the book on Manning's web site:

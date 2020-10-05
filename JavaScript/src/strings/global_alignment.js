@@ -129,7 +129,7 @@ class GlobalAlignment {
 
     const n = pattern.length + 1;
     const m = text.length + 1;
-    let prevCol = new Array(n);
+    let prevCol;
     let currentCol = new Array(n);
 
     for (let i = 0; i < n; i++) {
