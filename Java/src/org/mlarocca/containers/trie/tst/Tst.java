@@ -5,6 +5,7 @@ import org.mlarocca.containers.trie.StringTree;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 public class Tst implements StringTree {
 
@@ -87,7 +88,16 @@ public class Tst implements StringTree {
 
     @Override
     public Iterable<String> keysWithPrefix(String prefix) {
-        return null;
+        if (prefix.isEmpty()) {
+            return this.keys();
+        }
+        readLock.lock();
+        try {
+            return root == null ? new HashSet<>() : root.keysWithPrefix(prefix);
+        } finally {
+            readLock.unlock();
+        }
+
     }
 
     @Override
@@ -268,28 +278,29 @@ public class Tst implements StringTree {
         }
 
         public TstNode search(String key) {
-            return search(key, 0);
+            TstNode node = getNodeFor(key, 0);
+            return (node != null && node.storesKey) ? node : null;
         }
 
-        private TstNode search(String key, int charIndex) {
+        private TstNode getNodeFor(String key, int charIndex) {
             if (charIndex >= key.length()) {
                 return null;
             }
             Character c = key.charAt(charIndex);
             if (c.equals(this.character)) {
                 if (charIndex == key.length() - 1) {
-                    return storesKey ? this : null;
+                    return this;
                 } else {
-                    return this.middle == null ? null : this.middle.search(key, charIndex + 1);
+                    return this.middle == null ? null : this.middle.getNodeFor(key, charIndex + 1);
                 }
             } else if (c.compareTo(this.character) < 0) {
-                return left == null ? null : left.search(key, charIndex);
+                return left == null ? null : left.getNodeFor(key, charIndex);
             } else {
-                return right == null ? null : right.search(key, charIndex);
+                return right == null ? null : right.getNodeFor(key, charIndex);
             }
         }
 
-        public Iterable<String> keys() {
+        public List<String> keys() {
             List<String> keys = Collections.synchronizedList(new ArrayList<>());
             this.keys("", keys);
             return keys;
@@ -310,6 +321,18 @@ public class Tst implements StringTree {
             if (middle != null) {
                 middle.keys(currentPath + character, keys);
             }
+        }
+
+        public Iterable<String> keysWithPrefix(String prefix) {
+            // Invariant: prefix is not empty
+            TstNode node = this.getNodeFor(prefix, 0);
+
+            return node == null
+                    ? new HashSet<>()
+                    : node.keys().stream()
+                    // All keys in node.keys already include the last character in prefix
+                    .map(s -> prefix.substring(0, prefix.length() - 1) + s)
+                    .collect(Collectors.toSet());
         }
 
         public String min() {
