@@ -73,17 +73,22 @@ public class Tst implements StringTree {
 
     @Override
     public Optional<String> search(String element) {
-        writeLock.lock();
+        readLock.lock();
         try {
-            return root.search(element) == null ? Optional.empty() : Optional.of(element);
+            return root == null || root.search(element) == null ? Optional.empty() : Optional.of(element);
         } finally {
-            writeLock.unlock();
+            readLock.unlock();
         }
     }
 
     @Override
     public Optional<String> longestPrefixOf(String prefix) {
-        return Optional.empty();
+        readLock.lock();
+        try {
+            return Optional.ofNullable(root).map(node -> node.longestPrefixOf(prefix));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
@@ -334,6 +339,34 @@ public class Tst implements StringTree {
                     .map(s -> prefix.substring(0, prefix.length() - 1) + s)
                     .collect(Collectors.toSet());
         }
+
+        public String longestPrefixOf(String key) {
+            return this.longestPrefixOf(key, 0);
+        }
+
+        public String longestPrefixOf(String key, int charIndex) {
+            if (charIndex >= key.length()) {
+                return null;
+            }
+            String result = null;
+            Character c = key.charAt(charIndex);
+            if (c.equals(this.character)) {
+                if (charIndex == key.length() - 1) {
+                    return storesKey ? key : null;
+                } else {
+                    result = middle == null ? null : middle.longestPrefixOf(key, charIndex + 1);
+                    if (result == null && this.storesKey) {
+                        result = key.substring(0, charIndex + 1);
+                    }
+                }
+            } else if (c.compareTo(this.character) < 0) {
+                result = left == null ? null : left.longestPrefixOf(key, charIndex);
+            } else {
+                result = right == null ? null : right.longestPrefixOf(key, charIndex);
+            }
+            return result;
+        }
+
 
         public String min() {
             return this.min("");
