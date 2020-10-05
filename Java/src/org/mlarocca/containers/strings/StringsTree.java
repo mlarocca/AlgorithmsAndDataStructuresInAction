@@ -1,4 +1,4 @@
-package org.mlarocca.containers.stringstree;
+package org.mlarocca.containers.strings;
 
 import org.mlarocca.containers.tree.SearchTree;
 

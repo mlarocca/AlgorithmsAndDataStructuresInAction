@@ -1,6 +1,6 @@
-package org.mlarocca.containers.stringstree.tst;
+package org.mlarocca.containers.strings.tst;
 
-import org.mlarocca.containers.stringstree.StringsTree;
+import org.mlarocca.containers.strings.StringsTree;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
