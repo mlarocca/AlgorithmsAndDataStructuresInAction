@@ -1,4 +1,4 @@
-package org.mlarocca.containers.stringstree.trie;
+package org.mlarocca.containers.strings.trie;
 
 import org.junit.Test;
 
