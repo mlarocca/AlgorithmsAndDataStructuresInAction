@@ -60,7 +60,7 @@ public class HeapTest {
         Arrays.asList(2, 3, 4, 5).forEach(branchingFactor -> {
             Heap<Integer> heap = new Heap<>();
             int numElements = 5 + rnd.nextInt(10);
-            IntStream.range(0 , numElements).forEach(i -> {
+            IntStream.range(0, numElements).forEach(i -> {
                 assertTrue(heap.add(i));
             });
             assertEquals(numElements, heap.size());

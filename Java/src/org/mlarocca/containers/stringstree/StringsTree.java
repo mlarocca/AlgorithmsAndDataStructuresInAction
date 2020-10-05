@@ -1,15 +1,14 @@
-package org.mlarocca.containers.trie;
+package org.mlarocca.containers.stringstree;
 
 import org.mlarocca.containers.tree.SearchTree;
 
 import java.util.Optional;
 
-public interface StringTree extends SearchTree<String> {
+public interface StringsTree extends SearchTree<String> {
     /**
      * Search the tree for the longest key that is a prefix of prefix.
      *
      * @param prefix A non-empty string.
-     *
      * @return The (possibly empty) longest prefix of `prefix` that is stored in the trie.
      */
     Optional<String> longestPrefixOf(String prefix);

@@ -1,11 +1,13 @@
-package org.mlarocca.containers.trie;
+package org.mlarocca.containers.stringstree.trie;
+
+import org.mlarocca.containers.stringstree.StringsTree;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
-public class Trie implements StringTree {
+public class Trie implements StringsTree {
 
     TrieNode root;
 

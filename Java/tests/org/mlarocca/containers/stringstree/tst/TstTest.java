@@ -1,7 +1,7 @@
-package org.mlarocca.containers.trie.tst;
+package org.mlarocca.containers.stringstree.tst;
 
 import org.junit.Test;
-import org.mlarocca.containers.trie.Trie;
+import org.mlarocca.containers.stringstree.trie.Trie;
 
 import java.util.*;
 import java.util.function.Function;
