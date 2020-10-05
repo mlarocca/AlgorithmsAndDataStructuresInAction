@@ -137,7 +137,10 @@ public class TrieTest {
     public void search() {
         List<String> keys = Arrays.asList("a", "ab", "abc", "ac", "aca", "f", "g");
         Collections.shuffle(keys);
+
         Trie trie = new Trie();
+        assertTrue("Search on an empty tst should not crash", trie.search("").isEmpty());
+
         for (String str : keys) {
             trie.add(str);
         }

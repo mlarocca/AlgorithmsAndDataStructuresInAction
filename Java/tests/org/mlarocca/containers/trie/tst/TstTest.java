@@ -70,6 +70,7 @@ public class TstTest {
         assertTrue(tst.search("dem").isPresent());
     }
 
+
     @Test(expected = IllegalArgumentException.class)
     public void addEmptyString() {
         Trie trie = new Trie();
@@ -135,6 +136,8 @@ public class TstTest {
         List<String> keys = Arrays.asList("a", "ab", "abc", "ac", "aca", "f", "g");
         Collections.shuffle(keys);
         Tst tst = new Tst();
+        assertTrue("Search on an empty tst should not crash", tst.search("").isEmpty());
+
         for (String str : keys) {
             tst.add(str);
         }
@@ -364,8 +367,5 @@ public class TstTest {
 
         assertEquals("Should returns the longest matching prefix", "shells", tst.longestPrefixOf("shells").get());
         assertEquals("Should returns the longest matching prefix", "shells", tst.longestPrefixOf("shellsort").get());
-
-        tst.add("");
-        assertEquals("Should return the empty string when stored", "", tst.longestPrefixOf("").get());
     }
 }

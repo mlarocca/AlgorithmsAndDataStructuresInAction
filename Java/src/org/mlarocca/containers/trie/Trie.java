@@ -349,7 +349,7 @@ public class Trie implements StringTree {
                     : node.keys().stream().map(s -> prefix + s).collect(Collectors.toSet());
         }
 
-        private String longestPrefixOf(String prefix) {
+        public String longestPrefixOf(String prefix) {
             return this.longestPrefixOf(prefix, 0);
         }
 
