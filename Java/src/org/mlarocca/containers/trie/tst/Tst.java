@@ -4,13 +4,27 @@ import org.mlarocca.containers.trie.StringTree;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Tst implements StringTree {
 
     private TstNode root;
 
+    /**
+     * To make this container thread-safe, we need to synchronize all public methods.
+     * Instead of using a generic reentrant lock through the synchronized keyword,
+     * we define a Read/Write lock, so if we have more reads than writes, we can hold the lock
+     * without blocking other reads. Only writes block all other operations.
+     */
+    private ReentrantReadWriteLock.ReadLock readLock;
+    private ReentrantReadWriteLock.WriteLock writeLock;
+
     public Tst() {
         root = null;
+
+        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+        readLock = lock.readLock();
+        writeLock = lock.writeLock();
     }
 
     @Override
@@ -18,32 +32,52 @@ public class Tst implements StringTree {
         if (element.isEmpty()) {
             throw new IllegalArgumentException("Keys must be non-empty");
         }
-        if (root == null) {
-            root = new TstNode(element);
-            return true;
-        } else {
-            return root.add(element) != null;
+        writeLock.lock();
+        try {
+            if (root == null) {
+                root = new TstNode(element);
+                return true;
+            } else {
+                return root.add(element) != null;
+            }
+        } finally {
+            writeLock.unlock();
         }
     }
 
     @Override
     public boolean remove(String element) {
-        if (root == null) {
-            return false;
-        } else {
-            return root.remove(element);
+        writeLock.lock();
+        try {
+            if (root == null) {
+                return false;
+            } else {
+                return root.remove(element);
+            }
+        } finally {
+            writeLock.unlock();
         }
     }
 
     @Override
     public void clear() {
-        // Let the garbage collector do all the hard work
-        root = null;
+        writeLock.lock();
+        try {
+            // Let the garbage collector do all the hard work
+            root = null;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public Optional<String> search(String element) {
-        return root.search(element) == null ? Optional.empty() : Optional.of(element);
+        writeLock.lock();
+        try {
+            return root.search(element) == null ? Optional.empty() : Optional.of(element);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
@@ -58,32 +92,62 @@ public class Tst implements StringTree {
 
     @Override
     public Iterable<String> keys() {
-        return root == null ? new HashSet<>() : root.keys();
+        readLock.lock();
+        try {
+            return root == null ? new HashSet<>() : root.keys();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Optional<String> min() {
-        return Optional.ofNullable(root).map(TstNode::min);
+        readLock.lock();
+        try {
+            return Optional.ofNullable(root).map(TstNode::min);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Optional<String> max() {
-        return Optional.ofNullable(root).map(TstNode::max);
+        readLock.lock();
+        try {
+            return Optional.ofNullable(root).map(TstNode::max);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean isEmpty() {
-        return root == null || root.size() == 0;
+        readLock.lock();
+        try {
+            return root == null || root.size() == 0;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public int size() {
-        return root == null ? 0 : root.size();
+        readLock.lock();
+        try {
+            return root == null ? 0 : root.size();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public int height() {
-        return root == null ? 0 : root.height();
+        readLock.lock();
+        try {
+            return root == null ? 0 : root.height();
+        } finally {
+            readLock.unlock();
+        }
     }
 
     private class TstNode {
