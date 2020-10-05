@@ -26,7 +26,7 @@ const LN_2 = Math.log(2);
  * @private
  * @description
  * Read a bit from the internal storage.
- * 
+ *
  * @param {!Uint8Array} bitsArray An array containing all the bits for the filter, broken down by the byte.
  * @param {!Number} index The index of the bit we want to read.
  * @return {Number} 1 or 0, depending on the value set for that bit.
@@ -44,7 +44,7 @@ function readBit(bitsArray, index) {
  * @description
  * Stores a bit on the internal bits array.
  * We can only store 1s, so there is no need to pass the value to store.
- * 
+ *
  * @param {!Uint8Array} bitsArray An array containing all the bits for the filter, broken down by the byte.
  * @param {!Number} index The index of the bit we want to write.
  * @return {!boolean} true iff at least one bit was flipped, false otherwise (meaning the key was already stored in the
@@ -140,8 +140,8 @@ class BloomFilter {
    *          tolerance would be too big to allocate an array for it.
    */
   constructor(maxSize, maxTolerance = 0.01, seed = randomInt()) {
-    let maxS = parseInt(maxSize, 10);
-    let tol = parseFloat(maxTolerance, 10);
+    let maxS = parseInt(maxSize, 10); //lgtm [js/superfluous-trailing-arguments]
+    let tol = parseFloat(maxTolerance, 10); //lgtm [js/superfluous-trailing-arguments]
 
     if (Number.isNaN(maxS) || maxSize <= 0) {
       throw new TypeError(ERROR_MSG_BLOOM_FILTER_CONSTRUCTOR_MAX_SIZE(maxSize));

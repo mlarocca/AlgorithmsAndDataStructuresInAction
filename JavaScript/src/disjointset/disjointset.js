@@ -3,9 +3,7 @@ import { ERROR_MSG_INVALID_ARGUMENT } from '../common/errors.js';
 
 const ERROR_MSG_UNION_FIND_CONSTRUCTOR_ILLEGAL_ARGUMENT = (val) => `Illegal argument for DisjointSet constructor: ${val}`;
 const ERROR_MSG_UNION_FIND_CONSTRUCTOR_DUPLICATE_ELEMENT = (val) => `Duplicate element in initial set for DisjointSet constructor: ${val}`;
-const ERROR_MSG_FIND_ILLEGAL_ARGUMENT = (val) => `Illegal argument for method find: ${val}`;
 const ERROR_MSG_FIND_NOT_IN_SET = (val) => `Argument ${val} for method find does not belong to this set`;
-const ERROR_MSG_ADD_ELEMENT = (val) => `Illegal argument for method add: ${val}`;
 
 const _elements = new WeakMap();
 

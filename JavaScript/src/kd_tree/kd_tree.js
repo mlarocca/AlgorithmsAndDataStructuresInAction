@@ -291,14 +291,14 @@ class Node {
         _point.set(this, points[0]);
         _size.set(this, 1);
         //Children are leaves
-        _left.set(this, Node.Empty(dimensionality, depth + 1, this));
-        _right.set(this, Node.Empty(dimensionality, depth + 1, this));
+        _left.set(this, Node.Empty(dimensionality, depth + 1));
+        _right.set(this, Node.Empty(dimensionality, depth + 1));
         break;
       default:
         let [med, left, right] = median(points, Node.keyByDim(this.dim));
         _point.set(this, med);
-        _left.set(this, new Node(left, dimensionality, depth + 1, this));
-        _right.set(this, new Node(right, dimensionality, depth + 1, this));
+        _left.set(this, new Node(left, dimensionality, depth + 1));
+        _right.set(this, new Node(right, dimensionality, depth + 1));
         _size.set(this, 1 + _left.get(this).size + _right.get(this).size);
         break;
     }
@@ -502,8 +502,8 @@ class Node {
     let added = false;
     if (this.isEmpty()) {
       _point.set(this, point);
-      _left.set(this, Node.Empty(point.dimensionality, this.depth + 1, this));
-      _right.set(this, Node.Empty(point.dimensionality, this.depth + 1, this));
+      _left.set(this, Node.Empty(point.dimensionality, this.depth + 1));
+      _right.set(this, Node.Empty(point.dimensionality, this.depth + 1));
       _size.set(this, 1);
       added = true;
     } else if (!this.point.equals(point)) {
