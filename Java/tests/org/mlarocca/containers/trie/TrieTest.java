@@ -63,15 +63,19 @@ public class TrieTest {
         assertTrue(trie.search("demo").isPresent());
         assertTrue(trie.search("decor").isPresent());
 
-        assertFalse(trie.search("").isPresent());
-        assertTrue("Should add the empty string", trie.add(""));
-        assertEquals(7, trie.size());
-        assertTrue(trie.search("").isPresent());
-
         assertFalse(trie.search("dem").isPresent());
         assertTrue("Prefixes should be added correctly", trie.add("dem"));
-        assertEquals(8, trie.size());
+        assertEquals(7, trie.size());
         assertTrue(trie.search("dem").isPresent());
+
+        assertFalse(trie.add("de"));
+        assertEquals(7, trie.size());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void addEmptyString() {
+        Trie trie = new Trie();
+        trie.add("");
     }
 
     @Test
@@ -110,12 +114,7 @@ public class TrieTest {
         assertTrue("Remove should not have affected prefixes of removed words", trie.search("to").isPresent());
         assertEquals(trie.size(), 9);
 
-        assertTrue(trie.add(""));
-        assertEquals(trie.size(), 10);
-        assertTrue(trie.search("").isPresent());
-        assertTrue("It should remove the empty string", trie.remove(""));
-        assertFalse(trie.search("").isPresent());
-        assertEquals(trie.size(), 9);
+        assertFalse("It should handle the empty string", trie.remove(""));
     }
 
     @Test
@@ -268,9 +267,6 @@ public class TrieTest {
         assertTrue(trie.remove("and"));
         assertTrue(trie.remove("anti"));
         assertEquals("min returns the shortest string", "be", trie.min().get());
-
-        trie.add("");
-        assertEquals("min returns the shortest string", "", trie.min().get());
     }
 
     @Test
@@ -346,7 +342,7 @@ public class TrieTest {
         trie.add("the");
         trie.add("shore");
 
-        assertTrue("No prefix for empty string when it's not stored", trie.longestPrefixOf("").isEmpty());
+        assertTrue("No prefix for the empty string", trie.longestPrefixOf("").isEmpty());
         assertTrue("Should be empty when no prefix is stored in the trie", trie.longestPrefixOf("s").isEmpty());
         assertTrue("Should be empty when no prefix is stored in the trie", trie.longestPrefixOf("sh").isEmpty());
         assertTrue("Should be empty when no prefix is stored in the trie", trie.longestPrefixOf("t").isEmpty());
@@ -371,8 +367,5 @@ public class TrieTest {
 
         assertEquals("Should returns the longest matching prefix", "shells", trie.longestPrefixOf("shells").get());
         assertEquals("Should returns the longest matching prefix", "shells", trie.longestPrefixOf("shellsort").get());
-
-        trie.add("");
-        assertEquals("Should return the empty string when stored", "", trie.longestPrefixOf("").get());
     }
 }

@@ -33,6 +33,9 @@ public class Trie implements StringTree {
     public boolean add(String element) {
         writeLock.lock();
         try {
+            if (element.isEmpty()) {
+                throw new IllegalArgumentException("Keys must be non-empty");
+            }
             return root.add(element) != null;
         } finally {
             writeLock.unlock();
@@ -301,7 +304,7 @@ public class Trie implements StringTree {
             return keys;
         }
 
-        private void keys(String currentPath, List<String> keys) {
+        public void keys(String currentPath, List<String> keys) {
             if (this.storesKey) {
                 keys.add(currentPath);
             }
@@ -311,7 +314,7 @@ public class Trie implements StringTree {
                     .forEach(entry -> entry.getValue().keys(currentPath + entry.getKey(), keys));
         }
 
-        private Optional<String> min(String path) {
+        public Optional<String> min(String path) {
             if (storesKey) {
                 // shorter strings are always lexicographically smaller
                 return Optional.of(path);
@@ -321,7 +324,7 @@ public class Trie implements StringTree {
             }
         }
 
-        private Optional<String> max(String path) {
+        public Optional<String> max(String path) {
             // Assumes that we do purge the trie when we remove a key
             Optional<String> maxInSubtree = children.keySet().stream().max(Character::compareTo)
                     .flatMap(c -> children.get(c).max(path + c));
@@ -330,7 +333,7 @@ public class Trie implements StringTree {
             return maxInSubtree.or(() -> storesKey ? Optional.of(path) : Optional.empty());
         }
 
-        private Iterable<String> keysWithPrefix(String prefix) {
+        public Iterable<String> keysWithPrefix(String prefix) {
             TrieNode node = this.getNodeFor(prefix);
 
             return node == null
