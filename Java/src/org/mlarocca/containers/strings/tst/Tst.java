@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class Tst implements StringsTree {
 
-    private TstNode root;
+    private Optional<TstNode> root;
 
     /**
      * To make this container thread-safe, we need to synchronize all public methods.
@@ -21,7 +21,7 @@ public class Tst implements StringsTree {
     private ReentrantReadWriteLock.WriteLock writeLock;
 
     public Tst() {
-        root = null;
+        root = Optional.empty();
 
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         readLock = lock.readLock();
@@ -35,11 +35,11 @@ public class Tst implements StringsTree {
         }
         writeLock.lock();
         try {
-            if (root == null) {
-                root = new TstNode(element);
+            if (root.isEmpty()) {
+                root =  Optional.of(new TstNode(element));
                 return true;
             } else {
-                return root.add(element) != null;
+                return root.map(r -> r.add(element)).isPresent();
             }
         } finally {
             writeLock.unlock();
@@ -50,11 +50,7 @@ public class Tst implements StringsTree {
     public boolean remove(String element) {
         writeLock.lock();
         try {
-            if (root == null) {
-                return false;
-            } else {
-                return root.remove(element);
-            }
+            return root.map(r -> r.remove(element)).orElse(false);
         } finally {
             writeLock.unlock();
         }
@@ -65,7 +61,7 @@ public class Tst implements StringsTree {
         writeLock.lock();
         try {
             // Let the garbage collector do all the hard work
-            root = null;
+            root = Optional.empty();
         } finally {
             writeLock.unlock();
         }
@@ -75,7 +71,8 @@ public class Tst implements StringsTree {
     public Optional<String> search(String element) {
         readLock.lock();
         try {
-            return root == null || root.search(element) == null ? Optional.empty() : Optional.of(element);
+            // If root==null or search returns null, evaluates to Optional.empty; otherwise returns the input
+            return root.map(r -> r.search(element)).map(n -> element);
         } finally {
             readLock.unlock();
         }
@@ -85,7 +82,7 @@ public class Tst implements StringsTree {
     public Optional<String> longestPrefixOf(String prefix) {
         readLock.lock();
         try {
-            return Optional.ofNullable(root).map(node -> node.longestPrefixOf(prefix));
+            return root.map(node -> node.longestPrefixOf(prefix));
         } finally {
             readLock.unlock();
         }
@@ -98,7 +95,7 @@ public class Tst implements StringsTree {
         }
         readLock.lock();
         try {
-            return root == null ? new HashSet<>() : root.keysWithPrefix(prefix);
+            return root.map(node -> node.keysWithPrefix(prefix)).orElse(new HashSet<>());
         } finally {
             readLock.unlock();
         }
@@ -109,7 +106,7 @@ public class Tst implements StringsTree {
     public Iterable<String> keys() {
         readLock.lock();
         try {
-            return root == null ? new HashSet<>() : root.keys();
+            return root.map(TstNode::keys).orElse(new ArrayList<String>());
         } finally {
             readLock.unlock();
         }
@@ -119,7 +116,7 @@ public class Tst implements StringsTree {
     public Optional<String> min() {
         readLock.lock();
         try {
-            return Optional.ofNullable(root).map(TstNode::min);
+            return root.map(TstNode::min);
         } finally {
             readLock.unlock();
         }
@@ -129,7 +126,7 @@ public class Tst implements StringsTree {
     public Optional<String> max() {
         readLock.lock();
         try {
-            return Optional.ofNullable(root).map(TstNode::max);
+            return root.map(TstNode::max);
         } finally {
             readLock.unlock();
         }
@@ -139,7 +136,7 @@ public class Tst implements StringsTree {
     public boolean isEmpty() {
         readLock.lock();
         try {
-            return root == null || root.size() == 0;
+            return this.size() == 0;
         } finally {
             readLock.unlock();
         }
@@ -149,7 +146,7 @@ public class Tst implements StringsTree {
     public int size() {
         readLock.lock();
         try {
-            return root == null ? 0 : root.size();
+            return root.map(TstNode::size).orElse(0);
         } finally {
             readLock.unlock();
         }
@@ -159,7 +156,7 @@ public class Tst implements StringsTree {
     public int height() {
         readLock.lock();
         try {
-            return root == null ? 0 : root.height();
+            return root.map(TstNode::height).orElse(0);
         } finally {
             readLock.unlock();
         }
