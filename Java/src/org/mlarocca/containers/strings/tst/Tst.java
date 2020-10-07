@@ -2,7 +2,10 @@ package org.mlarocca.containers.strings.tst;
 
 import org.mlarocca.containers.strings.StringsTree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -36,10 +39,10 @@ public class Tst implements StringsTree {
         writeLock.lock();
         try {
             if (root.isEmpty()) {
-                root =  Optional.of(new TstNode(element));
+                root = Optional.of(new TstNode(element));
                 return true;
             } else {
-                return root.map(r -> r.add(element)).isPresent();
+                return root.flatMap(r -> r.add(element)).isPresent();
             }
         } finally {
             writeLock.unlock();
@@ -71,8 +74,8 @@ public class Tst implements StringsTree {
     public Optional<String> search(String element) {
         readLock.lock();
         try {
-            // If root==null or search returns null, evaluates to Optional.empty; otherwise returns the input
-            return root.map(r -> r.search(element)).map(n -> element);
+            // If root or search's result are empty, evaluates to Optional.empty; otherwise returns the input
+            return root.flatMap(r -> r.search(element)).map(n -> element);
         } finally {
             readLock.unlock();
         }
@@ -82,7 +85,7 @@ public class Tst implements StringsTree {
     public Optional<String> longestPrefixOf(String prefix) {
         readLock.lock();
         try {
-            return root.map(node -> node.longestPrefixOf(prefix));
+            return root.flatMap(node -> node.longestPrefixOf(prefix));
         } finally {
             readLock.unlock();
         }
@@ -95,7 +98,7 @@ public class Tst implements StringsTree {
         }
         readLock.lock();
         try {
-            return root.map(node -> node.keysWithPrefix(prefix)).orElse(new HashSet<>());
+            return root.map(node -> node.keysWithPrefix(prefix)).orElse(new ArrayList<>());
         } finally {
             readLock.unlock();
         }
@@ -106,7 +109,7 @@ public class Tst implements StringsTree {
     public Iterable<String> keys() {
         readLock.lock();
         try {
-            return root.map(TstNode::keys).orElse(new ArrayList<String>());
+            return root.map(TstNode::keys).orElse(new ArrayList<>());
         } finally {
             readLock.unlock();
         }
@@ -116,7 +119,7 @@ public class Tst implements StringsTree {
     public Optional<String> min() {
         readLock.lock();
         try {
-            return root.map(TstNode::min);
+            return root.flatMap(TstNode::min);
         } finally {
             readLock.unlock();
         }
@@ -126,7 +129,7 @@ public class Tst implements StringsTree {
     public Optional<String> max() {
         readLock.lock();
         try {
-            return root.map(TstNode::max);
+            return root.flatMap(TstNode::max);
         } finally {
             readLock.unlock();
         }
@@ -167,9 +170,9 @@ public class Tst implements StringsTree {
         private Character character;
         private boolean storesKey;
 
-        private TstNode left;
-        private TstNode middle;
-        private TstNode right;
+        private Optional<TstNode> left;
+        private Optional<TstNode> middle;
+        private Optional<TstNode> right;
 
         public TstNode(String key) {
             this(key, 0);
@@ -180,50 +183,50 @@ public class Tst implements StringsTree {
                 throw new IndexOutOfBoundsException();
             }
             character = key.charAt(charIndex);
-            left = right = null;
+            left = right = Optional.empty();
             if (charIndex + 1 < key.length()) {
                 // Stores the rest of the key in a midlle-link chain
                 storesKey = false;
-                middle = new TstNode(key, charIndex + 1);
+                middle = Optional.of(new TstNode(key, charIndex + 1));
             } else {
-                middle = null;
+                middle = Optional.empty();
                 storesKey = true;
             }
         }
 
-        public TstNode add(String key) {
+        public Optional<TstNode> add(String key) {
             return this.add(key, 0);
         }
 
-        private TstNode add(String key, int charIndex) {
+        private Optional<TstNode> add(String key, int charIndex) {
             if (charIndex < key.length()) {
                 Character c = key.charAt(charIndex);
                 if (character.equals(c)) {
                     if (charIndex == key.length() - 1) {
                         if (storesKey) {
-                            return null;
+                            return Optional.empty();
                         } else {
                             storesKey = true;
-                            return this;
+                            return Optional.of(this);
                         }
-                    } else if (this.middle != null) {
-                        return middle.add(key, charIndex + 1);
+                    } else if (this.middle.isPresent()) {
+                        return middle.flatMap(node -> node.add(key, charIndex + 1));
                     } else {
-                        this.middle = new TstNode(key, charIndex + 1);
+                        this.middle = Optional.of(new TstNode(key, charIndex + 1));
                         return middle;
                     }
                 } else if (c.compareTo(character) < 0) {
-                    if (this.left != null) {
-                        return left.add(key, charIndex);
+                    if (this.left.isPresent()) {
+                        return left.flatMap(node -> node.add(key, charIndex));
                     } else {
-                        left = new TstNode(key, charIndex);
+                        left = Optional.of(new TstNode(key, charIndex));
                         return left;
                     }
                 } else {
-                    if (this.right != null) {
-                        return right.add(key, charIndex);
+                    if (this.right.isPresent()) {
+                        return right.flatMap(node -> node.add(key, charIndex));
                     } else {
-                        right = new TstNode(key, charIndex);
+                        right = Optional.of(new TstNode(key, charIndex));
                         return right;
                     }
                 }
@@ -253,52 +256,51 @@ public class Tst implements StringsTree {
                         return false;
                     }
                 } else {
-                    boolean deleted = this.middle == null
-                            ? false
-                            : this.middle.remove(key, charIndex + 1, purge);
+                    boolean deleted = this.middle.map(node -> node.remove(key, charIndex + 1, purge))
+                            .orElse(false);
                     if (deleted && purge.get()) {
-                        this.middle = null;
+                        this.middle = Optional.empty();
                         purge.set(!this.storesKey && this.isLeaf());
                     }
                     return deleted;
                 }
             } else if (c.compareTo(this.character) < 0) {
-                boolean deleted = left == null ? false : left.remove(key, charIndex, purge);
+                boolean deleted = left.map(node -> node.remove(key, charIndex, purge)).orElse(false);
                 if (deleted && purge.get()) {
-                    this.left = null;
+                    this.left = Optional.empty();
                     purge.set(!this.storesKey && this.isLeaf());
                 }
                 return deleted;
             } else {
-                boolean deleted = right == null ? false : right.remove(key, charIndex, purge);
+                boolean deleted = right.map(node -> node.remove(key, charIndex, purge)).orElse(false);
                 if (deleted && purge.get()) {
-                    this.right = null;
+                    this.right = Optional.empty();
                     purge.set(!this.storesKey && this.isLeaf());
                 }
                 return deleted;
             }
         }
 
-        public TstNode search(String key) {
-            TstNode node = getNodeFor(key, 0);
-            return (node != null && node.storesKey) ? node : null;
+        public Optional<TstNode> search(String key) {
+            Optional<TstNode> node = getNodeFor(key, 0);
+            return node.filter(n -> n.storesKey);
         }
 
-        private TstNode getNodeFor(String key, int charIndex) {
+        private Optional<TstNode> getNodeFor(String key, int charIndex) {
             if (charIndex >= key.length()) {
-                return null;
+                return Optional.empty();
             }
             Character c = key.charAt(charIndex);
             if (c.equals(this.character)) {
                 if (charIndex == key.length() - 1) {
-                    return this;
+                    return Optional.of(this);
                 } else {
-                    return this.middle == null ? null : this.middle.getNodeFor(key, charIndex + 1);
+                    return middle.flatMap(node -> node.getNodeFor(key, charIndex + 1));
                 }
             } else if (c.compareTo(this.character) < 0) {
-                return left == null ? null : left.getNodeFor(key, charIndex);
+                return left.flatMap(node -> node.getNodeFor(key, charIndex));
             } else {
-                return right == null ? null : right.getNodeFor(key, charIndex);
+                return right.flatMap(node -> node.getNodeFor(key, charIndex));
             }
         }
 
@@ -313,108 +315,98 @@ public class Tst implements StringsTree {
                 keys.add(currentPath + this.character);
             }
             // For left and right branches, we must not add this node's character to the path
-            if (left != null) {
-                left.keys(currentPath, keys);
-            }
-            if (right != null) {
-                right.keys(currentPath, keys);
-            }
+            left.ifPresent(node -> node.keys(currentPath, keys));
+            right.ifPresent(node -> node.keys(currentPath, keys));
             // For the middle child, instead, this node's character is part of the path forward
-            if (middle != null) {
-                middle.keys(currentPath + character, keys);
-            }
+            middle.ifPresent(node -> node.keys(currentPath + character, keys));
         }
 
         public Iterable<String> keysWithPrefix(String prefix) {
             // Invariant: prefix is not empty
-            TstNode node = this.getNodeFor(prefix, 0);
+            Optional<TstNode> node = this.getNodeFor(prefix, 0);
 
-            return node == null
-                    ? new HashSet<>()
-                    : node.keys().stream()
+            return node.map(TstNode::keys)
                     // All keys in node.keys already include the last character in prefix
-                    .map(s -> prefix.substring(0, prefix.length() - 1) + s)
-                    .collect(Collectors.toSet());
+                    .map(iter -> iter.stream().map(s -> prefix.substring(0, prefix.length() - 1) + s))
+                    .map(stream -> stream.collect(Collectors.toList())).orElse(new ArrayList<>());
         }
 
-        public String longestPrefixOf(String key) {
+        public Optional<String> longestPrefixOf(String key) {
             return this.longestPrefixOf(key, 0);
         }
 
-        public String longestPrefixOf(String key, int charIndex) {
+        public Optional<String> longestPrefixOf(String key, int charIndex) {
             if (charIndex >= key.length()) {
-                return null;
+                return Optional.empty();
             }
-            String result = null;
+            Optional<String> result = Optional.empty();
             Character c = key.charAt(charIndex);
             if (c.equals(this.character)) {
                 if (charIndex == key.length() - 1) {
-                    return storesKey ? key : null;
+                    return storesKey ? Optional.of(key) : Optional.empty();
                 } else {
-                    result = middle == null ? null : middle.longestPrefixOf(key, charIndex + 1);
-                    if (result == null && this.storesKey) {
-                        result = key.substring(0, charIndex + 1);
-                    }
+                    result = middle.flatMap(node -> node.longestPrefixOf(key, charIndex + 1))
+                            .or(() -> this.storesKey ? Optional.of(key.substring(0, charIndex + 1)) : Optional.empty());
                 }
             } else if (c.compareTo(this.character) < 0) {
-                result = left == null ? null : left.longestPrefixOf(key, charIndex);
+                result = left.flatMap(node -> node.longestPrefixOf(key, charIndex));
             } else {
-                result = right == null ? null : right.longestPrefixOf(key, charIndex);
+                result = right.flatMap(node -> node.longestPrefixOf(key, charIndex));
             }
             return result;
         }
 
 
-        public String min() {
+        public Optional<String> min() {
             return this.min("");
         }
 
-        private String min(String path) {
+        private Optional<String> min(String path) {
             // Search the left branch, if it exists it has lexicographically smaller words
-            String result = left == null ? null : left.min(path);
-            if (result != null) {
+            Optional<String> result = left.flatMap(node -> node.min(path));
+            if (result.isPresent()) {
                 return result;
             }
             // else, search the middle branch (including current node) and return the shortest key
             if (this.storesKey) {
-                return path + character;
+                return Optional.of(path + character);
             } else {
-                result = middle == null ? null : middle.min(path + character);
+                result = middle.flatMap(node -> node.min(path + character));
             }
-            if (result != null) {
+            if (result.isPresent()) {
                 return result;
             }
             // else search the right branch
-            return right == null ? null : right.min(path);
+            return right.flatMap(node -> node.min(path));
         }
 
-        public String max() {
+        public Optional<String> max() {
             return this.max("");
         }
 
-        private String max(String path) {
+        private Optional<String> max(String path) {
             // Search the right branch, if it exists it has lexicographically larger words
-            String result = right == null ? null : right.max(path);
-            if (result != null) {
+            Optional<String> result = right.flatMap(node -> node.max(path));
+            if (result.isPresent()) {
                 return result;
             }
             // else, search the middle branch (including current node) and return its max (and longest)
-            result = middle == null ? null : middle.max(path + character);
-            if (result != null) {
+            result = middle.flatMap(node -> node.max(path + character));
+            if (result.isPresent()) {
                 return result;
             }
             if (this.storesKey) {
-                return path + character;
+                return Optional.of(path + character);
             }
             // else search the left branch
-            return left == null ? null : left.max(path);
+            return left.flatMap(node -> node.max(path));
         }
 
         public int size() {
             return (this.storesKey ? 1 : 0) +
-                    (left != null ? left.size() : 0) +
-                    (right != null ? right.size() : 0) +
-                    (middle != null ? middle.size() : 0);
+                    left.map(TstNode::size).orElse(0) +
+                    middle.map(TstNode::size).orElse(0) +
+                    right.map(TstNode::size).orElse(0);
         }
 
         public int height() {
@@ -422,15 +414,15 @@ public class Tst implements StringsTree {
                 return 0;
             } else {
                 int subTreesHeight = Math.max(
-                        Math.max((left != null ? left.height() : 0), (right != null ? right.height() : 0)),
-                        (middle != null ? middle.height() : 0));
+                        Math.max(left.map(TstNode::height).orElse(0), right.map(TstNode::height).orElse(0)),
+                        middle.map(TstNode::height).orElse(0));
 
                 return 1 + subTreesHeight;
             }
         }
 
         private boolean isLeaf() {
-            return left == null && right == null && middle == null;
+            return left.isEmpty() && right.isEmpty() && middle.isEmpty();
         }
 
     }
