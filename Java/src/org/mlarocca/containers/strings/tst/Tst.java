@@ -30,8 +30,8 @@ public class Tst implements StringsTree {
 
     @Override
     public boolean add(String element) {
-        if (element.isEmpty()) {
-            throw new IllegalArgumentException("Keys must be non-empty");
+        if (element == null || element.isEmpty()) {
+            throw new IllegalArgumentException("Keys must be non-null and non-empty");
         }
         writeLock.lock();
         try {
