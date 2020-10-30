@@ -311,7 +311,7 @@ public class Tst implements StringsTree {
             return keys;
         }
 
-        public void keys(String currentPath, List<String> keys) {
+        private void keys(String currentPath, List<String> keys) {
             if (this.storesKey) {
                 keys.add(currentPath + this.character);
             }
@@ -344,7 +344,7 @@ public class Tst implements StringsTree {
             return this.longestPrefixOf(key, 0);
         }
 
-        public String longestPrefixOf(String key, int charIndex) {
+        private String longestPrefixOf(String key, int charIndex) {
             if (charIndex >= key.length()) {
                 return null;
             }
