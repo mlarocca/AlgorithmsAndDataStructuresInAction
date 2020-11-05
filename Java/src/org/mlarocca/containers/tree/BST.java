@@ -192,33 +192,33 @@ public class BST<T extends Comparable<T>> implements SearchTree<T> {
     private class BSTNode {
         private T key;
 
-        private Optional<BSTNode> left;
-        private Optional<BSTNode> right;
+        private BSTNode left;
+        private BSTNode right;
 
         public BSTNode(T key) {
             this.key = key;
-            this.left = Optional.empty();
-            this.right = Optional.empty();
+            this.left = null;
+            this.right = null;
         }
 
         public Optional<BSTNode> getLeft() {
-            return left;
+            return Optional.ofNullable(left);
         }
 
         public Optional<BSTNode> getRight() {
-            return right;
+            return Optional.ofNullable(right);
         }
 
-        private void setLeft(Optional<BSTNode> left) {
+        private void setLeft(BSTNode left) {
             this.left = left;
         }
 
-        private void setRight(Optional<BSTNode> right) {
+        private void setRight(BSTNode right) {
             this.right = right;
         }
 
         public boolean isLeaf() {
-            return left.isEmpty() && right.isEmpty();
+            return getLeft().isEmpty() && getRight().isEmpty();
         }
 
         public T getKey() {
@@ -257,22 +257,22 @@ public class BST<T extends Comparable<T>> implements SearchTree<T> {
             }
             return result;
         }
-        
+
         public Optional<BSTNode> add(T key) {
             // Check how the new key compares to this node's key
             if (key.compareTo(this.getKey()) <= 0) {
                 // The new key is NOT larger than current, so in a search we would go left
-                Optional<BSTNode> left = this.getLeft()
+                BSTNode left = this.getLeft()
                         .flatMap(node -> node.add(key))
                         // If the left child is empty, we can create a new node with the new key
-                        .or(() -> Optional.of(new BSTNode(key)));
+                        .orElse(new BSTNode(key));
                 this.setLeft(left);
             } else {
                 // The new key is larger than current, so in a search we would go right
-                Optional<BSTNode> right = this.getRight()
+                BSTNode right = this.getRight()
                         .flatMap(node -> node.add(key))
                         // If the right child is empty, we can create a new node with the new key
-                        .or(() -> Optional.of(new BSTNode(key)));
+                        .orElse(new BSTNode(key));
                 this.setRight(right);
             }
             return Optional.of(this);
@@ -290,23 +290,23 @@ public class BST<T extends Comparable<T>> implements SearchTree<T> {
                         // We replace current node's key with the previous key in the tree (so to preserve total ordering)
                         this.key = prevKey;
                         // and then remove that key from the subtree where it was found.
-                        this.setLeft(this.getLeft().flatMap(lN -> lN.remove(prevKey, wasRemoved)));
+                        this.setLeft(this.getLeft().flatMap(lN -> lN.remove(prevKey, wasRemoved)).orElse(null));
                     });
                 } else {
                     this.getRight().map(BSTNode::min).ifPresent(nextKey -> {
                         // We replace current node's key with the next key in the tree (so to preserve total ordering)
                         this.key = nextKey;
                         // and then remove that key from the subtree where it was found.
-                        this.setRight(this.getRight().flatMap(rN -> rN.remove(nextKey, wasRemoved)));
+                        this.setRight(this.getRight().flatMap(rN -> rN.remove(nextKey, wasRemoved)).orElse(null));
                     });
                 }
                 return Optional.of(this);
             }
             // else
             if (targetKey.compareTo(key) <= 0) {
-                this.setLeft(getLeft().flatMap(lN -> lN.remove(targetKey, wasRemoved)));
+                this.setLeft(getLeft().flatMap(lN -> lN.remove(targetKey, wasRemoved)).orElse(null));
             } else {
-                this.setRight(this.getRight().flatMap(rN -> rN.remove(targetKey, wasRemoved)));
+                this.setRight(this.getRight().flatMap(rN -> rN.remove(targetKey, wasRemoved)).orElse(null));
             }
             return Optional.of(this);
         }
@@ -316,9 +316,9 @@ public class BST<T extends Comparable<T>> implements SearchTree<T> {
          */
         private void cleanUp() {
             this.getLeft().ifPresent(BSTNode::cleanUp);
-            this.setLeft(Optional.empty());
+            this.setLeft(null);
             this.getRight().ifPresent(BSTNode::cleanUp);
-            this.setRight(Optional.empty());
+            this.setRight(null);
         }
 
         private boolean checkBSTInvariants() {
