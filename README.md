@@ -93,6 +93,14 @@ This data structure allows to more efficiently store and query large sets of str
 
 Storing  tries  can be cheaper  than holding  these  values  in  binary  search trees  or  hash  tables, but  it  can require  a  lot of  memory. Radix  tries  compress  paths, whenever  possible, to provide  a  more  compact  representation  of  these  tries,  without having to compromise interms of complexity or performance.
 
+# _Extra_: **TST** (Ternary Search Trie)
+## | [DEV.to](https://dev.to/mlarocca/ternary-search-trees-2cj7) | [Java](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/blob/master/Java/src/org/mlarocca/containers/strings/tst/Tst.java) |
+
+
+[![An example of a TST](./readme/thumbs/tst.md.png)](./readme/tst.png)
+
+An alternative solution that can help us reduce the space overhead associated with tries nodes.
+
 # _Extra_: **Needleman-Wunsch** String Alignment Algorithm
 ## | [JavaScript](https://github.com/mlarocca/AlgorithmsAndDataStructuresInAction/tree/master/JavaScript/src/strings) |
 
