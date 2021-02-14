@@ -6,7 +6,7 @@
 
 This repository contains a collections of data structures and algorithms from the Manning book _Advanced Algorithms and Data Structures (formerly _Algorithms and Data Structures in Action_)
 
-![Knapsack Problem](./readme/cover.png)
+![Book's Cover](./readme/cover.png)
 
 You can buy the book on Manning's web site:
 https://www.manning.com/books/advanced-algorithms-and-data-structures
