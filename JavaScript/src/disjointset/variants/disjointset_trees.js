@@ -150,7 +150,7 @@ class UnionFindTrees {
     }
     //else
     let parent = _parentsMap.get(this);
-    parent.set(p2, parent.get(p1));
+    parent.set(p2, p1);
 
     return true;  // Merged
   }
