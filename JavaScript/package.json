@@ -27,6 +27,6 @@
   "dependencies": {
     "@std/esm": "^0.26.0",
     "esm": "^3.2.25",
-    "minimist": ">=1.2.2"
+    "minimist": ">=1.2.6"
   }
 }
