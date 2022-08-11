@@ -208,7 +208,7 @@ class DWayHeap(object):
         return element
 
     def peek(self) -> Any:
-        """Removes, WITHOUT removing it, the highest-priority element in the heap.
+        """Returns, WITHOUT removing it, the highest-priority element in the heap.
         If the heap is empty, raises a `RuntimeError`.
 
         Returns: The element with highest priority in the heap.
